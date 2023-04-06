@@ -39,14 +39,22 @@ namespace Repositories
 
         public async Task AddAsync(TEntity entity)
         {
-            await Task.Run(() => this.dbContext.Set<TEntity>().Add(entity));
+            await Task.Run(() => {
+                this.dbContext.Set<TEntity>().Add(entity);
+                this.dbContext.SaveChanges();
+            });
+           
            
         }
 
         public async Task UpdateAsync(TEntity entity)
         {
-            await Task.Run(() => this.dbContext.Set<TEntity>().Update(entity));
+            await Task.Run(() => {
+                this.dbContext.Set<TEntity>().Update(entity);
+                 this.dbContext.SaveChanges();
+            });
            
+
 
         }
 
@@ -56,6 +64,7 @@ namespace Repositories
             {
                 TEntity entity = this.dbContext.Set<TEntity>().Find(id)!;
                 entity!.IsDeleted = true;
+                this.dbContext.SaveChanges();
             });
         }
 

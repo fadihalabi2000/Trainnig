@@ -11,11 +11,11 @@ namespace Services.CRUD
 {
     public class ArticleService : BaseCRUDService<Article>, IArticleService
     {
-        private readonly IUnitOfWork unitOfWork;
+        private readonly IUnitOfWorkRepo unitOfWorkRepo;
 
-        public ArticleService(IUnitOfWork unitOfWork) : base(unitOfWork.ArticleRepository)
+        public ArticleService(IUnitOfWorkRepo unitOfWorkRepo) : base(unitOfWorkRepo.ArticleRepository)
         {
-            this.unitOfWork = unitOfWork;
+            this.unitOfWorkRepo = unitOfWorkRepo;
         }
 
        

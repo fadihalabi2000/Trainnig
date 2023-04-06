@@ -1,5 +1,6 @@
 ﻿using NewsApiDomin.Models;
 using NewsApiServies.CRUD.Interfaces;
+using Repositories.Interfaces;
 using Services.CRUD;
 using Services.Transactions.Interfaces;
 
@@ -7,11 +8,11 @@ namespace NewsApiServies.CRUD
 {
     public class LogService : BaseCRUDService<Log>, ILogService
     {
-        private readonly IUnitOfWork unitOfWork;
+        private readonly IUnitOfWorkRepo unitOfWorkRepo;
 
-        public LogService(IUnitOfWork unitOfWork) : base(unitOfWork.LogRepository)
+        public LogService(IUnitOfWorkRepo unitOfWorkRepo) : base(unitOfWorkRepo.LogRepository)
         {
-            this.unitOfWork = unitOfWork;
+            this.unitOfWorkRepo = unitOfWorkRepo;
         }
 
     }

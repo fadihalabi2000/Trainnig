@@ -8,18 +8,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Repositories;
+using Repositories.Interfaces;
 
 namespace NewsApiServies.CRUD
 {
    
         public class ArticleImageService : BaseCRUDService<ArticleImage>, IArticleImageService
         {
-            private readonly IUnitOfWork unitOfWork;
+        private readonly IUnitOfWorkRepo unitOfWorkRepo;
 
-            public ArticleImageService(IUnitOfWork unitOfWork) : base(unitOfWork.ArticleImageRepository)
+        public ArticleImageService(IUnitOfWorkRepo unitOfWorkRepo) : base(unitOfWorkRepo.ArticleImageRepository)
             {
-                this.unitOfWork = unitOfWork;
-            }
+            this.unitOfWorkRepo = unitOfWorkRepo;
+        }
 
 
     }

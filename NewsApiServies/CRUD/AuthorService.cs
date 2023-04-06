@@ -1,17 +1,17 @@
 ﻿using NewsApiDomin.Models;
 using Services.CRUD;
+using Services.Transactions.Interfaces;
 using NewsApiServies.CRUD.Interfaces;
 using Repositories.Interfaces;
-using Services.Transactions.Interfaces;
 
 namespace NewsApiServies.CRUD
 {
    
-    public class FavoriteCategoryService : BaseCRUDService<FavoriteCategorie>, IFavoriteCategoryService
+    public class AuthorService : BaseCRUDService<Author>, IAuthorService
     {
         private readonly IUnitOfWorkRepo unitOfWorkRepo;
 
-        public FavoriteCategoryService(IUnitOfWorkRepo  unitOfWorkRepo) : base(unitOfWorkRepo.FavoriteCategorieRepository)
+        public AuthorService(IUnitOfWorkRepo unitOfWorkRepo) : base(unitOfWorkRepo.AuthorRepository)
         {
             this.unitOfWorkRepo = unitOfWorkRepo;
         }
