@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\NewsApiDomin\NewsApiDomin.csproj" />
+    <ProjectReference Include="..\NewsApiRepositories\NewsApiRepositories.csproj" />
+  </ItemGroup>
+
 </Project>

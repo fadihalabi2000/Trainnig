@@ -24,11 +24,11 @@ namespace NewsApiData.Migrations
 
             modelBuilder.Entity("NewsApiDomin.Models.Article", b =>
                 {
-                    b.Property<int>("ArticleId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ArticleId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int>("AuthorId")
                         .HasColumnType("int");
@@ -56,7 +56,7 @@ namespace NewsApiData.Migrations
                     b.Property<int>("ViewCount")
                         .HasColumnType("int");
 
-                    b.HasKey("ArticleId");
+                    b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
 
@@ -79,6 +79,9 @@ namespace NewsApiData.Migrations
                     b.Property<int>("ImageId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ArticleId");
@@ -90,11 +93,11 @@ namespace NewsApiData.Migrations
 
             modelBuilder.Entity("NewsApiDomin.Models.Author", b =>
                 {
-                    b.Property<int>("AuthorId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AuthorId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("AccountStats")
                         .IsRequired()
@@ -116,6 +119,9 @@ namespace NewsApiData.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -124,35 +130,38 @@ namespace NewsApiData.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("AuthorId");
+                    b.HasKey("Id");
 
                     b.ToTable("Author");
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Category", b =>
                 {
-                    b.Property<int>("CategoryId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("CategoryName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("CategoryId");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
 
                     b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Comment", b =>
                 {
-                    b.Property<int>("CommentId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CommentId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int>("ArticleId")
                         .HasColumnType("int");
@@ -160,14 +169,20 @@ namespace NewsApiData.Migrations
                     b.Property<DateTime>("CommentDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("CommentId")
+                        .HasColumnType("int");
+
                     b.Property<string>("CommentText")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.HasKey("CommentId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ArticleId");
 
@@ -187,6 +202,9 @@ namespace NewsApiData.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
@@ -201,11 +219,11 @@ namespace NewsApiData.Migrations
 
             modelBuilder.Entity("NewsApiDomin.Models.Image", b =>
                 {
-                    b.Property<int>("ImageId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ImageId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("ImageDescription")
                         .IsRequired()
@@ -215,21 +233,27 @@ namespace NewsApiData.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ImageId");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
 
                     b.ToTable("Images");
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Like", b =>
                 {
-                    b.Property<int>("LikeId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LikeId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int>("ArticleId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("LikeDate")
                         .HasColumnType("datetime2");
@@ -237,7 +261,7 @@ namespace NewsApiData.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.HasKey("LikeId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ArticleId");
 
@@ -248,11 +272,11 @@ namespace NewsApiData.Migrations
 
             modelBuilder.Entity("NewsApiDomin.Models.Log", b =>
                 {
-                    b.Property<int>("LogId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LogId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int>("AuthorId")
                         .HasColumnType("int");
@@ -261,13 +285,16 @@ namespace NewsApiData.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.Property<int>("logLevel")
                         .HasColumnType("int");
 
-                    b.HasKey("LogId");
+                    b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
 
@@ -278,11 +305,11 @@ namespace NewsApiData.Migrations
 
             modelBuilder.Entity("NewsApiDomin.Models.User", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -291,6 +318,9 @@ namespace NewsApiData.Migrations
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -304,7 +334,7 @@ namespace NewsApiData.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId");
+                    b.HasKey("Id");
 
                     b.ToTable("Users");
                 });
@@ -312,13 +342,13 @@ namespace NewsApiData.Migrations
             modelBuilder.Entity("NewsApiDomin.Models.Article", b =>
                 {
                     b.HasOne("NewsApiDomin.Models.Author", "Author")
-                        .WithMany("articles")
+                        .WithMany("Articles")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("NewsApiDomin.Models.Category", "Category")
-                        .WithMany("articles")
+                        .WithMany("Articles")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -331,13 +361,13 @@ namespace NewsApiData.Migrations
             modelBuilder.Entity("NewsApiDomin.Models.ArticleImage", b =>
                 {
                     b.HasOne("NewsApiDomin.Models.Article", "Article")
-                        .WithMany("articleImages")
+                        .WithMany("ArticleImages")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("NewsApiDomin.Models.Image", "Image")
-                        .WithMany("articleImages")
+                        .WithMany("ArticleImages")
                         .HasForeignKey("ImageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -350,13 +380,13 @@ namespace NewsApiData.Migrations
             modelBuilder.Entity("NewsApiDomin.Models.Comment", b =>
                 {
                     b.HasOne("NewsApiDomin.Models.Article", "Article")
-                        .WithMany("comments")
+                        .WithMany("Comments")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("NewsApiDomin.Models.User", "User")
-                        .WithMany("comments")
+                        .WithMany("Comments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -369,13 +399,13 @@ namespace NewsApiData.Migrations
             modelBuilder.Entity("NewsApiDomin.Models.FavoriteCategorie", b =>
                 {
                     b.HasOne("NewsApiDomin.Models.Category", "Category")
-                        .WithMany("favoriteCategories")
+                        .WithMany("FavoriteCategories")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("NewsApiDomin.Models.User", "User")
-                        .WithMany("favoriteCategories")
+                        .WithMany("FavoriteCategories")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -388,7 +418,7 @@ namespace NewsApiData.Migrations
             modelBuilder.Entity("NewsApiDomin.Models.Like", b =>
                 {
                     b.HasOne("NewsApiDomin.Models.Article", "Article")
-                        .WithMany("likes")
+                        .WithMany("Likes")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -407,13 +437,13 @@ namespace NewsApiData.Migrations
             modelBuilder.Entity("NewsApiDomin.Models.Log", b =>
                 {
                     b.HasOne("NewsApiDomin.Models.Author", "Author")
-                        .WithMany("logs")
+                        .WithMany("Logs")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("NewsApiDomin.Models.User", "User")
-                        .WithMany("logs")
+                        .WithMany("Logs")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -425,41 +455,41 @@ namespace NewsApiData.Migrations
 
             modelBuilder.Entity("NewsApiDomin.Models.Article", b =>
                 {
-                    b.Navigation("articleImages");
+                    b.Navigation("ArticleImages");
 
-                    b.Navigation("comments");
+                    b.Navigation("Comments");
 
-                    b.Navigation("likes");
+                    b.Navigation("Likes");
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Author", b =>
                 {
-                    b.Navigation("articles");
+                    b.Navigation("Articles");
 
-                    b.Navigation("logs");
+                    b.Navigation("Logs");
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Category", b =>
                 {
-                    b.Navigation("articles");
+                    b.Navigation("Articles");
 
-                    b.Navigation("favoriteCategories");
+                    b.Navigation("FavoriteCategories");
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Image", b =>
                 {
-                    b.Navigation("articleImages");
+                    b.Navigation("ArticleImages");
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.User", b =>
                 {
-                    b.Navigation("comments");
+                    b.Navigation("Comments");
 
-                    b.Navigation("favoriteCategories");
+                    b.Navigation("FavoriteCategories");
+
+                    b.Navigation("Logs");
 
                     b.Navigation("likes");
-
-                    b.Navigation("logs");
                 });
 #pragma warning restore 612, 618
         }

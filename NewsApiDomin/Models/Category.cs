@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DataAccess.Entities.Abstractions.Classes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace NewsApiDomin.Models
 {
-    public class Category
+    public class Category: BaseNormalEntity
     {
-        public int CategoryId { get; set; }
+      
         public string CategoryName { get; set; } = string.Empty; 
-        public List<Article> articles { get; set; }=new List<Article>();
-        public List<FavoriteCategorie> favoriteCategories { get; set; }= new List<FavoriteCategorie>();
+        public List<Article> Articles { get; set; }=new List<Article>();
+        public List<FavoriteCategorie> FavoriteCategories { get; set; }= new List<FavoriteCategorie>();
 
     }
 }

@@ -7,7 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\" />
+    <ProjectReference Include="..\ApiData\NewsApiData.csproj" />
+    <ProjectReference Include="..\NewsApiDomin\NewsApiDomin.csproj" />
   </ItemGroup>
 
 </Project>
