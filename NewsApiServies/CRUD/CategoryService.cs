@@ -8,18 +8,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NewsApiServies.CRUD.Interfaces;
+using Repositories.Interfaces;
 
 namespace NewsApiServies.CRUD
 {
    
-    public class CategorySevice : BaseCRUDService<Category>, ICategoryService
+    public class CategoryService : BaseCRUDService<Category>, ICategoryService
     {
-        private readonly IUnitOfWork unitOfWork;
+        private readonly IUnitOfWorkRepo unitOfWorkRepo;
 
-       public CategorySevice(IUnitOfWork unitOfWork) : base(unitOfWork.CategoryRepository)
+        public CategoryService(IUnitOfWorkRepo unitOfWorkRepo) : base(unitOfWorkRepo.CategoryRepository)
        {
-            this.unitOfWork = unitOfWork;
-       }
+            this.unitOfWorkRepo = unitOfWorkRepo;
+        }
 
 
     }

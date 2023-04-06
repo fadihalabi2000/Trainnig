@@ -1,5 +1,6 @@
 ﻿using NewsApiDomin.Models;
 using NewsApiServies.CRUD.Interfaces;
+using Repositories.Interfaces;
 using Services.CRUD;
 using Services.Transactions.Interfaces;
 using System;
@@ -13,11 +14,11 @@ namespace NewsApiServies.CRUD
   
     public class LikeService : BaseCRUDService<Like>, ILikeService
     {
-        private readonly IUnitOfWork unitOfWork;
+        private readonly IUnitOfWorkRepo unitOfWorkRepo;
 
-        public LikeService(IUnitOfWork unitOfWork) : base(unitOfWork.LikeRepository)
+        public LikeService(IUnitOfWorkRepo unitOfWorkRepo) : base(unitOfWorkRepo.LikeRepository)
         {
-            this.unitOfWork = unitOfWork;
+            this.unitOfWorkRepo = unitOfWorkRepo;
         }
 
     }

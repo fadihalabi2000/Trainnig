@@ -6,7 +6,7 @@ using Services.CRUD.Interfaces;
 
 namespace Services.CRUD
 {
-    public abstract class BaseCRUDService<TEntity> : IBaseCRUDService<TEntity>
+    public  class BaseCRUDService<TEntity> : IBaseCRUDService<TEntity>
         where TEntity : IBaseNormalEntity
     {
         protected readonly IBaseRepository<TEntity> repository;
@@ -25,6 +25,7 @@ namespace Services.CRUD
         public async Task<TEntity> GetByIdAsync(int id)
         {
                 return await this.repository.GetByIdAsync(id);
+            
              
         }
 

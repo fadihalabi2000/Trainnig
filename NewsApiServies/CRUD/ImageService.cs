@@ -3,16 +3,15 @@ using NewsApiServies.CRUD.Interfaces;
 using Services.CRUD;
 using Services.Transactions.Interfaces;
 
-
 namespace NewsApiServies.CRUD
 {
     public class ImageService:BaseCRUDService<Image> ,IImageService
     {
-        private readonly IUnitOfWork unitOfWork;
+        private readonly IUnitOfWorkRepo unitOfWorkRepo;
 
-        public ImageService(IUnitOfWork unitOfWork):base(unitOfWork.ImageRepository)
+        public ImageService(IUnitOfWorkRepo unitOfWorkRepo) :base(unitOfWorkRepo.ImageRepository)
         {
-            this.unitOfWork = unitOfWork;
+            this.unitOfWorkRepo = unitOfWorkRepo;
         }
 
     }

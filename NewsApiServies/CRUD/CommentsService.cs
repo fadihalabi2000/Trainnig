@@ -1,4 +1,5 @@
 ﻿using NewsApiDomin.Models;
+using Repositories.Interfaces;
 using Services.CRUD.Interfaces;
 using Services.Transactions.Interfaces;
 
@@ -6,12 +7,11 @@ namespace Services.CRUD
 {
     public class CommentsService : BaseCRUDService<Comment>, ICommentsService
     {
-        private readonly IUnitOfWork unitOfWork;
+        private readonly IUnitOfWorkRepo unitOfWorkRepo;
 
-        public CommentsService(IUnitOfWork unitOfWork) : base(unitOfWork.CommentRepository)
+        public CommentsService(IUnitOfWorkRepo unitOfWorkRepo) : base(unitOfWorkRepo.CommentRepository)
         {
-            this.unitOfWork = unitOfWork;
-            
+            this.unitOfWorkRepo = unitOfWorkRepo;
         }
 
      

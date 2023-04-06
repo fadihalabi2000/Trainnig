@@ -1,21 +1,19 @@
-﻿using DataAccess;
-using Microsoft.EntityFrameworkCore;
+﻿
 using NewsApiData;
 using NewsApiDomin.Models;
 using Repositories;
 using Repositories.Interfaces;
+
 using Services.Transactions.Interfaces;
 using System.Threading.Tasks;
 
 namespace Services.Transactions
 {
-    /// <summary>
-    /// Since we use dependency injection, the same dbContext will be injected in the UnitOfWork and we do not need to manually create the repositories
-    /// </summary>
-    public class UnitOfWork : IUnitOfWork
+   
+    public class UnitOfWorkRepo : IUnitOfWorkRepo
     {
         private readonly NewsApiDbContext dbContext;
-
+      
         public IArticleRepository ArticleRepository { get; private set; }
 
         public ICommentsRepository CommentRepository { get; private set; }
@@ -36,7 +34,7 @@ namespace Services.Transactions
 
         public IBaseRepository<ArticleImage> ArticleImageRepository { get; private set; }
 
-        public UnitOfWork(NewsApiDbContext dbContext)
+        public UnitOfWorkRepo(NewsApiDbContext dbContext)
         {
             this.dbContext = dbContext;
             ArticleRepository = new ArticleRepository(this.dbContext);
@@ -53,6 +51,7 @@ namespace Services.Transactions
 
 
         }
+
         public async Task<bool> CommitAsync()
         {
             if (await dbContext.SaveChangesAsync() > 0)

@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using NewsApiData;
+
+using NewsApiServies.CRUD;
+using NewsApiServies.CRUD.Interfaces;
 using Services.Transactions;
 using Services.Transactions.Interfaces;
 
@@ -11,10 +14,13 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IUnitOfWorkRepo,UnitOfWorkRepo>();
+builder.Services.AddScoped<IUnitOfWorkService,UnitOfWorkService>();
 builder.Services.AddDbContext<NewsApiDbContext>(option =>
 option.UseSqlServer(builder.Configuration["ConnectionStrings:NewsApiConnectionString"]));
 
-builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+
 
 var app = builder.Build();
 

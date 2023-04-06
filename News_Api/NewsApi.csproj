@@ -19,12 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\ApiData\NewsApiData.csproj" />
     <ProjectReference Include="..\NewsApiRepositories\NewsApiRepositories.csproj" />
+    <ProjectReference Include="..\NewsApiServies\NewsApiServies.csproj" />
   </ItemGroup>
 
 </Project>

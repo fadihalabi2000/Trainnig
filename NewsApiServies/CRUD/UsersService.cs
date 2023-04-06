@@ -1,4 +1,5 @@
 ﻿using NewsApiDomin.Models;
+using Repositories.Interfaces;
 using Services.CRUD.Interfaces;
 using Services.Transactions.Interfaces;
 
@@ -7,11 +8,11 @@ namespace Services.CRUD
 {
     public class UsersService : BaseCRUDService<User>, IUsersService 
     {
-        private readonly IUnitOfWork unitOfWork;
+        private readonly IUnitOfWorkRepo unitOfWorkRepo;
 
-        public UsersService(IUnitOfWork unitOfWork) : base(unitOfWork.UserRepository)
+        public UsersService(IUnitOfWorkRepo unitOfWorkRepo) : base(unitOfWorkRepo.UserRepository)
         {
-            this.unitOfWork = unitOfWork;
+            this.unitOfWorkRepo = unitOfWorkRepo;
         }
 
       
