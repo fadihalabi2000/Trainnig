@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DataAccess.Entities.Abstractions.Classes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NewsApiDomin.Models
 {
-    public class Comment
+    public class Comment: BaseNormalEntity
     {
         public int CommentId { get; set; }
         public string CommentText { get; set; }=string.Empty;

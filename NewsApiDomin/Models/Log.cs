@@ -1,4 +1,5 @@
-﻿using NewsApiDomin.Enum;
+﻿using DataAccess.Entities.Abstractions.Classes;
+using NewsApiDomin.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +8,8 @@ using System.Threading.Tasks;
 
 namespace NewsApiDomin.Models
 {
-    public class Log
+    public class Log : BaseNormalEntity
     {
-        public int LogId { get; set; }
         public  LogLevel logLevel { get; set; }
         public string Content { get; set; } = string.Empty;
         public int AuthorId { get; set; }
