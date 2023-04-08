@@ -12,7 +12,7 @@ namespace NewsApiDomin.Models
       
         public string CategoryName { get; set; } = string.Empty; 
         public List<Article> Articles { get; set; }=new List<Article>();
-        public List<FavoriteCategorie> FavoriteCategories { get; set; }= new List<FavoriteCategorie>();
+    
 
     }
 }

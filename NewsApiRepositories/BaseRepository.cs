@@ -2,10 +2,12 @@
 using DataAccess.Entities.Abstractions.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using NewsApiData;
+using NewsApiDomin.Models;
 using Repositories.Interfaces;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Xml;
 
 namespace Repositories
 {
@@ -29,6 +31,7 @@ namespace Repositories
         }
         public async Task<TEntity> GetByIdAsync(int id)
         {
+            
             DbSet<TEntity> dbSet = this.dbContext.Set<TEntity>();
 
             TEntity? entity = await dbSet.FirstOrDefaultAsync(p => p.Id == id && p.IsDeleted == false);
@@ -39,19 +42,24 @@ namespace Repositories
 
         public async Task AddAsync(TEntity entity)
         {
+           // Category x = new Category() { CategoryName = "eeee", IsDeleted = false };
+           
             await Task.Run(() => {
-                this.dbContext.Set<TEntity>().Add(entity);
-                this.dbContext.SaveChanges();
+                this.dbContext.Set<TEntity>().AddAsync(entity);
+
+
             });
-           
-           
+
+
+
         }
 
         public async Task UpdateAsync(TEntity entity)
         {
             await Task.Run(() => {
                 this.dbContext.Set<TEntity>().Update(entity);
-                 this.dbContext.SaveChanges();
+              
+
             });
            
 
@@ -60,11 +68,12 @@ namespace Repositories
 
         public async Task DeleteAsync(int id)
         {
+
             await Task.Run(() =>
             {
                 TEntity entity = this.dbContext.Set<TEntity>().Find(id)!;
                 entity!.IsDeleted = true;
-                this.dbContext.SaveChanges();
+
             });
         }
 

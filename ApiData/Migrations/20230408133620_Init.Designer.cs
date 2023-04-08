@@ -12,8 +12,8 @@ using NewsApiData;
 namespace NewsApiData.Migrations
 {
     [DbContext(typeof(NewsApiDbContext))]
-    [Migration("20230404190516_AddEntity")]
-    partial class AddEntity
+    [Migration("20230408133620_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -67,32 +67,6 @@ namespace NewsApiData.Migrations
                     b.ToTable("Articles");
                 });
 
-            modelBuilder.Entity("NewsApiDomin.Models.ArticleImage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("ArticleId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ImageId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ArticleId");
-
-                    b.HasIndex("ImageId");
-
-                    b.ToTable("ArticleImages");
-                });
-
             modelBuilder.Entity("NewsApiDomin.Models.Author", b =>
                 {
                     b.Property<int>("Id")
@@ -100,14 +74,6 @@ namespace NewsApiData.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("AccountStats")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AuthorName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Bio")
                         .IsRequired()
@@ -171,9 +137,6 @@ namespace NewsApiData.Migrations
                     b.Property<DateTime>("CommentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("CommentId")
-                        .HasColumnType("int");
-
                     b.Property<string>("CommentText")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -193,32 +156,6 @@ namespace NewsApiData.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("NewsApiDomin.Models.FavoriteCategorie", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("FavoriteCategorias");
-                });
-
             modelBuilder.Entity("NewsApiDomin.Models.Image", b =>
                 {
                     b.Property<int>("Id")
@@ -226,6 +163,9 @@ namespace NewsApiData.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ArticleId")
+                        .HasColumnType("int");
 
                     b.Property<string>("ImageDescription")
                         .IsRequired()
@@ -239,6 +179,8 @@ namespace NewsApiData.Migrations
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ArticleId");
 
                     b.ToTable("Images");
                 });
@@ -287,6 +229,9 @@ namespace NewsApiData.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -312,6 +257,10 @@ namespace NewsApiData.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -360,25 +309,6 @@ namespace NewsApiData.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("NewsApiDomin.Models.ArticleImage", b =>
-                {
-                    b.HasOne("NewsApiDomin.Models.Article", "Article")
-                        .WithMany("ArticleImages")
-                        .HasForeignKey("ArticleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NewsApiDomin.Models.Image", "Image")
-                        .WithMany("ArticleImages")
-                        .HasForeignKey("ImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Article");
-
-                    b.Navigation("Image");
-                });
-
             modelBuilder.Entity("NewsApiDomin.Models.Comment", b =>
                 {
                     b.HasOne("NewsApiDomin.Models.Article", "Article")
@@ -398,23 +328,15 @@ namespace NewsApiData.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("NewsApiDomin.Models.FavoriteCategorie", b =>
+            modelBuilder.Entity("NewsApiDomin.Models.Image", b =>
                 {
-                    b.HasOne("NewsApiDomin.Models.Category", "Category")
-                        .WithMany("FavoriteCategories")
-                        .HasForeignKey("CategoryId")
+                    b.HasOne("NewsApiDomin.Models.Article", "Article")
+                        .WithMany("Images")
+                        .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NewsApiDomin.Models.User", "User")
-                        .WithMany("FavoriteCategories")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-
-                    b.Navigation("User");
+                    b.Navigation("Article");
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Like", b =>
@@ -457,9 +379,9 @@ namespace NewsApiData.Migrations
 
             modelBuilder.Entity("NewsApiDomin.Models.Article", b =>
                 {
-                    b.Navigation("ArticleImages");
-
                     b.Navigation("Comments");
+
+                    b.Navigation("Images");
 
                     b.Navigation("Likes");
                 });
@@ -474,20 +396,11 @@ namespace NewsApiData.Migrations
             modelBuilder.Entity("NewsApiDomin.Models.Category", b =>
                 {
                     b.Navigation("Articles");
-
-                    b.Navigation("FavoriteCategories");
-                });
-
-            modelBuilder.Entity("NewsApiDomin.Models.Image", b =>
-                {
-                    b.Navigation("ArticleImages");
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.User", b =>
                 {
                     b.Navigation("Comments");
-
-                    b.Navigation("FavoriteCategories");
 
                     b.Navigation("Logs");
 

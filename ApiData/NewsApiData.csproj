@@ -18,8 +18,4 @@
     <ProjectReference Include="..\NewsApiDomin\NewsApiDomin.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
 </Project>

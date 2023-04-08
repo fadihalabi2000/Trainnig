@@ -17,15 +17,12 @@ namespace Services.Transactions
         private readonly NewsApiDbContext dbContext;
         public IBaseCRUDService<Category> CategoryService { get; private set; }
 
-        public IArticleImageService ArticleImageService { get; private set; }
-
         public IArticleService ArticleService { get; private set; }
 
         public IAuthorService AuthorService { get; private set; }
 
         public ICommentsService CommentsService { get; private set; }
 
-        public IFavoriteCategoryService FavoriteCategoryService { get; private set; }
 
         public IImageService ImageService { get; private set; }
 
@@ -39,11 +36,11 @@ namespace Services.Transactions
         {
             this.dbContext = dbContext;
             CategoryService =new BaseCRUDService<Category>(unitOfWorkRepo.CategoryRepository);
-            ArticleImageService = new ArticleImageService(unitOfWorkRepo);
+       
             ArticleService = new ArticleService(unitOfWorkRepo);
             AuthorService = new AuthorService(unitOfWorkRepo);
             CommentsService = new CommentsService(unitOfWorkRepo);
-            FavoriteCategoryService = new FavoriteCategoryService(unitOfWorkRepo);
+  
             ImageService = new ImageService(unitOfWorkRepo);
             LikeService = new LikeService(unitOfWorkRepo);
             LogService = new LogService(unitOfWorkRepo);
@@ -58,7 +55,7 @@ namespace Services.Transactions
             {
                 return true;
             }
-
+ 
             return false;
         }
     }

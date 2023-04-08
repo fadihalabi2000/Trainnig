@@ -1,14 +1,15 @@
 ﻿using NewsApiDomin.Models;
-using Services.CRUD.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NewsApiServies.CRUD.Interfaces
+namespace NewsApiDomin.ViewModels.CommentViewModel
 {
-    public interface IFavoriteCategoryService:IBaseCRUDService<FavoriteCategorie>
+    public class UpdateComment
     {
+        public string CommentText { get; set; } = string.Empty;
+ 
     }
 }

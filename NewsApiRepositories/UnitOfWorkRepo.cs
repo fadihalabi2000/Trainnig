@@ -26,13 +26,11 @@ namespace Services.Transactions
 
         public IBaseRepository<Like> LikeRepository { get; private set; }
 
-        public IBaseRepository<FavoriteCategorie> FavoriteCategorieRepository { get; private set; }
 
         public IBaseRepository<Category> CategoryRepository { get; private set; }
 
         public IBaseRepository<Image> ImageRepository { get; private set; }
 
-        public IBaseRepository<ArticleImage> ArticleImageRepository { get; private set; }
 
         public UnitOfWorkRepo(NewsApiDbContext dbContext)
         {
@@ -44,10 +42,10 @@ namespace Services.Transactions
             LogRepository = new BaseRepository<Log>(this.dbContext);
             AuthorRepository = new BaseRepository<Author>(this.dbContext);
             LikeRepository = new BaseRepository<Like>(this.dbContext);
-            FavoriteCategorieRepository = new BaseRepository<FavoriteCategorie>(this.dbContext);
+       
             CategoryRepository = new BaseRepository<Category>(this.dbContext);
             ImageRepository = new BaseRepository<Image>(this.dbContext);
-            ArticleImageRepository = new BaseRepository<ArticleImage>(this.dbContext);
+     
 
 
         }

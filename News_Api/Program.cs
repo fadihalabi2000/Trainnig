@@ -3,6 +3,8 @@ using NewsApiData;
 
 using NewsApiServies.CRUD;
 using NewsApiServies.CRUD.Interfaces;
+using Services.CRUD;
+using Services.CRUD.Interfaces;
 using Services.Transactions;
 using Services.Transactions.Interfaces;
 
