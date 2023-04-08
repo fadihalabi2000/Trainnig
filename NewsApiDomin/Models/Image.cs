@@ -12,6 +12,8 @@ namespace NewsApiDomin.Models
         public string ImageUrl { get; set; } = string.Empty;
         public string ImageDescription { get; set; } = string.Empty;
 
-        public List<ArticleImage>ArticleImages { get; set; }=new List<ArticleImage>();
+        public int ArticleId { get; set; }
+
+        public  Article Article { get; set; } = new Article();
     }
 }

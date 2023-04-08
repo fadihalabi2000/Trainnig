@@ -18,7 +18,7 @@ namespace Repositories
         {
             DateTime dateTimeUtcNow = DateTime.UtcNow;
             entity.PublishDate = dateTimeUtcNow;
-            entity.UpdateDate = dateTimeUtcNow;
+            entity.UpdateDate = DateTime.MinValue;
 
             await Task.Run(() => base.AddAsync(entity));
         }

@@ -12,7 +12,7 @@ namespace NewsApiDomin.Models
         public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public int ViewCount { get; set; }
-        public DateTime PublishDate { get; set; }=DateTime.MinValue;
+        public DateTime PublishDate { get; set; }=DateTime.UtcNow;
         public DateTime UpdateDate { get; set; }=DateTime.MinValue;
 
         public int AuthorId { get; set; }
@@ -23,7 +23,7 @@ namespace NewsApiDomin.Models
 
         public List<Like> Likes{ get; set; } =new List<Like>();
         public List<Comment> Comments{ get; set; } =new List<Comment>();
-        public List<ArticleImage> ArticleImages{ get; set; } =new List<ArticleImage>();
+        public List<Image> Images{ get; set; } =new List<Image>();
        
     }
 }

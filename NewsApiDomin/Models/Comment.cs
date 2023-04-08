@@ -9,9 +9,9 @@ namespace NewsApiDomin.Models
 {
     public class Comment: BaseNormalEntity
     {
-        public int CommentId { get; set; }
+      
         public string CommentText { get; set; }=string.Empty;
-        public DateTime CommentDate { get; set; }=DateTime.MinValue;
+        public DateTime CommentDate { get; set; }=DateTime.UtcNow;
         public int ArticleId { get; set; }
         public int UserId { get; set; }
         public Article Article { get; set; } = new Article();

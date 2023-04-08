@@ -9,11 +9,8 @@ namespace Services.Transactions.Interfaces
         public IBaseRepository<User> UserRepository { get; }
         public IBaseRepository<Log> LogRepository { get; }
         public IBaseRepository<Author> AuthorRepository { get; }
-        public IBaseRepository<Like> LikeRepository { get; }
-        public IBaseRepository<FavoriteCategorie> FavoriteCategorieRepository { get; }
-       
+        public IBaseRepository<Like> LikeRepository { get; }  
         public IBaseRepository<Image> ImageRepository { get; }
-        public IBaseRepository<ArticleImage> ArticleImageRepository { get; }
 
         public IBaseRepository<Category> CategoryRepository { get; }
         public IArticleRepository ArticleRepository { get; }

@@ -9,7 +9,7 @@ namespace NewsApiDomin.Models
 {
     public class Like : BaseNormalEntity
     {
-        public DateTime LikeDate { get; set; }=DateTime.MinValue;
+        public DateTime LikeDate { get; set; } = DateTime.UtcNow;
         public int ArticleId { get; set; }
         public int UserId { get; set; }
         public Article Article { get; set; } =new Article();
