@@ -1,6 +1,8 @@
-﻿using NewsApiDomin.Models;
+﻿
+
+
+using NewsApiDomin.Models;
 using NewsApiServies.CRUD.Interfaces;
-using Repositories.Interfaces;
 using Services.CRUD;
 using Services.Transactions.Interfaces;
 
@@ -14,6 +16,18 @@ namespace NewsApiServies.CRUD
         {
             this.unitOfWorkRepo = unitOfWorkRepo;
         }
+
+        public async Task<List<Log>> GetAllAuthorsLogAsync()
+        {
+            return await unitOfWorkRepo.LogRepository.GetAllAuthorsLogAsync();
+        }
+
+        public async Task<List<Log>> GetAllUsersLogAsync()
+        {
+            return await unitOfWorkRepo.LogRepository.GetAllUsersLogAsync();
+        }
+
+  
 
     }
 }

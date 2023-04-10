@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace NewsApiDomin.ViewModels.ArticleViewModel
 {
-    public class CreateOrUpdateArticle
+    public class CreateArticle
     {
         public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public int ViewCount { get; set; }
         public int AuthorId { get; set; }
         public int CategoryId { get; set; }
-        public List<Image> ArticleImages { get; set; } = new List<Image>();
+         public List<Image> Images { get; set; } = new List<Image>();
     }
 }

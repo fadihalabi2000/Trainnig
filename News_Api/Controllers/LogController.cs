@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NewsApiDomin.Models;
+using NewsApiDomin.ViewModels.LogViewModel;
 using Services.Transactions.Interfaces;
 
 namespace NewsApi.Controllers
@@ -16,15 +17,40 @@ namespace NewsApi.Controllers
             this.unitOfWorkService = unitOfWorkService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<List<Log>>> GetAll()
+        [HttpGet("GetAllUsersLog")]
+        public async Task<ActionResult<List<UserLogView>>> GetAllUsersLog()
         {
 
             try
             {
-                var Users = await unitOfWorkService.LogService.GetAllAsync();
-                if (Users.Count() > 0)
-                    return Ok(Users);
+                var logs = await unitOfWorkService.LogService.GetAllUsersLogAsync();
+                var usersLogView = logs.Select(l => new UserLogView { Content = l.Content, UserId = l.UserId, logLevel = l.logLevel });
+                if (usersLogView.Count() > 0)
+                    return Ok(usersLogView);
+                else
+                    return BadRequest();
+
+            }
+            catch (Exception)
+            {
+
+                return BadRequest();
+            }
+
+        }
+
+
+
+        [HttpGet("GetAllAuthorLog")]
+        public async Task<ActionResult<List<AuthorLogView>>> GetAllAuthorLog()
+        {
+
+            try
+            {
+                var logs = await unitOfWorkService.LogService.GetAllAuthorsLogAsync();
+                var authorsLogView = logs.Select(l => new AuthorLogView { Content = l.Content, AuthorId = l.AuthorId, logLevel = l.logLevel });
+                if (authorsLogView.Count() > 0)
+                    return Ok(authorsLogView);
                 else
                     return BadRequest();
 
@@ -45,11 +71,12 @@ namespace NewsApi.Controllers
 
             try
             {
-                var user = await unitOfWorkService.LogService.GetByIdAsync(id);
-                if (user == null)
+                var log = await unitOfWorkService.LogService.GetByIdAsync(id);
+               
+                if (log == null)
                     return BadRequest();
                 else
-                    return Ok(user);
+                    return Ok(log);
 
             }
             catch (Exception)
@@ -61,71 +88,6 @@ namespace NewsApi.Controllers
         }
 
 
-        [HttpPost]
-        public async Task<ActionResult> Post(Log article)
-        {
 
-            try
-            {
-                var articlesImage = new Log();
-
-                await unitOfWorkService.LogService.AddAsync(articlesImage);
-
-                if (await unitOfWorkService.CommitAsync())
-                    return Ok(articlesImage);
-                else
-                    return BadRequest();
-
-            }
-            catch (Exception)
-            {
-
-                return BadRequest();
-            }
-        }
-
-
-
-        [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, Log article)
-        {
-            try
-            {
-                await unitOfWorkService.LogService.GetByIdAsync(id);
-                var articlesImage = new Log();
-                await unitOfWorkService.LogService.UpdateAsync(articlesImage);
-                if (await unitOfWorkService.CommitAsync())
-                    return NoContent();
-                else
-                    return BadRequest();
-
-            }
-            catch (Exception)
-            {
-
-                return BadRequest();
-            }
-
-        }
-
-
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
-        {
-            try
-            {
-                await unitOfWorkService.LogService.DeleteAsync(id);
-                if (await unitOfWorkService.CommitAsync())
-                    return NoContent();
-                else
-                    return BadRequest();
-
-            }
-            catch (Exception)
-            {
-
-                return BadRequest();
-            }
-        }
     }
 }

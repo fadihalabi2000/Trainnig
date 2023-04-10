@@ -1,6 +1,8 @@
 ﻿
 using NewsApiData;
 using NewsApiDomin.Models;
+using NewsApiRepositories;
+using NewsApiRepositories.Interfaces;
 using Repositories;
 using Repositories.Interfaces;
 
@@ -20,14 +22,14 @@ namespace Services.Transactions
 
         public IBaseRepository<User> UserRepository { get; private set; }
 
-        public IBaseRepository<Log> LogRepository { get; private set; }
+        public ILogRepository LogRepository { get; private set; }
 
         public IBaseRepository<Author> AuthorRepository { get; private set; }
 
         public IBaseRepository<Like> LikeRepository { get; private set; }
 
 
-        public IBaseRepository<Category> CategoryRepository { get; private set; }
+        public ICategoryRepository CategoryRepository { get; private set; }
 
         public IBaseRepository<Image> ImageRepository { get; private set; }
 
@@ -37,13 +39,13 @@ namespace Services.Transactions
             this.dbContext = dbContext;
             ArticleRepository = new ArticleRepository(this.dbContext);
             CommentRepository = new CommentsRepository(this.dbContext);
+            CategoryRepository = new CategoryReository(this.dbContext);
+            LogRepository = new LogRepository(this.dbContext);
 
             UserRepository = new BaseRepository<User>(this.dbContext);
-            LogRepository = new BaseRepository<Log>(this.dbContext);
             AuthorRepository = new BaseRepository<Author>(this.dbContext);
             LikeRepository = new BaseRepository<Like>(this.dbContext);
        
-            CategoryRepository = new BaseRepository<Category>(this.dbContext);
             ImageRepository = new BaseRepository<Image>(this.dbContext);
      
 

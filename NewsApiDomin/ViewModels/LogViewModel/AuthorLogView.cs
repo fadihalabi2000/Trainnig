@@ -13,7 +13,6 @@ namespace NewsApiDomin.ViewModels.LogViewModel
         public LogLevel logLevel { get; set; }
         public string Content { get; set; } = string.Empty;
         public int AuthorId { get; set; }
-        public Author Author { get; set; } = new Author();
-        public User User { get; set; } = new User();
+
     }
 }

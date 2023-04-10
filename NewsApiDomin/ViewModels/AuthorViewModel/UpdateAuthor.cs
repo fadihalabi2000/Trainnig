@@ -9,7 +9,7 @@ namespace NewsApiDomin.ViewModels.AuthorViewModel
 {
     public class UpdateAuthor
     {
-        public string AuthorName { get; set; } = string.Empty;
+    
         public string Password { get; set; } = string.Empty;
         public string DisplayName { get; set; } = string.Empty;
         public string Bio { get; set; } = string.Empty;

@@ -12,7 +12,7 @@ using NewsApiData;
 namespace NewsApiData.Migrations
 {
     [DbContext(typeof(NewsApiDbContext))]
-    [Migration("20230408133620_Init")]
+    [Migration("20230410142229_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
