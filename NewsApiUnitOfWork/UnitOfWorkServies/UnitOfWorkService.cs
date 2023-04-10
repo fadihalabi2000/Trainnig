@@ -1,5 +1,4 @@
-﻿
-
+﻿using DataAccess;
 using NewsApiData;
 using NewsApiDomin.Models;
 using NewsApiServies.CRUD;
@@ -37,6 +36,7 @@ namespace Services.Transactions
         {
             this.dbContext = dbContext;
             CategoryService =new BaseCRUDService<Category>(unitOfWorkRepo.CategoryRepository);
+       
             ArticleService = new ArticleService(unitOfWorkRepo);
             AuthorService = new AuthorService(unitOfWorkRepo);
             CommentsService = new CommentsService(unitOfWorkRepo);

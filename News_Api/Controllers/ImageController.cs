@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NewsApiDomin.Models;
+using NewsApiDomin.ViewModels.ImageViewModel;
+using NewsApiDomin.ViewModels.LikeViewModel;
 using Services.Transactions.Interfaces;
 
 namespace NewsApi.Controllers
@@ -17,14 +19,15 @@ namespace NewsApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Image>>> GetAll()
+        public async Task<ActionResult<List<ImageView>>> GetAll()
         {
 
             try
             {
-                var Users = await unitOfWorkService.ImageService.GetAllAsync();
-                if (Users.Count() > 0)
-                    return Ok(Users);
+                var images = await unitOfWorkService.ImageService.GetAllAsync();
+                var imagesView = images.Select(i => new ImageView { Id = i.Id, ArticleId = i.ArticleId, ImageUrl = i.ImageUrl, ImageDescription = i.ImageDescription });
+                if (imagesView.Count() > 0)
+                    return Ok(imagesView);
                 else
                     return BadRequest();
 
@@ -38,18 +41,19 @@ namespace NewsApi.Controllers
         }
 
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Image>> GetById(int id)
+        [HttpGet("{id}",Name = "GetImage")]
+        public async Task<ActionResult<ImageView>> GetById(int id)
         {
 
 
             try
             {
-                var user = await unitOfWorkService.ImageService.GetByIdAsync(id);
-                if (user == null)
+                var image = await unitOfWorkService.ImageService.GetByIdAsync(id);
+                var imageview=new ImageView { Id = image.Id,ArticleId=image.ArticleId, ImageDescription = image.ImageDescription,ImageUrl=image.ImageUrl };
+                if (imageview == null)
                     return BadRequest();
                 else
-                    return Ok(user);
+                    return Ok(imageview);
 
             }
             catch (Exception)
@@ -62,17 +66,28 @@ namespace NewsApi.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult> Post(Image article)
+        public async Task<ActionResult<ImageView>> Post(CreateImage createImage)
         {
 
             try
             {
-                var articlesImage = new Image();
+                var image = new Image { ImageDescription=createImage.ImageDescription,ImageUrl= createImage.ImageUrl,ArticleId=createImage.ArticleId};
 
-                await unitOfWorkService.ImageService.AddAsync(articlesImage);
+                await unitOfWorkService.ImageService.AddAsync(image);
 
                 if (await unitOfWorkService.CommitAsync())
-                    return Ok(articlesImage);
+                {
+                    var lastID = await unitOfWorkService.ImageService.GetAllAsync();
+                    var imageId = lastID.Max(b => b.Id);
+                    image = await unitOfWorkService.ImageService.GetByIdAsync(imageId);
+                    var imageView = new ImageView { Id = image.Id, ArticleId = image.ArticleId, ImageDescription= image.ImageDescription,ImageUrl=image.ImageUrl };
+                    return CreatedAtRoute("GetImage", new
+                    {
+                        id = imageId,
+                    }, imageView);
+
+                  
+                }
                 else
                     return BadRequest();
 
@@ -87,13 +102,14 @@ namespace NewsApi.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, Image article)
+        public async Task<ActionResult> Put(int id, UpdateImage updateImage)
         {
             try
             {
-                await unitOfWorkService.ImageService.GetByIdAsync(id);
-                var articlesImage = new Image();
-                await unitOfWorkService.ImageService.UpdateAsync(articlesImage);
+              var image=  await unitOfWorkService.ImageService.GetByIdAsync(id);
+                image.ImageDescription = updateImage.ImageDescription;
+                image.ImageUrl = updateImage.ImageUrl;
+                await unitOfWorkService.ImageService.UpdateAsync(image);
                 if (await unitOfWorkService.CommitAsync())
                     return NoContent();
                 else

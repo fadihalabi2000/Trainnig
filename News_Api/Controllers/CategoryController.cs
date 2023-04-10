@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NewsApiDomin.Models;
+using NewsApiDomin.ViewModels.CategoryViewModel;
+using NewsApiDomin.ViewModels.ImageViewModel;
 using Services.Transactions.Interfaces;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace NewsApi.Controllers
 {
@@ -17,14 +20,15 @@ namespace NewsApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Category>>> GetAll()
+        public async Task<ActionResult<List<CategoryView>>> GetAll()
         {
 
             try
             {
-                var Users = await unitOfWorkService.CategoryService.GetAllAsync();
-                if (Users.Count() > 0)
-                    return Ok(Users);
+                var categories = await unitOfWorkService.CategoryService.GetAllAsync();
+                var categoriesView = categories.Select(c=>new CategoryView { Id=c.Id,CategoryName=c.CategoryName}).ToList();
+                if (categoriesView.Count() > 0)
+                    return Ok(categoriesView);
                 else
                     return BadRequest();
 
@@ -38,18 +42,19 @@ namespace NewsApi.Controllers
         }
 
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Category>> GetById(int id)
+        [HttpGet("{id}",Name = "GetCategory")]
+        public async Task<ActionResult<CategoryView>> GetById(int id)
         {
 
 
             try
             {
-                var user = await unitOfWorkService.CategoryService.GetByIdAsync(id);
-                if (user == null)
+                var category = await unitOfWorkService.CategoryService.GetByIdAsync(id);
+                var categoryView = new CategoryView { Id = category.Id, CategoryName = category.CategoryName, Articles = category.Articles };
+                if (categoryView == null)
                     return BadRequest();
                 else
-                    return Ok(user);
+                    return Ok(categoryView);
 
             }
             catch (Exception)
@@ -62,20 +67,29 @@ namespace NewsApi.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult> Post(Category article)
+        public async Task<ActionResult<CategoryView>> Post(CreateCategory createCategory)
         {
 
             try
             {
-                var articlesImage = new Category();
+                var category = new Category {CategoryName=createCategory.CategoryName};
 
-                await unitOfWorkService.CategoryService.AddAsync(articlesImage);
+                await unitOfWorkService.CategoryService.AddAsync(category);
 
                 if (await unitOfWorkService.CommitAsync())
-                    return Ok(articlesImage);
+                {
+                    var lastID = await unitOfWorkService.CategoryService.GetAllAsync();
+                    var categoryId = lastID.Max(b => b.Id);
+                    category = await unitOfWorkService.CategoryService.GetByIdAsync(categoryId);
+                    var categoryView = new CategoryView { Id = category.Id,CategoryName=category.CategoryName,Articles=category.Articles };
+                    return CreatedAtRoute("GetCategory", new
+                    {
+                        id = categoryId,
+                    }, categoryView);
+                  
+                }
                 else
                     return BadRequest();
-
             }
             catch (Exception)
             {
@@ -87,13 +101,13 @@ namespace NewsApi.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, Category article)
+        public async Task<ActionResult> Put(int id, UpdateCategory updateCategory)
         {
             try
             {
-                await unitOfWorkService.CategoryService.GetByIdAsync(id);
-                var articlesImage = new Category();
-                await unitOfWorkService.CategoryService.UpdateAsync(articlesImage);
+               var category= await unitOfWorkService.CategoryService.GetByIdAsync(id);
+                category.CategoryName = updateCategory.CategoryName;
+                await unitOfWorkService.CategoryService.UpdateAsync(category);
                 if (await unitOfWorkService.CommitAsync())
                     return NoContent();
                 else

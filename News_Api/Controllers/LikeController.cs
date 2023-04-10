@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NewsApiDomin.Models;
+using NewsApiDomin.ViewModels.LikeViewModel;
 using Services.Transactions.Interfaces;
 
 namespace NewsApi.Controllers
@@ -17,16 +18,17 @@ namespace NewsApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Like>>> GetAll()
+        public async Task<ActionResult<List<LikeView>>> GetAll()
         {
 
             try
             {
                 var likes = await unitOfWorkService.LikeService.GetAllAsync();
-                if (likes.Count() > 0)
+                var likesView =  likes.Select(l => new LikeView() { Id = l.Id, ArticleId = l.ArticleId, LikeDate = l.LikeDate, UserId = l.UserId }).ToList();
+                if (likesView.Count() > 0)
                 {
                    
-                    return Ok(likes);
+                    return Ok(likesView);
                 }
                 else
                 {
@@ -43,8 +45,8 @@ namespace NewsApi.Controllers
         }
 
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Like>> GetById(int id)
+        [HttpGet("{id}",Name = "GetLike")]
+        public async Task<ActionResult<LikeView>> GetById(int id)
         {
 
 
@@ -57,9 +59,9 @@ namespace NewsApi.Controllers
                 }
                 else
                 {
-                   
+                    var likeView = new LikeView { Id = like.Id, ArticleId=like.ArticleId,LikeDate=like.LikeDate,UserId=like.UserId };
                
-                    return Ok(like);
+                    return Ok(likeView);
                 }
 
             }
@@ -73,17 +75,27 @@ namespace NewsApi.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult> Post(Like like)
+        public async Task<ActionResult<LikeView>> Post(CreateLike createLike)
         {
 
             try
             {
             
-
+                var like= new Like { ArticleId = createLike.ArticleId, UserId = createLike.UserId };
                 await unitOfWorkService.LikeService.AddAsync(like);
-
+              
                 if (await unitOfWorkService.CommitAsync())
-                    return Ok(like);
+                {
+                    var lastID = await unitOfWorkService.LikeService.GetAllAsync();
+                    var likeId = lastID.Max(b => b.Id);
+                    like=await unitOfWorkService.LikeService.GetByIdAsync(likeId);
+                    var likeView = new LikeView {Id=like.Id, ArticleId = like.ArticleId, LikeDate = like.LikeDate, UserId = like.UserId };
+                    return CreatedAtRoute("GetLike", new
+                    {
+                        id = likeId,
+                    } , likeView) ;
+
+                }
                 else
                     return BadRequest();
 

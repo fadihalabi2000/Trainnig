@@ -1,8 +1,10 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
 using NewsApiDomin.Models;
+using NewsApiDomin.ViewModels.ImageViewModel;
 using NewsApiDomin.ViewModels.UserViewModel;
 using Services.Transactions.Interfaces;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace NewsApi.Controllers
 {
@@ -18,14 +20,16 @@ namespace NewsApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<User>>> GetAll()
+        public async Task<ActionResult<List<UserView>>> GetAll()
         {
 
             try
             {
-                var Users = await unitOfWorkService.UsersService.GetAllAsync();
-                if (Users.Count() > 0)
-                    return Ok(Users);
+                var users = await unitOfWorkService.UsersService.GetAllAsync();
+                var usersView = users.Select(u => new UserView { Id = u.Id, FirstName = u.FirstName, LastName = u.LastName, DisplayName = u.DisplayName,
+                                                               ProfilePicture=u.ProfilePicture,Email=u.Email,Password=u.Password });
+                if (usersView.Count() > 0)
+                    return Ok(usersView);
                 else
                     return BadRequest();
 
@@ -39,7 +43,7 @@ namespace NewsApi.Controllers
         }
 
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}",Name = "GetUser")]
         public async Task<ActionResult<User>> GetById(int id)
         {
 
@@ -63,33 +67,42 @@ namespace NewsApi.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult> Post(CreateUser user)
+        public async Task<ActionResult<UserView>> Post(CreateUser createUser)
         {
 
             try
             {
-                var newUser = new User
+                var user = new User
                 {
-                    FirstName = user.FirstName,
-                    LastName = user.LastName
-                                 ,
-                    Email = user.Email,
-                    Password = user.Password,
-                    ProfilePicture = user.ProfilePicture,
-                    IsDeleted = false,
+                    FirstName = createUser.FirstName,
+                    LastName = createUser.LastName ,
+                    Email = createUser.Email,
+                    Password = createUser.Password,
+                    ProfilePicture = createUser.ProfilePicture,
+                    DisplayName= createUser.DisplayName,
                 };
 
-                await unitOfWorkService.UsersService.AddAsync(newUser);
+                await unitOfWorkService.UsersService.AddAsync(user);
 
                 if (await unitOfWorkService.CommitAsync())
-                    return Ok(user);
+                {
+                    var lastID = await unitOfWorkService.UsersService.GetAllAsync();
+                    var userId = lastID.Max(b => b.Id);
+                    user = await unitOfWorkService.UsersService.GetByIdAsync(userId);
+                    var userView = new UserView { Id = user.Id,FirstName= user .FirstName,LastName= user.LastName,DisplayName= user.DisplayName,
+                                       ProfilePicture= user.ProfilePicture,Email=user.Email,Password = user.Password
+                    };
+                    return CreatedAtRoute("GetUser", new
+                    {
+                        id = userId,
+                    }, userView);
+                   
+                }
                 else
                     return BadRequest();
-
             }
             catch (Exception)
             {
-
                 return BadRequest();
             }
         }
@@ -97,16 +110,17 @@ namespace NewsApi.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, UpdateUser user)
+        public async Task<ActionResult> Put(int id, UpdateUser updateUser)
         {
             try
             {
-                var oldUser = await unitOfWorkService.UsersService.GetByIdAsync(id);
-                oldUser.FirstName = user.FirstName;
-                oldUser.LastName = user.LastName;
-                oldUser.Password = user.Password;
-                oldUser.ProfilePicture = user.ProfilePicture;
-                await unitOfWorkService.UsersService.UpdateAsync(oldUser);
+                var user = await unitOfWorkService.UsersService.GetByIdAsync(id);
+                user.FirstName = updateUser.FirstName;
+                user.LastName = updateUser.LastName;
+                user.Password = updateUser.Password;
+                user.ProfilePicture = updateUser.ProfilePicture;
+                user.DisplayName= updateUser.DisplayName;
+                await unitOfWorkService.UsersService.UpdateAsync(user);
                 if (await unitOfWorkService.CommitAsync())
                     return NoContent();
                 else

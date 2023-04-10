@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using NewsApiDomin.Models;
 using NewsApiDomin.ViewModels.ArticleViewModel;
+using NewsApiDomin.ViewModels.ImageViewModel;
 using NewsApiDomin.ViewModels.UserViewModel;
 using Services.Transactions.Interfaces;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace NewsApi.Controllers
 {
@@ -19,14 +21,28 @@ namespace NewsApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Article>>> GetAll()
+        public async Task<ActionResult<List<ArticlView>>> GetAll()
         {
 
             try
             {
-                var Users = await unitOfWorkService.ArticleService.GetAllAsync();
-                if (Users.Count() > 0)
-                    return Ok(Users);
+                var articles = await unitOfWorkService.ArticleService.GetAllAsync();
+                var articlesView = articles.Select(a => new ArticlView
+                {
+                    Id = a.Id,
+                    AuthorId = a.AuthorId,
+                    CategoryId = a.CategoryId,
+                    Content = a.Content,
+                    Comments = a.Comments,
+                    Images = a.Images,
+                    ViewCount = a.ViewCount,
+                    Title = a.Title,
+                    Likes = a.Likes,
+                    PublishDate = a.PublishDate,
+                    UpdateDate = a.PublishDate
+                });
+                if (articlesView.Count() > 0)
+                    return Ok(articlesView);
                 else
                     return BadRequest();
 
@@ -40,18 +56,32 @@ namespace NewsApi.Controllers
         }
 
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Article>> GetById(int id)
+        [HttpGet("{id}",Name = "GetArticle")]
+        public async Task<ActionResult<ArticlView>> GetById(int id)
         {
 
 
             try
             {
-                var user = await unitOfWorkService.ArticleService.GetByIdAsync(id);
-                if (user == null)
+                var article = await unitOfWorkService.ArticleService.GetByIdAsync(id);
+                var articleView = new ArticlView
+                {
+                    Id = article.Id,
+                    AuthorId = article.AuthorId,
+                    CategoryId = article.CategoryId,
+                    Content = article.Content   ,
+                    Comments = article.Comments,
+                    Images = article.Images,
+                    ViewCount = article.ViewCount,
+                    Title = article.Title,
+                    Likes = article.Likes,
+                    PublishDate = article.PublishDate,
+                    UpdateDate = article.PublishDate
+                };
+                if (articleView == null)
                     return BadRequest();
                 else
-                    return Ok(user);
+                    return Ok(articleView);
 
             }
             catch (Exception)
@@ -64,24 +94,44 @@ namespace NewsApi.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult> Post(CreateOrUpdateArticle article)
+        public async Task<ActionResult<ArticlView>> Post(CreateArticle createArticle)
         {
 
             try
             {
-               var articles=new Article();
+               var article=new Article
+               {
+                  
+                   AuthorId = createArticle.AuthorId,
+                   CategoryId = createArticle.CategoryId,
+                   Content = createArticle.Content,
+                   ViewCount = createArticle.ViewCount,
+                   Title = createArticle.Title,
+                   Images= createArticle.Images,
+                   
+               };
 
-                await unitOfWorkService.ArticleService.AddAsync(articles);
+                await unitOfWorkService.ArticleService.AddAsync(article);
 
                 if (await unitOfWorkService.CommitAsync())
-                    return Ok(articles);
+                {
+                    var lastID = await unitOfWorkService.ArticleService.GetAllAsync();
+                    var articleId = lastID.Max(b => b.Id);
+                    article = await unitOfWorkService.ArticleService.GetByIdAsync(articleId);
+                    var articleView = new ArticlView { Id = article.Id,AuthorId= article.AuthorId,CategoryId= article.CategoryId, ViewCount= article.ViewCount,
+                                                       PublishDate=article.PublishDate,UpdateDate= article.UpdateDate,Comments=article.Comments,Content = article.Content,
+                                                       Images = article.Images,Likes = article.Likes,Title=article.Title
+                    };
+                    return CreatedAtRoute("GetArticle", new
+                    {
+                        id = articleId,
+                    }, articleView);
+                }
                 else
                     return BadRequest();
-
             }
             catch (Exception)
             {
-
                 return BadRequest();
             }
         }
@@ -89,13 +139,26 @@ namespace NewsApi.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, CreateOrUpdateArticle article)
+        public async Task<ActionResult> Put(int id, UpdateArticle updateArticle)
         {
             try
             {
-                await unitOfWorkService.ArticleService.GetByIdAsync(id);
-                var articles = new Article();
-                await unitOfWorkService.ArticleService.UpdateAsync(articles);
+               var article= await unitOfWorkService.ArticleService.GetByIdAsync(id);
+
+
+
+
+                article.CategoryId = updateArticle.CategoryId;
+                article.Content = updateArticle.Content;
+                article.ViewCount = updateArticle.ViewCount;
+                article.Title = updateArticle.Title;
+                article.Likes = updateArticle.Likes;
+                article.Comments = updateArticle.Comments;
+
+
+
+
+                await unitOfWorkService.ArticleService.UpdateAsync(article);
                 if (await unitOfWorkService.CommitAsync())
                     return NoContent();
                 else

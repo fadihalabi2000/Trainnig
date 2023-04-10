@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NewsApiDomin.Models;
+using NewsApiDomin.ViewModels.AuthorViewModel;
 using Services.Transactions.Interfaces;
 
 namespace NewsApi.Controllers
@@ -17,14 +17,23 @@ namespace NewsApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Author>>> GetAll()
+        public async Task<ActionResult<List<AuthorView>>> GetAll()
         {
 
             try
             {
-                var Users = await unitOfWorkService.AuthorService.GetAllAsync();
-                if (Users.Count() > 0)
-                    return Ok(Users);
+                var authors = await unitOfWorkService.AuthorService.GetAllAsync();
+                var usersView = authors.Select(u => new AuthorView
+                {
+                    Id = u.Id,
+                    Bio=u.Bio,
+                    DisplayName = u.DisplayName,
+                    ProfilePicture = u.ProfilePicture,
+                    Email = u.Email,
+                    Password = u.Password
+                });
+                if (usersView.Count() > 0)
+                    return Ok(usersView);
                 else
                     return BadRequest();
 
@@ -38,18 +47,18 @@ namespace NewsApi.Controllers
         }
 
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}",Name ="GetAuthor")]
         public async Task<ActionResult<Author>> GetById(int id)
         {
 
 
             try
             {
-                var user = await unitOfWorkService.AuthorService.GetByIdAsync(id);
-                if (user == null)
+                var author = await unitOfWorkService.AuthorService.GetByIdAsync(id);
+                if (author == null)
                     return BadRequest();
                 else
-                    return Ok(user);
+                    return Ok(author);
 
             }
             catch (Exception)
@@ -62,17 +71,42 @@ namespace NewsApi.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult> Post(Author article)
+        public async Task<ActionResult<AuthorView>> Post(CreateAuthor createAuthor)
         {
 
             try
             {
-                var articlesImage = new Author();
+                var author = new Author
+                {
+                 
+                    Email = createAuthor.Email,
+                    Password = createAuthor.Password,
+                    ProfilePicture = createAuthor.ProfilePicture,
+                    DisplayName = createAuthor.DisplayName,
+                    Bio=createAuthor.Bio,
+                };
 
-                await unitOfWorkService.AuthorService.AddAsync(articlesImage);
+                await unitOfWorkService.AuthorService.AddAsync(author);
 
                 if (await unitOfWorkService.CommitAsync())
-                    return Ok(articlesImage);
+                {
+                    var lastID = await unitOfWorkService.AuthorService.GetAllAsync();
+                    var authorId = lastID.Max(b => b.Id);
+                    author = await unitOfWorkService.AuthorService.GetByIdAsync(authorId);
+                    var authorView = new AuthorView
+                    {
+                        Id = author.Id,
+                        DisplayName = author.DisplayName,
+                        ProfilePicture = author.ProfilePicture,
+                        Email = author.Email,
+                        Password = author.Password,
+                        Bio=author.Bio,
+                    };
+                    return CreatedAtRoute("GetAuthor", new
+                    {
+                        id = authorId,
+                    }, authorView);
+                }
                 else
                     return BadRequest();
 
@@ -87,13 +121,17 @@ namespace NewsApi.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, Author article)
+        public async Task<ActionResult> Put(int id, UpdateAuthor updateAuthor)
         {
             try
             {
-                await unitOfWorkService.AuthorService.GetByIdAsync(id);
-                var articlesImage = new Author();
-                await unitOfWorkService.AuthorService.UpdateAsync(articlesImage);
+                var author=  await unitOfWorkService.AuthorService.GetByIdAsync(id);
+                author.Bio = updateAuthor.Bio;
+                author.Password = updateAuthor.Password;
+                author.ProfilePicture = updateAuthor.ProfilePicture;
+                author.DisplayName = updateAuthor.DisplayName;
+
+                await unitOfWorkService.AuthorService.UpdateAsync(author);
                 if (await unitOfWorkService.CommitAsync())
                     return NoContent();
                 else

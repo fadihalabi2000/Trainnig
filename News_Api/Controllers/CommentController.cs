@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using NewsApiDomin.Models;
 using NewsApiDomin.ViewModels.CommentViewModel;
+using NewsApiDomin.ViewModels.LikeViewModel;
 using Services.Transactions.Interfaces;
+using System.Xml.Linq;
 
 namespace NewsApi.Controllers
 {
@@ -18,14 +20,15 @@ namespace NewsApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Comment>>> GetAll()
+        public async Task<ActionResult<List<CommentView>>> GetAll()
         {
 
             try
             {
                 var comments = await unitOfWorkService.CommentsService.GetAllAsync();
-                if (comments.Count() > 0)
-                    return Ok(comments);
+                var commentsView= comments.Select(c=> new CommentView { Id=c.Id,ArticleId=c.ArticleId,UserId=c.UserId,CommentDate=c.CommentDate,CommentText=c.CommentText}).ToList();
+                if (commentsView.Count() > 0)
+                    return Ok(commentsView);
                 else
                     return BadRequest();
 
@@ -39,18 +42,19 @@ namespace NewsApi.Controllers
         }
 
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Comment>> GetById(int id)
+        [HttpGet("{id}",Name = "GetComment")]
+        public async Task<ActionResult<CommentView>> GetById(int id)
         {
 
 
             try
             {
                 var comment = await unitOfWorkService.CommentsService.GetByIdAsync(id);
-                if (comment == null)
+                var commentsView =  new CommentView { Id = comment.Id, ArticleId = comment.ArticleId, UserId = comment.UserId, CommentDate = comment.CommentDate, CommentText = comment.CommentText };
+                if (commentsView == null)
                     return BadRequest();
                 else
-                    return Ok(comment);
+                    return Ok(commentsView);
 
             }
             catch (Exception)
@@ -75,7 +79,17 @@ namespace NewsApi.Controllers
                 await unitOfWorkService.CommentsService.AddAsync(comment);
 
                 if (await unitOfWorkService.CommitAsync())
-                    return Ok(comment);
+                {
+                    var lastID = await unitOfWorkService.CommentsService.GetAllAsync();
+                    var commentId = lastID.Max(b => b.Id);
+                    comment = await unitOfWorkService.CommentsService.GetByIdAsync(commentId);
+                    var commentsView = new CommentView { Id = comment.Id, ArticleId = comment.ArticleId, UserId = comment.UserId, CommentDate = comment.CommentDate, CommentText = comment.CommentText };
+                    return CreatedAtRoute("GetComment", new
+                    {
+                        id = commentId,
+                    }, commentsView);
+                    
+                }
                 else
                     return BadRequest();
 

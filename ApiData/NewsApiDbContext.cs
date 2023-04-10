@@ -1,18 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NewsApiDomin.Models;
+using System.Xml;
 
 namespace NewsApiData
 {
     public class NewsApiDbContext : DbContext
     {
-        public NewsApiDbContext(DbContextOptions<NewsApiDbContext> options) : base(options)
+        public  NewsApiDbContext(DbContextOptions<NewsApiDbContext> options) : base(options)
         {
-
+          
         }
+       
+
+
 
         public DbSet<Article> Articles { get; set; }
         public DbSet<Comment> Comments { get; set; }
-   
         public DbSet<Author> Author { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Image> Images { get; set; }
