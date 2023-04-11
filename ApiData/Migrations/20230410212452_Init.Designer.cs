@@ -12,7 +12,7 @@ using NewsApiData;
 namespace NewsApiData.Migrations
 {
     [DbContext(typeof(NewsApiDbContext))]
-    [Migration("20230410142229_Init")]
+    [Migration("20230410212452_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -65,6 +65,44 @@ namespace NewsApiData.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Articles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AuthorId = 1,
+                            CategoryId = 1,
+                            Content = "أصيب أكثر من 200 فلسطيني في مواجهات بنابلس مع قوات الاحتلال الإسرائيلي، بالتزامن مع تشييع شهيد بأريحا، وبعد ساعات من اقتحام مئات المستوطنين للمسجد الأقصى المبارك في القدس.",
+                            IsDeleted = false,
+                            PublishDate = new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1855),
+                            Title = "فلسطين.. عشرات الإصابات بنابلس وتشييع شهيد بأريحا واقتحام يهودي للأقصى",
+                            UpdateDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ViewCount = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AuthorId = 2,
+                            CategoryId = 2,
+                            Content = "اقتحم مستوطنون باحات المسجد الأقصى صباح اليوم الأحد بحماية قوات الاحتلال الإسرائيلي التي اعتدت على شبان فلسطينيين عند باب الأسباط ومنعتهم بالقوة من دخول المسجد الأقصى لأداء صلاة فجر اليوم، كما منعت عشرات النساء من الدخول.",
+                            IsDeleted = false,
+                            PublishDate = new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1861),
+                            Title = "الاحتلال يعتدي على فلسطينيين ويمنعهم من دخول الأقصى",
+                            UpdateDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ViewCount = 0
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AuthorId = 3,
+                            CategoryId = 3,
+                            Content = "منذ بداية الشهر الجاري هجمات على ضباط في الجيش والقوات الأمنية أدت إلى مقتل ضابط في الجيش وآخر في الشرطة وثالث في الدعم السريع ونهب مركبات عسكرية،",
+                            IsDeleted = false,
+                            PublishDate = new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1863),
+                            Title = "حوادث اغتيال العسكريين السودانيين",
+                            UpdateDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ViewCount = 0
+                        });
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Author", b =>
@@ -100,7 +138,39 @@ namespace NewsApiData.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Author");
+                    b.ToTable("Authors");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Bio = "aaaaa",
+                            DisplayName = "ali",
+                            Email = "ali@gmail.com",
+                            IsDeleted = false,
+                            Password = "123",
+                            ProfilePicture = "https://tse4.mm.bing.net/th/id/OIP.y2TOfKrvLx09_tbuortEygHaEG?w=331&h=183&c=7&r=0&o=5&pid=1.7"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Bio = "ooooo",
+                            DisplayName = "omar",
+                            Email = "omar@gmail.com",
+                            IsDeleted = false,
+                            Password = "145",
+                            ProfilePicture = "https://tse4.mm.bing.net/th/id/OIP.1FMDAFhu9UEmpewQZBWfqgHaEK?w=326&h=183&c=7&r=0&o=5&pid=1.7"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Bio = "hhhhh",
+                            DisplayName = "ahmad",
+                            Email = "ahmad@gmail.com",
+                            IsDeleted = false,
+                            Password = "165",
+                            ProfilePicture = "https://tse1.mm.bing.net/th/id/OIP.U8tBnyvXfaWfsx3Q-cIXUAHaHa?w=180&h=180&c=7&r=0&o=5&pid=1.7"
+                        });
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Category", b =>
@@ -121,6 +191,26 @@ namespace NewsApiData.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CategoryName = "sport",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CategoryName = "Political",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CategoryName = "Military",
+                            IsDeleted = false
+                        });
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Comment", b =>
@@ -154,6 +244,35 @@ namespace NewsApiData.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Comments");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ArticleId = 1,
+                            CommentDate = new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1896),
+                            CommentText = "wwwww",
+                            IsDeleted = false,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ArticleId = 2,
+                            CommentDate = new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1897),
+                            CommentText = "sssss",
+                            IsDeleted = false,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ArticleId = 3,
+                            CommentDate = new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1898),
+                            CommentText = "xxxxxxx",
+                            IsDeleted = false,
+                            UserId = 3
+                        });
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Image", b =>
@@ -183,6 +302,32 @@ namespace NewsApiData.Migrations
                     b.HasIndex("ArticleId");
 
                     b.ToTable("Images");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ArticleId = 1,
+                            ImageDescription = "no",
+                            ImageUrl = "https://tse4.mm.bing.net/th/id/OIP.P-lDxR5o6Hatd2C5RBKukAHaEO?w=263&h=180&c=7&r=0&o=5&pid=1.7",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ArticleId = 2,
+                            ImageDescription = "no",
+                            ImageUrl = "https://tse2.mm.bing.net/th/id/OIP.W2fvNzcjgTB7zbO9NDRXSwHaFL?w=212&h=180&c=7&r=0&o=5&pid=1.7",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ArticleId = 3,
+                            ImageDescription = "no",
+                            ImageUrl = "https://tse4.mm.bing.net/th/id/OIP.5zlHy1zk4adkwBWLRxVUqgHaFE?w=233&h=180&c=7&r=0&o=5&pid=1.7",
+                            IsDeleted = false
+                        });
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Like", b =>
@@ -211,7 +356,33 @@ namespace NewsApiData.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Like");
+                    b.ToTable("Likes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ArticleId = 1,
+                            IsDeleted = false,
+                            LikeDate = new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1879),
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ArticleId = 2,
+                            IsDeleted = false,
+                            LikeDate = new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1881),
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ArticleId = 3,
+                            IsDeleted = false,
+                            LikeDate = new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1882),
+                            UserId = 3
+                        });
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Log", b =>
@@ -288,93 +459,110 @@ namespace NewsApiData.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DisplayName = "obada",
+                            Email = "obada@gmail.com",
+                            FirstName = "obada",
+                            IsDeleted = false,
+                            LastName = "halabi",
+                            Password = "12345",
+                            ProfilePicture = "https://www.bing.com/th?id=OIP.RYDAyx95XZfKlV4Utf8Z7QHaEK&w=333&h=187&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            DisplayName = "fadi",
+                            Email = "fadi@gmail.com",
+                            FirstName = "fadi",
+                            IsDeleted = false,
+                            LastName = "halabi",
+                            Password = "123456",
+                            ProfilePicture = "https://www.bing.com/th?id=OIP.RYDAyx95XZfKlV4Utf8Z7QHaEK&w=333&h=187&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            DisplayName = "taher",
+                            Email = "taher",
+                            FirstName = "taher",
+                            IsDeleted = false,
+                            LastName = "halabi",
+                            Password = "12345",
+                            ProfilePicture = "https://www.bing.com/th?id=OIP.frAlEuXSfGFRLcBxzVRY1AHaER&w=329&h=189&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2"
+                        });
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Article", b =>
                 {
-                    b.HasOne("NewsApiDomin.Models.Author", "Author")
-                        .WithMany("Articles")
+                    b.HasOne("NewsApiDomin.Models.Author", null)
+                        .WithMany("Article")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NewsApiDomin.Models.Category", "Category")
+                    b.HasOne("NewsApiDomin.Models.Category", null)
                         .WithMany("Articles")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Author");
-
-                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Comment", b =>
                 {
-                    b.HasOne("NewsApiDomin.Models.Article", "Article")
+                    b.HasOne("NewsApiDomin.Models.Article", null)
                         .WithMany("Comments")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NewsApiDomin.Models.User", "User")
+                    b.HasOne("NewsApiDomin.Models.User", null)
                         .WithMany("Comments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Article");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Image", b =>
                 {
-                    b.HasOne("NewsApiDomin.Models.Article", "Article")
+                    b.HasOne("NewsApiDomin.Models.Article", null)
                         .WithMany("Images")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Article");
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Like", b =>
                 {
-                    b.HasOne("NewsApiDomin.Models.Article", "Article")
+                    b.HasOne("NewsApiDomin.Models.Article", null)
                         .WithMany("Likes")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NewsApiDomin.Models.User", "User")
+                    b.HasOne("NewsApiDomin.Models.User", null)
                         .WithMany("likes")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Article");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Log", b =>
                 {
-                    b.HasOne("NewsApiDomin.Models.Author", "Author")
-                        .WithMany("Logs")
+                    b.HasOne("NewsApiDomin.Models.Author", null)
+                        .WithMany("Log")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NewsApiDomin.Models.User", "User")
+                    b.HasOne("NewsApiDomin.Models.User", null)
                         .WithMany("Logs")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Author");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Article", b =>
@@ -388,9 +576,9 @@ namespace NewsApiData.Migrations
 
             modelBuilder.Entity("NewsApiDomin.Models.Author", b =>
                 {
-                    b.Navigation("Articles");
+                    b.Navigation("Article");
 
-                    b.Navigation("Logs");
+                    b.Navigation("Log");
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Category", b =>

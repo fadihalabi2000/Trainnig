@@ -8,15 +8,14 @@ namespace NewsApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LogController : ControllerBase
+    public class UserLogController : ControllerBase
     {
         private readonly IUnitOfWorkService unitOfWorkService;
 
-        public LogController(IUnitOfWorkService unitOfWorkService)
+        public UserLogController(IUnitOfWorkService unitOfWorkService)
         {
             this.unitOfWorkService = unitOfWorkService;
         }
-
         [HttpGet("GetAllUsersLog")]
         public async Task<ActionResult<List<UserLogView>>> GetAllUsersLog()
         {
@@ -37,46 +36,21 @@ namespace NewsApi.Controllers
                 return BadRequest();
             }
 
-        }
-
-
-
-        [HttpGet("GetAllAuthorLog")]
-        public async Task<ActionResult<List<AuthorLogView>>> GetAllAuthorLog()
-        {
-
-            try
-            {
-                var logs = await unitOfWorkService.LogService.GetAllAuthorsLogAsync();
-                var authorsLogView = logs.Select(l => new AuthorLogView { Content = l.Content, AuthorId = l.AuthorId, logLevel = l.logLevel });
-                if (authorsLogView.Count() > 0)
-                    return Ok(authorsLogView);
-                else
-                    return BadRequest();
-
-            }
-            catch (Exception)
-            {
-
-                return BadRequest();
-            }
 
         }
-
-
         [HttpGet("{id}")]
-        public async Task<ActionResult<Log>> GetById(int id)
+        public async Task<ActionResult<UserLogView>> GetAllLogUserById(int id)
         {
 
 
             try
             {
-                var log = await unitOfWorkService.LogService.GetByIdAsync(id);
-               
-                if (log == null)
+                var log = await unitOfWorkService.LogService.GetLogUserByIdAsync(id);
+                var userLogView = log.Select(l => new UserLogView { Content = l.Content, UserId = l.UserId, logLevel = l.logLevel });
+                if (userLogView == null)
                     return BadRequest();
                 else
-                    return Ok(log);
+                    return Ok(userLogView);
 
             }
             catch (Exception)
@@ -84,10 +58,6 @@ namespace NewsApi.Controllers
 
                 return BadRequest();
             }
-
         }
-
-
-
     }
 }

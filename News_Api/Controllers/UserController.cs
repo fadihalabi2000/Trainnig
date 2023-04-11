@@ -27,7 +27,7 @@ namespace NewsApi.Controllers
             {
                 var users = await unitOfWorkService.UsersService.GetAllAsync();
                 var usersView = users.Select(u => new UserView { Id = u.Id, FirstName = u.FirstName, LastName = u.LastName, DisplayName = u.DisplayName,
-                                                               ProfilePicture=u.ProfilePicture,Email=u.Email,Password=u.Password });
+                                                               ProfilePicture=u.ProfilePicture,Email=u.Email });
                 if (usersView.Count() > 0)
                     return Ok(usersView);
                 else
@@ -44,17 +44,18 @@ namespace NewsApi.Controllers
 
 
         [HttpGet("{id}",Name = "GetUser")]
-        public async Task<ActionResult<User>> GetById(int id)
+        public async Task<ActionResult<UserWithoutLog>> GetById(int id)
         {
 
 
             try
             {
                 var user = await unitOfWorkService.UsersService.GetByIdAsync(id);
-                if (user == null)
+                var userWithoutLog = new UserWithoutLog { Id = id, FirstName = user.FirstName, LastName = user.LastName, Comments = user.Comments, DisplayName = user.DisplayName, Email = user.Email, likes = user.likes, ProfilePicture = user.ProfilePicture };
+                if (userWithoutLog == null)
                     return BadRequest();
                 else
-                    return Ok(user);
+                    return Ok(userWithoutLog);
 
             }
             catch (Exception)
@@ -90,7 +91,7 @@ namespace NewsApi.Controllers
                     var userId = lastID.Max(b => b.Id);
                     user = await unitOfWorkService.UsersService.GetByIdAsync(userId);
                     var userView = new UserView { Id = user.Id,FirstName= user .FirstName,LastName= user.LastName,DisplayName= user.DisplayName,
-                                       ProfilePicture= user.ProfilePicture,Email=user.Email,Password = user.Password
+                                       ProfilePicture= user.ProfilePicture,Email=user.Email
                     };
                     return CreatedAtRoute("GetUser", new
                     {

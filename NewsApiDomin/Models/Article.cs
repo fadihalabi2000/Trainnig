@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace NewsApiDomin.Models
@@ -18,11 +20,13 @@ namespace NewsApiDomin.Models
         public int AuthorId { get; set; }
         public int CategoryId { get; set; }
 
-        public Author Author { get; set; } = new Author();  
-        public Category Category { get; set; } = new Category();
-
+        //public Author Author { get; set; }  
+        //public Category Category { get; set; } 
+   
         public List<Like> Likes{ get; set; } =new List<Like>();
+       
         public List<Comment> Comments{ get; set; } =new List<Comment>();
+       
         public List<Image> Images{ get; set; } =new List<Image>();
        
     }

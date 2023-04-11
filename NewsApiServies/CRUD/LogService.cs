@@ -22,10 +22,21 @@ namespace NewsApiServies.CRUD
             return await unitOfWorkRepo.LogRepository.GetAllAuthorsLogAsync();
         }
 
+        public async Task<List<Log>> GetLogAuthorByIdAsync(int id)
+        {
+            return await unitOfWorkRepo.LogRepository.GetLogAuthorByIdAsync(id);
+        }
+
+        public async Task<List<Log>> GetLogUserByIdAsync(int id)
+        {
+            return await unitOfWorkRepo.LogRepository.GetLogUserByIdAsync(id);
+        }
+
         public async Task<List<Log>> GetAllUsersLogAsync()
         {
             return await unitOfWorkRepo.LogRepository.GetAllUsersLogAsync();
         }
+
 
   
 

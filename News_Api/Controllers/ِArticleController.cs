@@ -39,7 +39,9 @@ namespace NewsApi.Controllers
                     Title = a.Title,
                     Likes = a.Likes,
                     PublishDate = a.PublishDate,
-                    UpdateDate = a.PublishDate
+                    UpdateDate = a.PublishDate,
+                    
+                    
                 });
                 if (articlesView.Count() > 0)
                     return Ok(articlesView);
@@ -76,7 +78,8 @@ namespace NewsApi.Controllers
                     Title = article.Title,
                     Likes = article.Likes,
                     PublishDate = article.PublishDate,
-                    UpdateDate = article.PublishDate
+                    UpdateDate = article.PublishDate,
+                    
                 };
                 if (articleView == null)
                     return BadRequest();

@@ -14,8 +14,8 @@ namespace NewsApiDomin.Models
        
         public int UserId { get; set; } =int.MaxValue;
 
-        public Author Author { get; set; }=new Author();
-        public User User { get; set; }=new User();
+        //public Author Author { get; set; }
+        //public User User { get; set; }
 
       
     }
