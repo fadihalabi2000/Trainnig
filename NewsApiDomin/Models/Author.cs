@@ -15,7 +15,7 @@ namespace NewsApiDomin.Models
         public string DisplayName { get; set; } = string.Empty;
         public string Bio { get; set; } = string.Empty;
         public string ProfilePicture { get; set; } = string.Empty;
-        public List<Article> Articles { get; set; } = new List<Article>();
-        public List<Log> Logs { get; set; } = new List<Log>();
+        public List<Article> Article { get; set; } = new List<Article>();
+        public List<Log> Log { get; set; } = new List<Log>();
     }
 }

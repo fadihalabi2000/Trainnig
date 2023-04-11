@@ -18,13 +18,13 @@ namespace Services.Transactions
       
         public IArticleRepository ArticleRepository { get; private set; }
 
-        public ICommentsRepository CommentRepository { get; private set; }
+        public IBaseRepository<Comment> CommentRepository { get; private set; }
 
-        public IBaseRepository<User> UserRepository { get; private set; }
+        public IUserRepository UserRepository { get; private set; }
 
         public ILogRepository LogRepository { get; private set; }
 
-        public IBaseRepository<Author> AuthorRepository { get; private set; }
+        public IAuthorRepository AuthorRepository { get; private set; }
 
         public IBaseRepository<Like> LikeRepository { get; private set; }
 
@@ -38,12 +38,13 @@ namespace Services.Transactions
         {
             this.dbContext = dbContext;
             ArticleRepository = new ArticleRepository(this.dbContext);
-            CommentRepository = new CommentsRepository(this.dbContext);
+           
             CategoryRepository = new CategoryReository(this.dbContext);
             LogRepository = new LogRepository(this.dbContext);
 
-            UserRepository = new BaseRepository<User>(this.dbContext);
-            AuthorRepository = new BaseRepository<Author>(this.dbContext);
+            CommentRepository = new BaseRepository<Comment>(this.dbContext);
+            UserRepository = new UserRepository(this.dbContext);
+            AuthorRepository = new AuthorRepository(this.dbContext);
             LikeRepository = new BaseRepository<Like>(this.dbContext);
        
             ImageRepository = new BaseRepository<Image>(this.dbContext);

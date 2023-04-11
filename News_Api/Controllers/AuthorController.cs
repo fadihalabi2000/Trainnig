@@ -30,7 +30,9 @@ namespace NewsApi.Controllers
                     DisplayName = u.DisplayName,
                     ProfilePicture = u.ProfilePicture,
                     Email = u.Email,
-                    Password = u.Password
+                    Password = u.Password,
+                    Article=u.Article,
+                    
                 });
                 if (usersView.Count() > 0)
                     return Ok(usersView);
@@ -48,13 +50,14 @@ namespace NewsApi.Controllers
 
 
         [HttpGet("{id}",Name ="GetAuthor")]
-        public async Task<ActionResult<Author>> GetById(int id)
+        public async Task<ActionResult<AuthorView>> GetById(int id)
         {
 
 
             try
             {
                 var author = await unitOfWorkService.AuthorService.GetByIdAsync(id);
+                var authorView= new AuthorView { Id=author.Id,Article=author.Article,DisplayName=author.DisplayName,Email=author.Email,Bio=author.Bio,Password=author.Password,ProfilePicture=author.ProfilePicture };
                 if (author == null)
                     return BadRequest();
                 else

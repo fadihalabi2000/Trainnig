@@ -7,15 +7,18 @@ namespace Services.Transactions.Interfaces
 {
     public interface IUnitOfWorkRepo
     {
-        public IBaseRepository<User> UserRepository { get; }
+      
         public ILogRepository LogRepository { get; }
-        public IBaseRepository<Author> AuthorRepository { get; }
+       
         public IBaseRepository<Like> LikeRepository { get; }  
         public IBaseRepository<Image> ImageRepository { get; }
+        public IBaseRepository<Comment> CommentRepository { get; }
 
+        public IUserRepository UserRepository { get; }
+        public IAuthorRepository AuthorRepository { get; }
         public ICategoryRepository CategoryRepository { get; }
         public IArticleRepository ArticleRepository { get; }
-        public ICommentsRepository CommentRepository { get; }
+       
       
         Task<bool> CommitAsync();
     }

@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
 using NewsApiData;
 using NewsApiDomin.Models;
 using Repositories.Interfaces;
@@ -8,25 +9,29 @@ namespace Repositories
 {
     public class ArticleRepository : BaseRepository<Article>, IArticleRepository
     {
-
+        private readonly NewsApiDbContext dbContext;
 
         public ArticleRepository(NewsApiDbContext dbContext) : base(dbContext)
         {
+            this.dbContext = dbContext;
         }
 
-        public new async Task AddAsync(Article entity)
+        public new async Task<List<Article>> GetAllAsync()
         {
-            DateTime dateTimeUtcNow = DateTime.UtcNow;
-            entity.PublishDate = dateTimeUtcNow;
-            entity.UpdateDate = DateTime.MinValue;
+            var dbSet = this.dbContext.Set<Article>().Include(i=>i.Images).Include(c=>c.Comments).Include(l=>l.Likes);
 
-            await Task.Run(() => base.AddAsync(entity));
+
+            return await Task.Run(() => dbSet.Where(c => c.IsDeleted == false).ToListAsync());
         }
-
-        public new async Task UpdateAsync(Article entity)
+        public new async Task<Article> GetByIdAsync(int id)
         {
-            entity.UpdateDate = DateTime.UtcNow;
-            await Task.Run(() => base.UpdateAsync(entity));
+
+            var dbSet = await this.dbContext.Set<Article>().Include(i => i.Images).Include(c => c.Comments).Include(l => l.Likes).ToListAsync();
+
+            Article? entity = dbSet.FirstOrDefault(c => c.Id == id && c.IsDeleted == false);
+            return entity!;
+
+
         }
     }
 }
