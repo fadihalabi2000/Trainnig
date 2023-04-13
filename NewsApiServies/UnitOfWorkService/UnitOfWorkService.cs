@@ -3,6 +3,7 @@
 using NewsApiData;
 using NewsApiDomin.Models;
 using NewsApiDomin.ViewModels.CategoryViewModel;
+using NewsApiRepositories.UnitOfWorkRepository.Interface;
 using NewsApiServies.CRUD;
 using NewsApiServies.CRUD.Interfaces;
 using NewsApiServies.Pagination;
@@ -49,6 +50,10 @@ namespace Services.Transactions
 
         public IPaginationService<User> UserPagination { get; private set; }
 
+        public IPaginationService<Comment> CommentPagination { get; private set; }
+
+        public IPaginationService<Image> ImagePagination { get; private set; }
+
         public UnitOfWorkService(NewsApiDbContext dbContext,IUnitOfWorkRepo unitOfWorkRepo)
         {
             this.dbContext = dbContext;
@@ -68,6 +73,8 @@ namespace Services.Transactions
             ArticlePagination = new PaginationService<Article>();
             UserPagination = new PaginationService<User>();
             LogPagination = new PaginationService<Log>();
+            CommentPagination = new PaginationService<Comment>();
+            ImagePagination = new PaginationService<Image>();
 
         }
 

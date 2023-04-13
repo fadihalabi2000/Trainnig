@@ -8,11 +8,8 @@ namespace NewsApiDomin.Enum
 {
     public enum LogLevel
     {
-        Emergency , 
-        Critical ,
         Error ,
         Warning,
-        Informational,
-        Debug
+        Information,
     }
 }

@@ -30,4 +30,6 @@ namespace NewsApiDomin.Models
         public List<Image> Images{ get; set; } =new List<Image>();
        
     }
+ 
+   
 }

@@ -3,19 +3,18 @@ using NewsApiData;
 using NewsApiDomin.Models;
 using NewsApiRepositories;
 using NewsApiRepositories.Interfaces;
+using NewsApiRepositories.UnitOfWorkRepository.Interface;
 using Repositories;
 using Repositories.Interfaces;
-
-using Services.Transactions.Interfaces;
 using System.Threading.Tasks;
 
-namespace Services.Transactions
+namespace NewsApiRepositories.UnitOfWorkRepository
 {
-   
+
     public class UnitOfWorkRepo : IUnitOfWorkRepo
     {
         private readonly NewsApiDbContext dbContext;
-      
+
         public IArticleRepository ArticleRepository { get; private set; }
 
         public IBaseRepository<Comment> CommentRepository { get; private set; }
@@ -38,7 +37,7 @@ namespace Services.Transactions
         {
             this.dbContext = dbContext;
             ArticleRepository = new ArticleRepository(this.dbContext);
-           
+
             CategoryRepository = new CategoryReository(this.dbContext);
             LogRepository = new LogRepository(this.dbContext);
 
@@ -46,9 +45,9 @@ namespace Services.Transactions
             UserRepository = new UserRepository(this.dbContext);
             AuthorRepository = new AuthorRepository(this.dbContext);
             LikeRepository = new BaseRepository<Like>(this.dbContext);
-       
+
             ImageRepository = new BaseRepository<Image>(this.dbContext);
-     
+
 
 
         }
@@ -63,6 +62,6 @@ namespace Services.Transactions
             return false;
         }
 
-       
+
     }
 }

@@ -2,6 +2,7 @@
 using NewsApiData;
 using NewsApiDomin.Models;
 using NewsApiRepositories.Interfaces;
+using NewsApiRepositories.UnitOfWorkRepository.Interface;
 using Repositories;
 using System;
 using System.Collections.Generic;

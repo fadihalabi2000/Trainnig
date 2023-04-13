@@ -4,10 +4,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using NewsApiData;
 using NewsApiDomin.Models;
+using NewsApiRepositories.UnitOfWorkRepository;
+using NewsApiRepositories.UnitOfWorkRepository.Interface;
 using NewsApiServies.Auth.Interfaces;
 using NewsApiServies.Pagination;
 using NewsApiServies.Pagination.Interface;
 using Services.Auth;
+using Services.MyLogger;
 using Services.Transactions;
 using Services.Transactions.Interfaces;
 using System.Text;
@@ -26,6 +29,7 @@ builder.Services.AddScoped<IUnitOfWorkRepo,UnitOfWorkRepo>();
 builder.Services.AddScoped<IUnitOfWorkService,UnitOfWorkService>();
 builder.Services.AddTransient<IUserAuthService,UserAuthService>();
 builder.Services.AddTransient<IAuthorAuthService,AuthorAuthService>();
+builder.Services.AddTransient<IMyLogger, MyLogger>();
 
 builder.Services.AddDbContext<NewsApiDbContext>(option =>
 option.UseSqlServer(builder.Configuration["ConnectionStrings:NewsApiConnectionString"]));

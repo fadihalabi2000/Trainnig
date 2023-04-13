@@ -1,12 +1,12 @@
 ﻿using NewsApiDomin.Models;
 using Services.CRUD;
-using Services.Transactions.Interfaces;
 using NewsApiServies.CRUD.Interfaces;
 using Repositories.Interfaces;
+using NewsApiRepositories.UnitOfWorkRepository.Interface;
 
 namespace NewsApiServies.CRUD
 {
-   
+
     public class AuthorService : BaseCRUDService<Author>, IAuthorService
     {
         private readonly IUnitOfWorkRepo unitOfWorkRepo;

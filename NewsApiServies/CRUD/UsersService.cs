@@ -1,8 +1,8 @@
 ﻿using NewsApiDomin.Models;
 using NewsApiDomin.ViewModels.UserViewModel;
+using NewsApiRepositories.UnitOfWorkRepository.Interface;
 using Repositories.Interfaces;
 using Services.CRUD.Interfaces;
-using Services.Transactions.Interfaces;
 
 
 namespace Services.CRUD
