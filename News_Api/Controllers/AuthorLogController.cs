@@ -1,13 +1,18 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NewsApiDomin.Models;
+using NewsApiDomin.ViewModels.CategoryViewModel;
+using NewsApiDomin.ViewModels;
 using NewsApiDomin.ViewModels.LogViewModel;
 using Services.Transactions.Interfaces;
+using System.Text.Json;
 
 namespace NewsApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles ="Admin")]
     public class AuthorLogController : ControllerBase
     {
         private readonly IUnitOfWorkService unitOfWorkService;
@@ -17,15 +22,21 @@ namespace NewsApi.Controllers
             this.unitOfWorkService = unitOfWorkService;
         }
         [HttpGet("GetAllAuthorLog")]
-        public async Task<ActionResult<List<AuthorLogView>>> GetAllAuthorLog()
+        public async Task<ActionResult<(PaginationMetaData, List<AuthorLogView>)>> GetAllAuthorLog(int pageNumber = 1, int pageSize = 10)
         {
 
             try
             {
                 var logs = await unitOfWorkService.LogService.GetAllAuthorsLogAsync();
-                var authorsLogView = logs.Select(l => new AuthorLogView { Content = l.Content, AuthorId = l.AuthorId, logLevel = l.logLevel });
-                if (authorsLogView.Count() > 0)
-                    return Ok(authorsLogView);
+
+                if (logs.Count() > 0)
+                {
+                    (logs, var paginationData) = await unitOfWorkService.LogPagination.GetPaginationAsync(pageNumber, pageSize, logs);
+                    var authorsLogView = logs.Select(l => new AuthorLogView { Content = l.Content, AuthorId = l.AuthorId, logLevel = l.logLevel });
+                    Response.Headers.Add("X-Pagination",
+                   JsonSerializer.Serialize(paginationData));
+                    return Ok(new { paginationData, authorsLogView });
+                }
                 else
                     return BadRequest();
 

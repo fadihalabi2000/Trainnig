@@ -1,16 +1,21 @@
 ﻿
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NewsApiDomin.Enums;
 using NewsApiDomin.Models;
+using NewsApiDomin.ViewModels;
 using NewsApiDomin.ViewModels.ArticleViewModel;
 using NewsApiDomin.ViewModels.ImageViewModel;
 using NewsApiDomin.ViewModels.UserViewModel;
 using Services.Transactions.Interfaces;
+using System.Text.Json;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace NewsApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ArticleController : ControllerBase
     {
         private readonly IUnitOfWorkService unitOfWorkService;
@@ -18,33 +23,40 @@ namespace NewsApi.Controllers
         public ArticleController(IUnitOfWorkService unitOfWorkService)
         {
             this.unitOfWorkService = unitOfWorkService;
+          
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ArticlView>>> GetAll()
+        public async Task<ActionResult<(PaginationMetaData, List<ArticlView>)>> GetAll(int pageNumber = 1, int pageSize = 10)
         {
 
             try
             {
-                var articles = await unitOfWorkService.ArticleService.GetAllAsync();
-                var articlesView = articles.Select(a => new ArticlView
+                var article = await unitOfWorkService.ArticleService.GetAllAsync();
+
+                if (article.Count() > 0)
                 {
-                    Id = a.Id,
-                    AuthorId = a.AuthorId,
-                    CategoryId = a.CategoryId,
-                    Content = a.Content,
-                    Comments = a.Comments,
-                    Images = a.Images,
-                    ViewCount = a.ViewCount,
-                    Title = a.Title,
-                    Likes = a.Likes,
-                    PublishDate = a.PublishDate,
-                    UpdateDate = a.PublishDate,
-                    
-                    
-                });
-                if (articlesView.Count() > 0)
-                    return Ok(articlesView);
+                    (article, var paginationData) = await unitOfWorkService.ArticlePagination.GetPaginationAsync(pageNumber, pageSize, article);
+                    var articles = article.Select(a => new ArticlView
+                    {
+                        Id = a.Id,
+                        AuthorId = a.AuthorId,
+                        CategoryId = a.CategoryId,
+                        Content = a.Content,
+                        Comments = a.Comments,
+                        Images = a.Images,
+                        ViewCount = a.ViewCount,
+                        Title = a.Title,
+                        Likes = a.Likes,
+                        PublishDate = a.PublishDate,
+                        UpdateDate = a.PublishDate,
+
+
+                    });
+                    Response.Headers.Add("X-Pagination",
+                JsonSerializer.Serialize(paginationData));
+                    return Ok(new { paginationData, articles });
+                }
                 else
                     return BadRequest();
 
@@ -95,7 +107,8 @@ namespace NewsApi.Controllers
 
         }
 
-
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Author")]
         [HttpPost]
         public async Task<ActionResult<ArticlView>> Post(CreateArticle createArticle)
         {
@@ -140,7 +153,8 @@ namespace NewsApi.Controllers
         }
 
 
-
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Author")]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, UpdateArticle updateArticle)
         {
@@ -176,7 +190,8 @@ namespace NewsApi.Controllers
 
         }
 
-
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Author")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {

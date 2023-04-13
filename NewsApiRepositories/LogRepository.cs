@@ -22,7 +22,7 @@ namespace NewsApiRepositories
             var dbSet = this.dbContext.Set<Log>();
 
 
-            return await Task.Run(() => dbSet.Where(l=> l.UserId==int.MaxValue).ToListAsync());
+            return await Task.Run(() => dbSet.Where(l=> l.UserId==int.MaxValue).OrderByDescending(l=>l.DateCreated).ToListAsync());
         }
 
       
@@ -30,17 +30,17 @@ namespace NewsApiRepositories
         public async Task<List<Log>> GetLogAuthorByIdAsync(int id)
         {
             var dbSet = this.dbContext.Set<Log>();
-            return await Task.Run(() => dbSet.Where(c => c.AuthorId ==id).ToListAsync());
+            return await Task.Run(() => dbSet.Where(l => l.AuthorId ==id).OrderByDescending(l => l.DateCreated).ToListAsync());
 
 
         }
 
-       
+  
 
         public async Task<List<Log>> GetLogUserByIdAsync(int id)
         {
             var dbSet = this.dbContext.Set<Log>();
-            return await Task.Run(() => dbSet.Where(c => c.UserId == id).ToListAsync());
+            return await Task.Run(() => dbSet.Where(l => l.UserId == id).OrderByDescending(l=>l.DateCreated).ToListAsync());
         }
 
         public async Task<List<Log>> GetAllUsersLogAsync()
@@ -48,7 +48,7 @@ namespace NewsApiRepositories
             var dbSet = this.dbContext.Set<Log>();
 
 
-            return await Task.Run(() => dbSet.Where(l => l.AuthorId == int.MaxValue).ToListAsync());
+            return await Task.Run(() => dbSet.Where(l => l.AuthorId == int.MaxValue).OrderByDescending(l => l.DateCreated).ToListAsync());
         }
 
 

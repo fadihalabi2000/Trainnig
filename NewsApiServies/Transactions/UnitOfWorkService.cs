@@ -2,8 +2,11 @@
 
 using NewsApiData;
 using NewsApiDomin.Models;
+using NewsApiDomin.ViewModels.CategoryViewModel;
 using NewsApiServies.CRUD;
 using NewsApiServies.CRUD.Interfaces;
+using NewsApiServies.Pagination;
+using NewsApiServies.Pagination.Interface;
 using Services.CRUD;
 using Services.CRUD.Interfaces;
 using Services.Transactions.Interfaces;
@@ -16,6 +19,8 @@ namespace Services.Transactions
     public class UnitOfWorkService : IUnitOfWorkService
     {
         private readonly NewsApiDbContext dbContext;
+
+        //CURD
         public IBaseCRUDService<Category> CategoryService { get; private set; }
 
         public IArticleService ArticleService { get; private set; }
@@ -33,6 +38,17 @@ namespace Services.Transactions
 
         public IUsersService UsersService { get; private set; }
 
+        //pagination
+        public IPaginationService<Category> CategoryPagination { get; private set; }
+
+        public IPaginationService<Article> ArticlePagination { get; private set; }
+
+        public IPaginationService<Author> AuthorPagination { get; private set; }
+
+        public IPaginationService<Log> LogPagination { get; private set; }
+
+        public IPaginationService<User> UserPagination { get; private set; }
+
         public UnitOfWorkService(NewsApiDbContext dbContext,IUnitOfWorkRepo unitOfWorkRepo)
         {
             this.dbContext = dbContext;
@@ -45,6 +61,14 @@ namespace Services.Transactions
             LikeService = new LikeService(unitOfWorkRepo);
             LogService = new LogService(unitOfWorkRepo);
             UsersService = new UsersService(unitOfWorkRepo);
+
+            //pagination
+            CategoryPagination = new PaginationService<Category>();
+            AuthorPagination = new PaginationService<Author>();
+            ArticlePagination = new PaginationService<Article>();
+            UserPagination = new PaginationService<User>();
+            LogPagination = new PaginationService<Log>();
+
         }
 
         
