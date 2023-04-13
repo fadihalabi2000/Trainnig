@@ -6,6 +6,8 @@ using NewsApiDomin.ViewModels;
 using NewsApiDomin.ViewModels.ImageViewModel;
 using NewsApiDomin.ViewModels.LogViewModel;
 using NewsApiDomin.ViewModels.UserViewModel;
+using NewsApiServies.Auth.ClassStatic;
+using Services.MyLogger;
 using Services.Transactions.Interfaces;
 using System.Text.Json;
 using static System.Net.Mime.MediaTypeNames;
@@ -18,10 +20,12 @@ namespace NewsApi.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUnitOfWorkService unitOfWorkService;
+        private readonly IMyLogger logger;
 
-        public UserController(IUnitOfWorkService unitOfWorkService)
+        public UserController(IUnitOfWorkService unitOfWorkService, IMyLogger logger)
         {
             this.unitOfWorkService = unitOfWorkService;
+            this.logger = logger;
         }
         [Authorize(Roles = "Admin")]
         [HttpGet]
@@ -34,7 +38,7 @@ namespace NewsApi.Controllers
 
                 if (user.Count() > 0)
                 {
-                    (user, var paginationData) = await unitOfWorkService.UserPagination.GetPaginationAsync(pageNumber,pageSize, user);
+                    (user, var paginationData) = await unitOfWorkService.UserPagination.GetPaginationAsync(pageNumber, pageSize, user);
                     var users = user.Select(u => new UserView
                     {
                         Id = u.Id,
@@ -46,15 +50,19 @@ namespace NewsApi.Controllers
                     });
                     Response.Headers.Add("X-Pagination",
                     JsonSerializer.Serialize(paginationData));
+                    await logger.LogInformation("All User table records fetched", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return Ok(new { paginationData, users });
                 }
                 else
+                {
+                    await logger.LogWarning("An Warning occurred while fetching all logs User ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
+                }
 
             }
             catch (Exception)
             {
-
+                await logger.LogWarning("An Warning occurred while fetching all logs User ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                 return BadRequest();
             }
 
@@ -71,14 +79,20 @@ namespace NewsApi.Controllers
                 var user = await unitOfWorkService.UsersService.GetByIdAsync(id);
                 var userWithoutLog = new UserWithoutLog { Id = id, FirstName = user.FirstName, LastName = user.LastName, Comments = user.Comments, DisplayName = user.DisplayName, Email = user.Email, likes = user.likes, ProfilePicture = user.ProfilePicture };
                 if (userWithoutLog == null)
+                {
+                    await logger.LogWarning("Failed to fetch User with ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
+                }
                 else
+                {
+                    await logger.LogInformation("User with ID " + id + " fetched ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return Ok(userWithoutLog);
+                }
 
             }
             catch (Exception)
             {
-
+                await logger.LogErorr("Erorr to fetch User with ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                 return BadRequest();
             }
 
@@ -141,14 +155,20 @@ namespace NewsApi.Controllers
                 user.DisplayName= updateUser.DisplayName;
                 await unitOfWorkService.UsersService.UpdateAsync(user);
                 if (await unitOfWorkService.CommitAsync())
+                {
+                    await logger.LogInformation("User with ID " + id + " updated", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return NoContent();
+                }
                 else
+                {
+                    await logger.LogWarning("An warning occurred when updateing the User ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
+                }
 
             }
             catch (Exception)
             {
-
+                await logger.LogErorr("An Erorr occurred when updateing the User ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                 return BadRequest();
             }
 
@@ -162,14 +182,20 @@ namespace NewsApi.Controllers
             {
                 await unitOfWorkService.UsersService.DeleteAsync(id);
                 if (await unitOfWorkService.CommitAsync())
+                {
+                    await logger.LogInformation("User with ID " + id + " deleted", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return NoContent();
+                }
                 else
+                {
+                    await logger.LogWarning("An warning occurred when deleteing the User ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
+                }
 
             }
             catch (Exception)
             {
-
+                await logger.LogErorr("An Erorr occurred when deleteing the User ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                 return BadRequest();
             }
 

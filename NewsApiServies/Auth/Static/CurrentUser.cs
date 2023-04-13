@@ -10,17 +10,17 @@ namespace NewsApiServies.Auth.ClassStatic
     public class CurrentUser
     {
     
-        public static string Id(HttpContext context)
+        public static int Id(HttpContext context)
         {
-            string userId = context.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            int userId =int.Parse(context.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
             return userId;
         }
         public static string Role(HttpContext context)
         {
-            string userId = context.User.FindFirst(ClaimTypes.Role)!.Value;
+            string role = context.User.FindFirst(ClaimTypes.Role)!.Value;
 
-            return userId;
+            return role;
         }
     }
 }

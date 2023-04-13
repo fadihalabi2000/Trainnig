@@ -1,9 +1,9 @@
 ﻿
 
 using NewsApiDomin.Models;
+using NewsApiRepositories.UnitOfWorkRepository.Interface;
 using NewsApiServies.CRUD.Interfaces;
 using Services.CRUD;
-using Services.Transactions.Interfaces;
 
 namespace NewsApiServies.CRUD
 {

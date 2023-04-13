@@ -7,6 +7,8 @@ using NewsApiDomin.ViewModels;
 using NewsApiDomin.ViewModels.ArticleViewModel;
 using NewsApiDomin.ViewModels.ImageViewModel;
 using NewsApiDomin.ViewModels.UserViewModel;
+using NewsApiServies.Auth.ClassStatic;
+using Services.MyLogger;
 using Services.Transactions.Interfaces;
 using System.Text.Json;
 using static System.Net.Mime.MediaTypeNames;
@@ -19,11 +21,12 @@ namespace NewsApi.Controllers
     public class ArticleController : ControllerBase
     {
         private readonly IUnitOfWorkService unitOfWorkService;
+        private readonly IMyLogger logger;
 
-        public ArticleController(IUnitOfWorkService unitOfWorkService)
+        public ArticleController(IUnitOfWorkService unitOfWorkService, IMyLogger logger)
         {
             this.unitOfWorkService = unitOfWorkService;
-          
+            this.logger = logger;
         }
 
         [HttpGet]
@@ -55,15 +58,20 @@ namespace NewsApi.Controllers
                     });
                     Response.Headers.Add("X-Pagination",
                 JsonSerializer.Serialize(paginationData));
+                    await logger.LogInformation("All Article table records fetched", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return Ok(new { paginationData, articles });
                 }
                 else
+                {
+                    await logger.LogWarning("An Warning occurred while fetching all logs Article ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+
                     return BadRequest();
+                }
 
             }
             catch (Exception)
             {
-
+                await logger.LogErorr("An Erorr occurred while fetching all logs Article ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                 return BadRequest();
             }
 
@@ -94,14 +102,20 @@ namespace NewsApi.Controllers
                     
                 };
                 if (articleView == null)
+                {
+                    await logger.LogWarning("Failed to fetch Article with ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
+                }
                 else
+                {
+                    await logger.LogInformation("Article with ID " + id + " fetched ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return Ok(articleView);
+                }
 
             }
             catch (Exception)
             {
-
+                await logger.LogErorr("Erorr to fetch Article with ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                 return BadRequest();
             }
 
@@ -138,16 +152,21 @@ namespace NewsApi.Controllers
                                                        PublishDate=article.PublishDate,UpdateDate= article.UpdateDate,Comments=article.Comments,Content = article.Content,
                                                        Images = article.Images,Likes = article.Likes,Title=article.Title
                     };
+                    await logger.LogInformation("Article with ID " + articleId + " added", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return CreatedAtRoute("GetArticle", new
                     {
                         id = articleId,
                     }, articleView);
                 }
                 else
+                {
+                    await logger.LogWarning("An warning occurred when adding the Article", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
+                }
             }
             catch (Exception)
             {
+                await logger.LogErorr("An Erorr occurred when adding the Article", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                 return BadRequest();
             }
         }
@@ -161,30 +180,28 @@ namespace NewsApi.Controllers
             try
             {
                var article= await unitOfWorkService.ArticleService.GetByIdAsync(id);
-
-
-
-
                 article.CategoryId = updateArticle.CategoryId;
                 article.Content = updateArticle.Content;
                 article.ViewCount = updateArticle.ViewCount;
                 article.Title = updateArticle.Title;
                 article.Likes = updateArticle.Likes;
                 article.Comments = updateArticle.Comments;
-
-
-
-
                 await unitOfWorkService.ArticleService.UpdateAsync(article);
                 if (await unitOfWorkService.CommitAsync())
+                {
+                    await logger.LogInformation("Article with ID " + id + " updated", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return NoContent();
+                }
                 else
+                {
+                    await logger.LogWarning("An warning occurred when updateing the ArticleID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
+                }
 
             }
             catch (Exception)
             {
-
+                await logger.LogErorr("An Erorr occurred when updateing the ArticleID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                 return BadRequest();
             }
 
@@ -199,13 +216,20 @@ namespace NewsApi.Controllers
             {
                 await unitOfWorkService.ArticleService.DeleteAsync(id);
                 if (await unitOfWorkService.CommitAsync())
+                {
+                    await logger.LogInformation("Article with ID " + id + " deleted", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return NoContent();
+                }
                 else
+                {
+                    await logger.LogWarning("An warning occurred when deleteing the Article ID "+id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
+                }
 
             }
             catch (Exception)
             {
+                await logger.LogErorr("An Erorr occurred when deleteing the Article ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
 
                 return BadRequest();
             }

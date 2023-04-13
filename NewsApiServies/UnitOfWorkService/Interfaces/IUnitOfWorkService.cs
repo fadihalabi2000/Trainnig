@@ -24,5 +24,7 @@ namespace Services.Transactions.Interfaces
         public IPaginationService<Author> AuthorPagination { get; }
         public IPaginationService<Log> LogPagination { get; }
         public IPaginationService<User> UserPagination { get; }
+        public IPaginationService<Comment> CommentPagination { get; }
+        public IPaginationService<Image> ImagePagination { get; }
     }
 }

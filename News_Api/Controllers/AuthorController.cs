@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using NewsApiDomin.Enums;
 using NewsApiDomin.Models;
 using NewsApiDomin.ViewModels;
 using NewsApiDomin.ViewModels.AuthorViewModel;
 using NewsApiDomin.ViewModels.CategoryViewModel;
+using NewsApiServies.Auth.ClassStatic;
+using Services.MyLogger;
 using Services.Transactions.Interfaces;
 using System.Text.Json;
 
@@ -16,10 +19,12 @@ namespace NewsApi.Controllers
     public class AuthorController : ControllerBase
     {
         private readonly IUnitOfWorkService unitOfWorkService;
+        private readonly IMyLogger logger;
 
-        public AuthorController(IUnitOfWorkService unitOfWorkService)
+        public AuthorController(IUnitOfWorkService unitOfWorkService, IMyLogger logger)
         {
             this.unitOfWorkService = unitOfWorkService;
+            this.logger = logger;
         }
 
         [HttpGet]
@@ -29,7 +34,7 @@ namespace NewsApi.Controllers
             try
             {
                 var author = await unitOfWorkService.AuthorService.GetAllAsync();
-             
+
                 if (author.Count() > 0)
                 {
                     (author, var paginationData) = await unitOfWorkService.AuthorPagination.GetPaginationAsync(pageNumber, pageSize, author);
@@ -46,15 +51,19 @@ namespace NewsApi.Controllers
                     });
                     Response.Headers.Add("X-Pagination",
                     JsonSerializer.Serialize(paginationData));
+                    await logger.LogInformation("All Author table records fetched", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return Ok(new { paginationData, authors });
                 }
                 else
+                {
+                    await logger.LogWarning("An Warning occurred while fetching all logs Author ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
+                }
 
             }
             catch (Exception)
             {
-
+                await logger.LogErorr("An Erorr occurred while fetching all logs Author ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                 return BadRequest();
             }
 
@@ -71,14 +80,20 @@ namespace NewsApi.Controllers
                 var author = await unitOfWorkService.AuthorService.GetByIdAsync(id);
                 var authorView= new AuthorView { Id=author.Id,Article=author.Article,DisplayName=author.DisplayName,Email=author.Email,Bio=author.Bio,Password=author.Password,ProfilePicture=author.ProfilePicture };
                 if (author == null)
+                {
+                    await logger.LogWarning("Failed to fetch Author with ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
+                }
                 else
+                {
+                    await logger.LogInformation("Author with ID " + id + " fetched ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return Ok(author);
+                }
 
             }
             catch (Exception)
             {
-
+                await logger.LogErorr("Erorr to fetch Author with ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                 return BadRequest();
             }
 
@@ -148,14 +163,20 @@ namespace NewsApi.Controllers
 
                 await unitOfWorkService.AuthorService.UpdateAsync(author);
                 if (await unitOfWorkService.CommitAsync())
+                {
+                    await logger.LogInformation("Author with ID " + id + " updated", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return NoContent();
+                }
                 else
+                {
+                    await logger.LogWarning("An warning occurred when updateing the Author ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
+                }
 
             }
             catch (Exception)
             {
-
+                await logger.LogErorr("An Erorr occurred when updateing the Author ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                 return BadRequest();
             }
 
@@ -169,14 +190,20 @@ namespace NewsApi.Controllers
             {
                 await unitOfWorkService.AuthorService.DeleteAsync(id);
                 if (await unitOfWorkService.CommitAsync())
+                {
+                    await logger.LogInformation("Author with ID " + id + " deleted", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return NoContent();
+                }
                 else
+                {
+                    await logger.LogWarning("An warning occurred when deleteing the Author ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
+                }
 
             }
             catch (Exception)
             {
-
+                await logger.LogErorr("An Erorr occurred when deleteing the Author ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                 return BadRequest();
             }
 
