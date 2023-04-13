@@ -11,6 +11,6 @@ namespace NewsApiDomin.ViewModels.CategoryViewModel
     {
         public int Id { get; set; }
         public string CategoryName { get; set; } = string.Empty;
-        public List<Article> Articles { get; set; } = new List<Article>();
+        //public List<Article> Articles { get; set; } = new List<Article>();
     }
 }

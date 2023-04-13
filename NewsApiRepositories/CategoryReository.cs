@@ -31,7 +31,7 @@ namespace NewsApiRepositories
         public new async Task<Category> GetByIdAsync(int id)
         {
 
-            var dbSet = await this.dbContext.Set<Category>().Include(a =>a.Articles).ToListAsync();
+            var dbSet = await this.dbContext.Set<Category>().Include(a =>a.Articles.OrderByDescending(a => a.PublishDate)).ToListAsync();
 
             Category? entity =  dbSet.FirstOrDefault(c => c.Id == id && c.IsDeleted == false);
             return entity!;

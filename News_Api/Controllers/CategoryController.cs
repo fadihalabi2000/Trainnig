@@ -1,34 +1,51 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NewsApiDomin.Enums;
 using NewsApiDomin.Models;
+using NewsApiDomin.ViewModels;
 using NewsApiDomin.ViewModels.CategoryViewModel;
 using NewsApiDomin.ViewModels.ImageViewModel;
+using NewsApiServies.Auth.ClassStatic;
 using Services.Transactions.Interfaces;
-using static System.Net.Mime.MediaTypeNames;
+using System.Security.Claims;
+using System.Text.Json;
+
 
 namespace NewsApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CategoryController : ControllerBase
     {
         private readonly IUnitOfWorkService unitOfWorkService;
-
+ 
         public CategoryController(IUnitOfWorkService unitOfWorkService)
         {
             this.unitOfWorkService = unitOfWorkService;
         }
-
+        
         [HttpGet]
-        public async Task<ActionResult<List<CategoryView>>> GetAll()
+        public async Task<ActionResult<(PaginationMetaData, List<CategoryView>)>> GetAll(int pageNumber = 1, int pageSize = 10)
         {
 
             try
             {
-                var categories = await unitOfWorkService.CategoryService.GetAllAsync();
-                var categoriesView = categories.Select(c=>new CategoryView { Id=c.Id,CategoryName=c.CategoryName}).ToList();
-                if (categoriesView.Count() > 0)
-                    return Ok(categoriesView);
+                
+                var category = await unitOfWorkService.CategoryService.GetAllAsync();
+              
+                if (category.Count() > 0)
+                {
+                    (category,var paginationData) = await unitOfWorkService.CategoryPagination.GetPaginationAsync(pageNumber, pageSize, category);
+                    List<CategoryView> categories = category.Select(c => new CategoryView { Id = c.Id, CategoryName = c.CategoryName }).ToList();
+                 
+ 
+                    Response.Headers.Add("X-Pagination",
+                   JsonSerializer.Serialize(paginationData));
+                    return Ok(new {paginationData, categories });
+
+                }
                 else
                     return BadRequest();
 
@@ -43,18 +60,17 @@ namespace NewsApi.Controllers
 
 
         [HttpGet("{id}",Name = "GetCategory")]
-        public async Task<ActionResult<CategoryView>> GetById(int id)
+        public async Task<ActionResult<Category>> GetById(int id)
         {
 
 
             try
             {
                 var category = await unitOfWorkService.CategoryService.GetByIdAsync(id);
-                var categoryView = new CategoryView { Id = category.Id, CategoryName = category.CategoryName, Articles = category.Articles };
-                if (categoryView == null)
+                if (category == null)
                     return BadRequest();
                 else
-                    return Ok(categoryView);
+                    return Ok(category);
 
             }
             catch (Exception)
@@ -65,7 +81,8 @@ namespace NewsApi.Controllers
 
         }
 
-
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Author")]
         [HttpPost]
         public async Task<ActionResult<CategoryView>> Post(CreateCategory createCategory)
         {
@@ -81,11 +98,10 @@ namespace NewsApi.Controllers
                     var lastID = await unitOfWorkService.CategoryService.GetAllAsync();
                     var categoryId = lastID.Max(b => b.Id);
                     category = await unitOfWorkService.CategoryService.GetByIdAsync(categoryId);
-                    var categoryView = new CategoryView { Id = category.Id,CategoryName=category.CategoryName,Articles=category.Articles };
                     return CreatedAtRoute("GetCategory", new
                     {
                         id = categoryId,
-                    }, categoryView);
+                    }, category);
                   
                 }
                 else
@@ -99,7 +115,8 @@ namespace NewsApi.Controllers
         }
 
 
-
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Author")]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, UpdateCategory updateCategory)
         {
@@ -122,7 +139,7 @@ namespace NewsApi.Controllers
 
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {

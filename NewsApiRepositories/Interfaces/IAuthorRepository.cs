@@ -10,5 +10,7 @@ namespace NewsApiRepositories.Interfaces
 {
     public interface IAuthorRepository:IBaseRepository<Author>
     {
+        Task<Author> CheckNameAndEmail(string displayName, string email);
+        Task<Author> AutherAuth(Login authorLogin);
     }
 }

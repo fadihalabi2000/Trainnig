@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NewsApiDomin.Models;
 using NewsApiDomin.ViewModels.ImageViewModel;
@@ -9,6 +10,9 @@ namespace NewsApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Author")]
+   
     public class ImageController : ControllerBase
     {
         private readonly IUnitOfWorkService unitOfWorkService;
@@ -40,7 +44,7 @@ namespace NewsApi.Controllers
 
         }
 
-
+        [Authorize]
         [HttpGet("{id}",Name = "GetImage")]
         public async Task<ActionResult<ImageView>> GetById(int id)
         {
@@ -64,7 +68,7 @@ namespace NewsApi.Controllers
 
         }
 
-
+       
         [HttpPost]
         public async Task<ActionResult<ImageView>> Post(CreateImage createImage)
         {
