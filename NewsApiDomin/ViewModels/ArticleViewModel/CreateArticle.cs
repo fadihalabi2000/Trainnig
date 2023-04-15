@@ -14,6 +14,6 @@ namespace NewsApiDomin.ViewModels.ArticleViewModel
         public int ViewCount { get; set; }
         public int AuthorId { get; set; }
         public int CategoryId { get; set; }
-         public List<Image> Images { get; set; } = new List<Image>();
+       //  public List<Image> Images { get; set; } = new List<Image>();
     }
 }

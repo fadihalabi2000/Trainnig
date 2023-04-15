@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NewsApiDomin.Models;
@@ -7,6 +8,7 @@ using NewsApiDomin.ViewModels.LikeViewModel;
 using NewsApiServies.Auth.ClassStatic;
 using Services.MyLogger;
 using Services.Transactions.Interfaces;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Xml.Linq;
 using static System.Net.Mime.MediaTypeNames;
@@ -20,11 +22,13 @@ namespace NewsApi.Controllers
     {
         private readonly IUnitOfWorkService unitOfWorkService;
         private readonly IMyLogger logger;
+        private readonly IMapper mapper;
 
-        public CommentController(IUnitOfWorkService unitOfWorkService, IMyLogger logger)
+        public CommentController(IUnitOfWorkService unitOfWorkService, IMyLogger logger,IMapper mapper)
         {
             this.unitOfWorkService = unitOfWorkService;
             this.logger = logger;
+            this.mapper = mapper;
         }
 
         [HttpGet]
@@ -37,11 +41,19 @@ namespace NewsApi.Controllers
                 if (comment.Count() > 0)
                 {
                     (comment, var paginationData) = await unitOfWorkService.CommentPagination.GetPaginationAsync(pageNumber, pageSize, comment);
-                    var comments = comment.Select(c => new CommentView { Id = c.Id, ArticleId = c.ArticleId, UserId = c.UserId, CommentDate = c.CommentDate, CommentText = c.CommentText }).ToList();
-                    Response.Headers.Add("X-Pagination",
-              JsonSerializer.Serialize(paginationData));
-                    await logger.LogInformation("All Comment table records fetched", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    return Ok(new { paginationData, comments });
+                    //  var comments = comment.Select(c => new CommentView { Id = c.Id, ArticleId = c.ArticleId, UserId = c.UserId, CommentDate = c.CommentDate, CommentText = c.CommentText }).ToList();
+                    if (comment.Count() > 0)
+                    {
+                        List<CommentView> comments = mapper.Map<List<CommentView>>(comment);
+                        Response.Headers.Add("X-Pagination",
+                  JsonSerializer.Serialize(paginationData));
+                        await logger.LogInformation("All Comment table records fetched", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+                        return Ok(new { paginationData, comments });
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
                 }
                 else
                 {
@@ -67,14 +79,15 @@ namespace NewsApi.Controllers
             try
             {
                 var comment = await unitOfWorkService.CommentsService.GetByIdAsync(id);
-                var commentsView =  new CommentView { Id = comment.Id, ArticleId = comment.ArticleId, UserId = comment.UserId, CommentDate = comment.CommentDate, CommentText = comment.CommentText };
-                if (commentsView == null)
+               // var commentsView =  new CommentView { Id = comment.Id, ArticleId = comment.ArticleId, UserId = comment.UserId, CommentDate = comment.CommentDate, CommentText = comment.CommentText };
+                if (comment == null)
                 {
                     await logger.LogWarning("Failed to fetch Comment with ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
                 }
                 else
                 {
+                    CommentView commentsView = mapper.Map<CommentView>(comment);
                     await logger.LogInformation("Comment with ID " + id + " fetched ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return Ok(commentsView);
                 }
@@ -90,15 +103,15 @@ namespace NewsApi.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult> Post(CreateComment createComment)
+        public async Task<ActionResult<CommentView>> Post(CreateComment createComment)
         {
 
             try
             {
-                var comment = new Comment() { CommentText= createComment.CommentText,
-                                              ArticleId=createComment.ArticleId,
-                                              UserId=createComment.UserId};
-
+                //var comment = new Comment() { CommentText= createComment.CommentText,
+                //                              ArticleId=createComment.ArticleId,
+                //                              UserId=createComment.UserId};
+                Comment comment= mapper.Map<Comment>(createComment);
                 await unitOfWorkService.CommentsService.AddAsync(comment);
 
                 if (await unitOfWorkService.CommitAsync())
@@ -106,7 +119,8 @@ namespace NewsApi.Controllers
                     var lastID = await unitOfWorkService.CommentsService.GetAllAsync();
                     var commentId = lastID.Max(b => b.Id);
                     comment = await unitOfWorkService.CommentsService.GetByIdAsync(commentId);
-                    var commentsView = new CommentView { Id = comment.Id, ArticleId = comment.ArticleId, UserId = comment.UserId, CommentDate = comment.CommentDate, CommentText = comment.CommentText };
+                    //var commentsView = new CommentView { Id = comment.Id, ArticleId = comment.ArticleId, UserId = comment.UserId, CommentDate = comment.CommentDate, CommentText = comment.CommentText };
+                    CommentView commentsView = mapper.Map<CommentView>(comment);
                     await logger.LogInformation("Comment with ID " + commentId + " added", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return CreatedAtRoute("GetComment", new
                     {
@@ -135,10 +149,10 @@ namespace NewsApi.Controllers
         {
             try
             {
-              var comment=  await unitOfWorkService.CommentsService.GetByIdAsync(id);
-                 comment.CommentDate = DateTime.Now;
-                comment.CommentText = updateComment.CommentText;
-               
+              Comment comment=  await unitOfWorkService.CommentsService.GetByIdAsync(id);
+                // comment.CommentDate = DateTime.Now;
+                //comment.CommentText = updateComment.CommentText;
+                mapper.Map(updateComment, comment);
                 await unitOfWorkService.CommentsService.UpdateAsync(comment);
                 if (await unitOfWorkService.CommitAsync())
                 {

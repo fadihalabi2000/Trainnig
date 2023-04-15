@@ -14,7 +14,5 @@ namespace NewsApiDomin.ViewModels.ArticleViewModel
         public int ViewCount { get; set; }
         public int CategoryId { get; set; }
 
-        public List<Like> Likes { get; set; } = new List<Like>();
-        public List<Comment> Comments { get; set; } = new List<Comment>();
     }
 }

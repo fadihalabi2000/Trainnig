@@ -12,6 +12,7 @@ namespace NewsApiRepositories.Interfaces
     public interface IUserRepository:IBaseRepository<User>
     {
         Task<User> CheckNameAndEmail(string displayName, string email);
+        Task<User> CheckDisplayName(string displayName);
         Task<User> UserAuth (Login userLogin);
 
     }

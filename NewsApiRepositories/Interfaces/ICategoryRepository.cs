@@ -10,6 +10,6 @@ namespace NewsApiRepositories.Interfaces
 {
     public interface ICategoryRepository:IBaseRepository<Category>
     {
-        
+        Task<Category> CheckCategoryName(string categoryName);
     }
 }

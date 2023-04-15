@@ -17,6 +17,9 @@ namespace NewsApiServies.CRUD
             this.unitOfWorkRepo = unitOfWorkRepo;
         }
 
-
+        public async Task<Category> CheckCategoryName(string categoryName)
+        {
+            return await unitOfWorkRepo.CategoryRepository.CheckCategoryName(categoryName);
+        }
     }
 }

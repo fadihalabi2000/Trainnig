@@ -15,6 +15,12 @@ namespace Services.CRUD
         {
             this.unitOfWorkRepo = unitOfWorkRepo;
         }
+
+        public async Task<User> CheckDisplayName(string displayName)
+        {
+           return await unitOfWorkRepo.UserRepository.CheckDisplayName(displayName);
+        }
+
         public new async Task<User> GetByIdAsync(int id)
         {
             return await unitOfWorkRepo.UserRepository.GetByIdAsync(id);

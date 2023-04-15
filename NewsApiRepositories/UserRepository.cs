@@ -21,6 +21,12 @@ namespace NewsApiRepositories
             this.dbContext = dbContext;
         }
 
+        public async Task<User> CheckDisplayName(string displayName)
+        {
+            var dbSet = await this.dbContext.Set<User>().FirstOrDefaultAsync(u => u.DisplayName == displayName );
+            return dbSet!;
+        }
+
         public async Task<User> CheckNameAndEmail(string displayName, string email)
         {
             var dbSet = await this.dbContext.Set<User>().FirstOrDefaultAsync(u=>u.DisplayName==displayName&&u.Email==email);

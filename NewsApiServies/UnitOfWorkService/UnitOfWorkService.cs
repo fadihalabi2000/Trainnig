@@ -22,7 +22,7 @@ namespace Services.Transactions
         private readonly NewsApiDbContext dbContext;
 
         //CURD
-        public IBaseCRUDService<Category> CategoryService { get; private set; }
+        public ICategoryService CategoryService { get; private set; }
 
         public IArticleService ArticleService { get; private set; }
 
@@ -53,11 +53,13 @@ namespace Services.Transactions
         public IPaginationService<Comment> CommentPagination { get; private set; }
 
         public IPaginationService<Image> ImagePagination { get; private set; }
+        public IPaginationService<Like> LikePagination { get; private set; }
 
         public UnitOfWorkService(NewsApiDbContext dbContext,IUnitOfWorkRepo unitOfWorkRepo)
         {
             this.dbContext = dbContext;
-            CategoryService =new BaseCRUDService<Category>(unitOfWorkRepo.CategoryRepository);
+            //  CategoryService =new BaseCRUDService<Category>(unitOfWorkRepo.CategoryRepository);
+            CategoryService =new CategoryService(unitOfWorkRepo);
             ArticleService = new ArticleService(unitOfWorkRepo);
             AuthorService = new AuthorService(unitOfWorkRepo);
             CommentsService = new CommentsService(unitOfWorkRepo);
@@ -75,6 +77,7 @@ namespace Services.Transactions
             LogPagination = new PaginationService<Log>();
             CommentPagination = new PaginationService<Comment>();
             ImagePagination = new PaginationService<Image>();
+            LikePagination = new PaginationService<Like>();
 
         }
 
@@ -82,7 +85,8 @@ namespace Services.Transactions
 
         public async Task<bool> CommitAsync()
         {
-            if (await dbContext.SaveChangesAsync() > 0)
+            
+            if (await dbContext.SaveChangesAsync()>0)
             {
                 return true;
             }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NewsApiData.Migrations;
@@ -23,11 +24,13 @@ namespace NewsApi.Controllers
     {
         private readonly IUnitOfWorkService unitOfWorkService;
         private readonly IMyLogger logger;
+        private readonly IMapper mapper;
 
-        public CategoryController(IUnitOfWorkService unitOfWorkService,IMyLogger  logger)
+        public CategoryController(IUnitOfWorkService unitOfWorkService,IMyLogger  logger,IMapper mapper)
         {
             this.unitOfWorkService = unitOfWorkService;
             this.logger = logger;
+            this.mapper = mapper;
         }
         
         [HttpGet]
@@ -42,11 +45,19 @@ namespace NewsApi.Controllers
                 if (category.Count() > 0)
                 {
                     (category, var paginationData) = await unitOfWorkService.CategoryPagination.GetPaginationAsync(pageNumber, pageSize, category);
-                    List<CategoryView> categories = category.Select(c => new CategoryView { Id = c.Id, CategoryName = c.CategoryName }).ToList();
-                    Response.Headers.Add("X-Pagination",
-                   JsonSerializer.Serialize(paginationData));
-                    await logger.LogInformation("All Category table records fetched", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    return Ok(new { paginationData, categories });
+                    if (category.Count() > 0)
+                    {
+                        // category.Select(c => new CategoryView { Id = c.Id, CategoryName = c.CategoryName }).ToList();
+                        List<CategoryView> categories = mapper.Map<List<CategoryView>>(category);
+                        Response.Headers.Add("X-Pagination",
+                       JsonSerializer.Serialize(paginationData));
+                        await logger.LogInformation("All Category table records fetched", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+                        return Ok(new { paginationData, categories });
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
 
                 }
                 else
@@ -93,34 +104,43 @@ namespace NewsApi.Controllers
 
         }
 
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Author")]
+        [Authorize(Roles = "Admin,Author")]
         [HttpPost]
         public async Task<ActionResult<CategoryView>> Post(CreateCategory createCategory)
         {
 
             try
             {
-                var category = new Category {CategoryName=createCategory.CategoryName};
+               // var category = new Category {CategoryName=createCategory.CategoryName};
+                Category category = mapper.Map<Category>(createCategory);
 
-                await unitOfWorkService.CategoryService.AddAsync(category);
-
-                if (await unitOfWorkService.CommitAsync())
+                var checkCategoryName = unitOfWorkService.CategoryService.CheckCategoryName(createCategory.CategoryName);
+                if (checkCategoryName is null)
                 {
-                    var lastID = await unitOfWorkService.CategoryService.GetAllAsync();
-                    var categoryId = lastID.Max(b => b.Id);
-                    category = await unitOfWorkService.CategoryService.GetByIdAsync(categoryId);
-                    await logger.LogInformation("category with ID " + categoryId + " added", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    return CreatedAtRoute("GetCategory", new
-                    {
-                        id = categoryId,
-                    }, category);
+                    await unitOfWorkService.CategoryService.AddAsync(category);
 
+                    if (await unitOfWorkService.CommitAsync())
+                    {
+                        var lastID = await unitOfWorkService.CategoryService.GetAllAsync();
+                        var categoryId = lastID.Max(b => b.Id);
+                        category = await unitOfWorkService.CategoryService.GetByIdAsync(categoryId);
+                        var ctegoryView = mapper.Map<CategoryView>(category);
+                        await logger.LogInformation("category with ID " + categoryId + " added", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+                        return CreatedAtRoute("GetCategory", new
+                        {
+                            id = categoryId,
+                        }, ctegoryView);
+
+                    }
+                    else
+                    {
+                        await logger.LogWarning("An warning occurred when adding the category", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+                        return BadRequest();
+                    }
                 }
                 else
                 {
-                    await logger.LogWarning("An warning occurred when adding the category", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    return BadRequest();
+                    return BadRequest(new { Message = "the CategoryName already exists " });
                 }
             }
             catch (Exception)
@@ -131,16 +151,24 @@ namespace NewsApi.Controllers
         }
 
 
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Author")]
+        [Authorize(Roles = "Admin,Author")]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, UpdateCategory updateCategory)
         {
             try
             {
-               var category= await unitOfWorkService.CategoryService.GetByIdAsync(id);
-                category.CategoryName = updateCategory.CategoryName;
-                await unitOfWorkService.CategoryService.UpdateAsync(category);
+                var category = await unitOfWorkService.CategoryService.GetByIdAsync(id);
+                //  category.CategoryName = updateCategory.CategoryName;
+               
+                var checkCategoryName =await unitOfWorkService.CategoryService.CheckCategoryName(updateCategory.CategoryName);
+                if (checkCategoryName is not null)
+                {
+                    return BadRequest(new { Message = "the displayName already exists " });
+                }
+                else
+                {
+                    mapper.Map(updateCategory,category);
+                    await unitOfWorkService.CategoryService.UpdateAsync(category);
                 if (await unitOfWorkService.CommitAsync())
                 {
                     await logger.LogInformation("category with ID " + id + " updated", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
@@ -151,6 +179,7 @@ namespace NewsApi.Controllers
                     await logger.LogWarning("An warning occurred when updateing the category ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
                 }
+            }
 
             }
             catch (Exception)
