@@ -7,6 +7,6 @@ namespace Services.CRUD.Interfaces
 {
     public interface IUsersService : IBaseCRUDService<User>
     {
-       
+        Task<User> CheckDisplayName(string displayName);
     }
 }

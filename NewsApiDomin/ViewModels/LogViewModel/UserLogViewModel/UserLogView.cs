@@ -6,13 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NewsApiDomin.ViewModels.LogViewModel
+namespace NewsApiDomin.ViewModels.LogViewModel.UserLogViewModel
 {
     public class UserLogView
     {
         public LogLevel logLevel { get; set; }
         public string Content { get; set; } = string.Empty;
         public int UserId { get; set; }
+        public DateTime DateCreated { get; set; } 
 
     }
 }

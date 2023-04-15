@@ -1,8 +1,11 @@
 ﻿
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using NewsApiDomin.Models;
 using NewsApiDomin.ViewModels;
+using NewsApiDomin.ViewModels.AuthorViewModel;
 using NewsApiDomin.ViewModels.ImageViewModel;
 using NewsApiDomin.ViewModels.LogViewModel;
 using NewsApiDomin.ViewModels.UserViewModel;
@@ -21,12 +24,15 @@ namespace NewsApi.Controllers
     {
         private readonly IUnitOfWorkService unitOfWorkService;
         private readonly IMyLogger logger;
+        private readonly IMapper mapper;
 
-        public UserController(IUnitOfWorkService unitOfWorkService, IMyLogger logger)
+        public UserController(IUnitOfWorkService unitOfWorkService, IMyLogger logger,IMapper mapper)
         {
             this.unitOfWorkService = unitOfWorkService;
             this.logger = logger;
+            this.mapper = mapper;
         }
+
         [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<ActionResult<(PaginationMetaData, List<UserView>)>> GetAll(int pageNumber = 1, int pageSize = 10)
@@ -39,19 +45,27 @@ namespace NewsApi.Controllers
                 if (user.Count() > 0)
                 {
                     (user, var paginationData) = await unitOfWorkService.UserPagination.GetPaginationAsync(pageNumber, pageSize, user);
-                    var users = user.Select(u => new UserView
+                    //var users = user.Select(u => new UserView
+                    //{
+                    //    Id = u.Id,
+                    //    FirstName = u.FirstName,
+                    //    LastName = u.LastName,
+                    //    DisplayName = u.DisplayName,
+                    //    ProfilePicture = u.ProfilePicture,
+                    //    Email = u.Email
+                    //});
+                    if (user.Count() > 0)
                     {
-                        Id = u.Id,
-                        FirstName = u.FirstName,
-                        LastName = u.LastName,
-                        DisplayName = u.DisplayName,
-                        ProfilePicture = u.ProfilePicture,
-                        Email = u.Email
-                    });
-                    Response.Headers.Add("X-Pagination",
-                    JsonSerializer.Serialize(paginationData));
-                    await logger.LogInformation("All User table records fetched", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    return Ok(new { paginationData, users });
+                        List<UserView> users = mapper.Map<List<UserView>>(user);
+                        Response.Headers.Add("X-Pagination",
+                        JsonSerializer.Serialize(paginationData));
+                        await logger.LogInformation("All User table records fetched", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+                        return Ok(new { paginationData, users });
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
                 }
                 else
                 {
@@ -77,7 +91,8 @@ namespace NewsApi.Controllers
             try
             {
                 var user = await unitOfWorkService.UsersService.GetByIdAsync(id);
-                var userWithoutLog = new UserWithoutLog { Id = id, FirstName = user.FirstName, LastName = user.LastName, Comments = user.Comments, DisplayName = user.DisplayName, Email = user.Email, likes = user.likes, ProfilePicture = user.ProfilePicture };
+                //var userWithoutLog = new UserWithoutLog { Id = id, FirstName = user.FirstName, LastName = user.LastName, Comments = user.Comments, DisplayName = user.DisplayName, Email = user.Email, likes = user.likes, ProfilePicture = user.ProfilePicture };
+                UserWithoutLog userWithoutLog = mapper.Map<UserWithoutLog>(user);
                 if (userWithoutLog == null)
                 {
                     await logger.LogWarning("Failed to fetch User with ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
@@ -129,7 +144,7 @@ namespace NewsApi.Controllers
         //            {
         //                id = userId,
         //            }, userView);
-                   
+
         //        }
         //        else
         //            return BadRequest();
@@ -141,28 +156,78 @@ namespace NewsApi.Controllers
         //}
 
 
-
+        [Authorize(Roles = "User,Admin")]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, UpdateUser updateUser)
         {
             try
             {
-                var user = await unitOfWorkService.UsersService.GetByIdAsync(id);
-                user.FirstName = updateUser.FirstName;
-                user.LastName = updateUser.LastName;
-                user.Password = updateUser.Password;
-                user.ProfilePicture = updateUser.ProfilePicture;
-                user.DisplayName= updateUser.DisplayName;
-                await unitOfWorkService.UsersService.UpdateAsync(user);
-                if (await unitOfWorkService.CommitAsync())
+                User user = await unitOfWorkService.UsersService.GetByIdAsync(id);
+
+                //user.FirstName = updateUser.FirstName;
+                //user.LastName = updateUser.LastName;
+                //user.Password = updateUser.Password;
+                //user.ProfilePicture = updateUser.ProfilePicture;
+                //user.DisplayName= updateUser.DisplayName;
+                var checkDisplayName = await unitOfWorkService.UsersService.CheckDisplayName(updateUser.DisplayName);
+                if (checkDisplayName is null)
                 {
-                    await logger.LogInformation("User with ID " + id + " updated", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    return NoContent();
+                    user = mapper.Map(updateUser,user);
+                    await unitOfWorkService.UsersService.UpdateAsync(user);
+                    if (await unitOfWorkService.CommitAsync())
+                    {
+                        await logger.LogInformation("User with ID " + id + " updated", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+                        return NoContent();
+                    }
+                    else
+                    {
+                        await logger.LogWarning("An warning occurred when updateing the User ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+                        return BadRequest();
+                    }
                 }
                 else
                 {
-                    await logger.LogWarning("An warning occurred when updateing the User ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    return BadRequest();
+                    return BadRequest(new { Message = "the displayName already exists " });
+                }
+
+            }
+            catch (Exception)
+            {
+                await logger.LogErorr("An Erorr occurred when updateing the User ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+                return BadRequest();
+            }
+
+        }
+
+        [Authorize(Roles = "User,Admin")]
+        [HttpPatch("{id}")]
+        public async Task<ActionResult> patch(int id, JsonPatchDocument<UpdateUser> patchDocument)
+        {
+            try
+            {
+                User user = await unitOfWorkService.UsersService.GetByIdAsync(id);
+                UpdateUser patchUser = mapper.Map<UpdateUser>(user);
+                patchDocument.ApplyTo(patchUser);
+
+               var checkDisplayName = await unitOfWorkService.UsersService.CheckDisplayName(patchUser.DisplayName);
+                if (checkDisplayName is null)
+                {
+                    user = mapper.Map(patchUser, user);
+                    await unitOfWorkService.UsersService.UpdateAsync(user);
+                    if (await unitOfWorkService.CommitAsync())
+                    {
+                        await logger.LogInformation("User with ID " + id + " updated", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+                        return NoContent();
+                    }
+                    else
+                    {
+                        await logger.LogWarning("An warning occurred when updateing the User ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+                        return BadRequest();
+                    }
+                }
+                else
+                {
+                    return BadRequest(new { Message = "the displayName already exists " });
                 }
 
             }

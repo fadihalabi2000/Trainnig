@@ -28,6 +28,7 @@ namespace NewsApiRepositories
             return dbSet!;
         }
 
+
         public new async Task<List<Author>> GetAllAsync()
         {
             var dbSet = this.dbContext.Set<Author>().Include(a=>a.Article.OrderByDescending(a=>a.PublishDate));
@@ -49,6 +50,12 @@ namespace NewsApiRepositories
         public async Task<Author> AutherAuth(Login authorLogin)
         {
             var dbSet = await this.dbContext.Set<Author>().FirstOrDefaultAsync(a => a.Email == authorLogin.Email && a.Password == authorLogin.Password);
+            return dbSet!;
+        }
+
+        public async Task<Author> CheckDisplayName(string displayName)
+        {
+            var dbSet = await this.dbContext.Set<Author>().FirstOrDefaultAsync(a => a.DisplayName == displayName );
             return dbSet!;
         }
     }

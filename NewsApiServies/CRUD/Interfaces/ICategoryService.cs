@@ -10,5 +10,6 @@ namespace NewsApiServies.CRUD.Interfaces
 {
     public interface ICategoryService:IBaseCRUDService<Category>
     {
+        Task<Category> CheckCategoryName(string categoryName);
     }
 }

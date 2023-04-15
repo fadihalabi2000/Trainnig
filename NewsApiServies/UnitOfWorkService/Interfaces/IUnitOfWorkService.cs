@@ -9,7 +9,8 @@ namespace Services.Transactions.Interfaces
 {
     public interface IUnitOfWorkService
     {
-        public IBaseCRUDService<Category> CategoryService { get; }
+       // public IBaseCRUDService<Category> CategoryService { get; }
+        public ICategoryService CategoryService { get; }
         public IArticleService ArticleService { get; }
         public IAuthorService AuthorService { get; }
         public ICommentsService CommentsService { get; }
@@ -26,5 +27,6 @@ namespace Services.Transactions.Interfaces
         public IPaginationService<User> UserPagination { get; }
         public IPaginationService<Comment> CommentPagination { get; }
         public IPaginationService<Image> ImagePagination { get; }
+        public IPaginationService<Like> LikePagination { get; }
     }
 }
