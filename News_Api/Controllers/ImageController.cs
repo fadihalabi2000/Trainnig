@@ -88,7 +88,6 @@ namespace NewsApi.Controllers
 
         }
 
-       
         [HttpPost]
         public async Task<ActionResult<ImageView>> Post(CreateImage createImage)
         {
