@@ -19,7 +19,8 @@ namespace NewsApiServies.CRUD
 
         public async Task<Category> CheckCategoryName(string categoryName)
         {
-            return await unitOfWorkRepo.CategoryRepository.CheckCategoryName(categoryName);
+            List<Category> categories = await unitOfWorkRepo.CategoryRepository.GetAllAsync();
+            return await Task.Run(() => categories.FirstOrDefault(c => c.CategoryName == categoryName)!);
         }
     }
 }

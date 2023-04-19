@@ -11,6 +11,5 @@ namespace NewsApiDomin.ViewModels.ImageViewModel
         public string ImageUrl { get; set; } = string.Empty;
         public string ImageDescription { get; set; } = string.Empty;
 
-        public int ArticleId { get; set; }
     }
 }

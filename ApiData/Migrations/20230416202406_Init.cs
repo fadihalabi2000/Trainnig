@@ -10,24 +10,6 @@ namespace NewsApiData.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Authors",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DisplayName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Bio = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ProfilePicture = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Authors", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Categories",
                 columns: table => new
                 {
@@ -58,6 +40,30 @@ namespace NewsApiData.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Authors",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DisplayName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Bio = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProfilePicture = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Authors", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Authors_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -101,8 +107,8 @@ namespace NewsApiData.Migrations
                     logLevel = table.Column<int>(type: "int", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    AuthorId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    AuthorId = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<int>(type: "int", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -112,14 +118,41 @@ namespace NewsApiData.Migrations
                         name: "FK_Logs_Authors_AuthorId",
                         column: x => x.AuthorId,
                         principalTable: "Authors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Logs_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RefreshTokens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AuthorId = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<int>(type: "int", nullable: true),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ExpiresOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RevokedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefreshTokens_Authors_AuthorId",
+                        column: x => x.AuthorId,
+                        principalTable: "Authors",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_RefreshTokens_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -203,12 +236,13 @@ namespace NewsApiData.Migrations
 
             migrationBuilder.InsertData(
                 table: "Authors",
-                columns: new[] { "Id", "Bio", "DisplayName", "Email", "IsDeleted", "Password", "ProfilePicture" },
+                columns: new[] { "Id", "Bio", "DisplayName", "Email", "IsDeleted", "Password", "ProfilePicture", "UserId" },
                 values: new object[,]
                 {
-                    { 1, "aaaaa", "ali", "ali@gmail.com", false, "123", "https://tse4.mm.bing.net/th/id/OIP.y2TOfKrvLx09_tbuortEygHaEG?w=331&h=183&c=7&r=0&o=5&pid=1.7" },
-                    { 2, "ooooo", "omar", "omar@gmail.com", false, "145", "https://tse4.mm.bing.net/th/id/OIP.1FMDAFhu9UEmpewQZBWfqgHaEK?w=326&h=183&c=7&r=0&o=5&pid=1.7" },
-                    { 3, "hhhhh", "ahmad", "ahmad@gmail.com", false, "165", "https://tse1.mm.bing.net/th/id/OIP.U8tBnyvXfaWfsx3Q-cIXUAHaHa?w=180&h=180&c=7&r=0&o=5&pid=1.7" }
+                    { 1, "aaaaa", "ali", "ali@gmail.com", false, "123", "https://tse4.mm.bing.net/th/id/OIP.y2TOfKrvLx09_tbuortEygHaEG?w=331&h=183&c=7&r=0&o=5&pid=1.7", null },
+                    { 2, "ooooo", "omar", "omar@gmail.com", false, "145", "https://tse4.mm.bing.net/th/id/OIP.1FMDAFhu9UEmpewQZBWfqgHaEK?w=326&h=183&c=7&r=0&o=5&pid=1.7", null },
+                    { 3, "hhhhh", "ahmad", "ahmad@gmail.com", false, "165", "https://tse1.mm.bing.net/th/id/OIP.U8tBnyvXfaWfsx3Q-cIXUAHaHa?w=180&h=180&c=7&r=0&o=5&pid=1.7", null },
+                    { 2147483647, "test", "test", "testA@gmail.com", false, "165", "https://tse1.mm.bing.net/th/id/OIP.U8tBnyvXfaWfsx3Q-cIXUAHaHa?w=180&h=180&c=7&r=0&o=5&pid=1.7", null }
                 });
 
             migrationBuilder.InsertData(
@@ -228,32 +262,38 @@ namespace NewsApiData.Migrations
                 {
                     { 1, "obada", "obada@gmail.com", "obada", false, "halabi", "12345", "https://www.bing.com/th?id=OIP.RYDAyx95XZfKlV4Utf8Z7QHaEK&w=333&h=187&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" },
                     { 2, "fadi", "fadi@gmail.com", "fadi", false, "halabi", "123456", "https://www.bing.com/th?id=OIP.RYDAyx95XZfKlV4Utf8Z7QHaEK&w=333&h=187&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" },
-                    { 3, "taher", "taher", "taher", false, "halabi", "12345", "https://www.bing.com/th?id=OIP.frAlEuXSfGFRLcBxzVRY1AHaER&w=329&h=189&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" }
+                    { 3, "taher", "taher@gmail.com", "taher", false, "halabi", "12345", "https://www.bing.com/th?id=OIP.frAlEuXSfGFRLcBxzVRY1AHaER&w=329&h=189&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" },
+                    { 2147483647, "test", "test@gmail.com", "test", true, "halabi", "12345", "https://www.bing.com/th?id=OIP.frAlEuXSfGFRLcBxzVRY1AHaER&w=329&h=189&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Articles",
                 columns: new[] { "Id", "AuthorId", "CategoryId", "Content", "IsDeleted", "PublishDate", "Title", "UpdateDate", "ViewCount" },
-                values: new object[] { 1, 1, 1, "أصيب أكثر من 200 فلسطيني في مواجهات بنابلس مع قوات الاحتلال الإسرائيلي، بالتزامن مع تشييع شهيد بأريحا، وبعد ساعات من اقتحام مئات المستوطنين للمسجد الأقصى المبارك في القدس.", false, new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1855), "فلسطين.. عشرات الإصابات بنابلس وتشييع شهيد بأريحا واقتحام يهودي للأقصى", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 0 });
+                values: new object[,]
+                {
+                    { 1, 1, 1, "أصيب أكثر من 200 فلسطيني في مواجهات بنابلس مع قوات الاحتلال الإسرائيلي، بالتزامن مع تشييع شهيد بأريحا، وبعد ساعات من اقتحام مئات المستوطنين للمسجد الأقصى المبارك في القدس.", false, new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1019), "فلسطين.. عشرات الإصابات بنابلس وتشييع شهيد بأريحا واقتحام يهودي للأقصى", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 0 },
+                    { 2, 2, 2, "اقتحم مستوطنون باحات المسجد الأقصى صباح اليوم الأحد بحماية قوات الاحتلال الإسرائيلي التي اعتدت على شبان فلسطينيين عند باب الأسباط ومنعتهم بالقوة من دخول المسجد الأقصى لأداء صلاة فجر اليوم، كما منعت عشرات النساء من الدخول.", false, new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1029), "الاحتلال يعتدي على فلسطينيين ويمنعهم من دخول الأقصى", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 0 },
+                    { 3, 3, 3, "منذ بداية الشهر الجاري هجمات على ضباط في الجيش والقوات الأمنية أدت إلى مقتل ضابط في الجيش وآخر في الشرطة وثالث في الدعم السريع ونهب مركبات عسكرية،", false, new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1031), "حوادث اغتيال العسكريين السودانيين", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 0 }
+                });
 
             migrationBuilder.InsertData(
-                table: "Articles",
-                columns: new[] { "Id", "AuthorId", "CategoryId", "Content", "IsDeleted", "PublishDate", "Title", "UpdateDate", "ViewCount" },
-                values: new object[] { 2, 2, 2, "اقتحم مستوطنون باحات المسجد الأقصى صباح اليوم الأحد بحماية قوات الاحتلال الإسرائيلي التي اعتدت على شبان فلسطينيين عند باب الأسباط ومنعتهم بالقوة من دخول المسجد الأقصى لأداء صلاة فجر اليوم، كما منعت عشرات النساء من الدخول.", false, new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1861), "الاحتلال يعتدي على فلسطينيين ويمنعهم من دخول الأقصى", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 0 });
-
-            migrationBuilder.InsertData(
-                table: "Articles",
-                columns: new[] { "Id", "AuthorId", "CategoryId", "Content", "IsDeleted", "PublishDate", "Title", "UpdateDate", "ViewCount" },
-                values: new object[] { 3, 3, 3, "منذ بداية الشهر الجاري هجمات على ضباط في الجيش والقوات الأمنية أدت إلى مقتل ضابط في الجيش وآخر في الشرطة وثالث في الدعم السريع ونهب مركبات عسكرية،", false, new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1863), "حوادث اغتيال العسكريين السودانيين", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 0 });
+                table: "Logs",
+                columns: new[] { "Id", "AuthorId", "Content", "DateCreated", "IsDeleted", "UserId", "logLevel" },
+                values: new object[,]
+                {
+                    { 1, 1, "add", new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1092), false, null, 2 },
+                    { 2, 1, "delete", new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1096), false, null, 2 },
+                    { 3, null, "update", new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1097), false, 1, 2 }
+                });
 
             migrationBuilder.InsertData(
                 table: "Comments",
                 columns: new[] { "Id", "ArticleId", "CommentDate", "CommentText", "IsDeleted", "UserId" },
                 values: new object[,]
                 {
-                    { 1, 1, new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1896), "wwwww", false, 1 },
-                    { 2, 2, new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1897), "sssss", false, 2 },
-                    { 3, 3, new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1898), "xxxxxxx", false, 3 }
+                    { 1, 1, new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1061), "wwwww", false, 1 },
+                    { 2, 2, new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1062), "sssss", false, 2 },
+                    { 3, 3, new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1063), "xxxxxxx", false, 3 }
                 });
 
             migrationBuilder.InsertData(
@@ -271,9 +311,9 @@ namespace NewsApiData.Migrations
                 columns: new[] { "Id", "ArticleId", "IsDeleted", "LikeDate", "UserId" },
                 values: new object[,]
                 {
-                    { 1, 1, false, new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1879), 1 },
-                    { 2, 2, false, new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1881), 2 },
-                    { 3, 3, false, new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1882), 3 }
+                    { 1, 1, false, new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1045), 1 },
+                    { 2, 2, false, new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1047), 2 },
+                    { 3, 3, false, new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1047), 3 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -285,6 +325,11 @@ namespace NewsApiData.Migrations
                 name: "IX_Articles_CategoryId",
                 table: "Articles",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Authors_UserId",
+                table: "Authors",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_ArticleId",
@@ -320,6 +365,16 @@ namespace NewsApiData.Migrations
                 name: "IX_Logs_UserId",
                 table: "Logs",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_AuthorId",
+                table: "RefreshTokens",
+                column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_UserId",
+                table: "RefreshTokens",
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -337,16 +392,19 @@ namespace NewsApiData.Migrations
                 name: "Logs");
 
             migrationBuilder.DropTable(
-                name: "Articles");
+                name: "RefreshTokens");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Articles");
 
             migrationBuilder.DropTable(
                 name: "Authors");
 
             migrationBuilder.DropTable(
                 name: "Categories");
+
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

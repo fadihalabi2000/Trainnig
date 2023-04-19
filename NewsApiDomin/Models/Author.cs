@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace NewsApiDomin.Models
@@ -17,5 +18,7 @@ namespace NewsApiDomin.Models
         public string ProfilePicture { get; set; } = string.Empty;
         public List<Article> Article { get; set; } = new List<Article>();
         public List<Log> Log { get; set; } = new List<Log>();
+        public List<RefreshToken>   RefreshTokens { get; set; } = new List<RefreshToken>();
+
     }
 }

@@ -16,5 +16,10 @@ namespace NewsApiServies.CRUD
             this.unitOfWorkRepo = unitOfWorkRepo;
         }
 
+        public async Task<List<Image>> GetAllByIdArticleAsync(int articleId)
+        {
+            List<Image> images = await unitOfWorkRepo.ImageRepository.GetAllAsync();
+            return await Task.Run(() => images.Where(i => i.ArticleId == articleId).ToList());
+        }
     }
 }

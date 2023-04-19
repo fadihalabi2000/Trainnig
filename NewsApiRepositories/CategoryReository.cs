@@ -21,14 +21,6 @@ namespace NewsApiRepositories
             this.dbContext = dbContext;
         }
 
-        public async Task<Category> CheckCategoryName(string categoryName)
-        {
-           
-                var dbSet = await this.dbContext.Set<Category>().FirstOrDefaultAsync(a => a.CategoryName == categoryName);
-                return dbSet!;
-            
-        }
-
         public new async Task<List<Category>> GetAllAsync()
         {
             var dbSet = this.dbContext.Set<Category>();

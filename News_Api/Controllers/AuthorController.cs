@@ -34,39 +34,17 @@ namespace NewsApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<(PaginationMetaData, List<AuthorsWithoutArticles>)>> GetAll(int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<(PaginationMetaData, List<AuthorView>)>> GetAll()
         {
 
             try
             {
                 var author = await unitOfWorkService.AuthorService.GetAllAsync();
-
                 if (author.Count() > 0)
-                {
-                    (author, var paginationData) = await unitOfWorkService.AuthorPagination.GetPaginationAsync(pageNumber, pageSize, author);
-                    //var authors = author.Select(u => new AuthorView
-                    //{
-                    //    Id = u.Id,
-                    //    Bio = u.Bio,
-                    //    DisplayName = u.DisplayName,
-                    //    ProfilePicture = u.ProfilePicture,
-                    //    Email = u.Email,
-                    //    Password = u.Password,
-                    //    Article = u.Article,
-
-                    //});
-                    if (author.Count() > 0)
-                    {
-                        List<AuthorsWithoutArticles> authors = mapper.Map<List<AuthorsWithoutArticles>>(author);
-                        Response.Headers.Add("X-Pagination",
-                        JsonSerializer.Serialize(paginationData));
-                        await logger.LogInformation("All Author table records fetched", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                        return Ok(new { paginationData, authors });
-                    }
-                    else
-                    {
-                        return NotFound();
-                    }
+                  {
+                    await logger.LogInformation("All Author table records fetched  ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+                    List<AuthorView> authors = mapper.Map<List<AuthorView>>(author);
+                   return Ok(authors );
                 }
                 else
                 {
@@ -85,24 +63,35 @@ namespace NewsApi.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<AuthorView>> GetById(int id)
+        public async Task<ActionResult<AuthorView>> GetById(int id,int pageNumber = 1, int pageSize = 10)
         {
-
-
             try
             {
-                var author = await unitOfWorkService.AuthorService.GetByIdAsync(id);
-                //var authorView= new AuthorView { Id=author.Id,Article=author.Article,DisplayName=author.DisplayName,Email=author.Email,Bio=author.Bio,Password=author.Password,ProfilePicture=author.ProfilePicture };
-                if (author == null)
+                var authorById = await unitOfWorkService.AuthorService.GetByIdAsync(id);
+                if (authorById == null)
                 {
                     await logger.LogWarning("Failed to fetch Author with ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
                 }
                 else
                 {
-                    AuthorView authorView = mapper.Map<AuthorView>(author);
-                    await logger.LogInformation("Author with ID " + id + " fetched ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    return Ok(authorView);
+                    List<ArticleWithAuthorView> articles = new List<ArticleWithAuthorView>();
+
+                    (articles, bool isCompleted) = await unitOfWorkService.ArticleService.GetArticlesAsync(authorById.Article);
+                    if (isCompleted)
+                    {
+                        (articles, var paginationData) = await unitOfWorkService.ArticleWithAuthorViewPagination.GetPaginationAsync(pageNumber, pageSize, articles);
+                        AuthorView author = mapper.Map<AuthorView>(authorById);
+                        Response.Headers.Add("X-Pagination",
+                    JsonSerializer.Serialize(paginationData));
+                        await logger.LogInformation("Author with ID " + id + " fetched ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+                        return Ok(new { paginationData, author, articles });
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
+
                 }
 
             }
@@ -115,54 +104,6 @@ namespace NewsApi.Controllers
         }
 
 
-        //[HttpPost]
-        //public async Task<ActionResult<AuthorView>> Post(CreateAuthor createAuthor)
-        //{
-
-        //    try
-        //    {
-        //        var author = new Author
-        //        {
-                 
-        //            Email = createAuthor.Email,
-        //            Password = createAuthor.Password,
-        //            ProfilePicture = createAuthor.ProfilePicture,
-        //            DisplayName = createAuthor.DisplayName,
-        //            Bio=createAuthor.Bio,
-        //        };
-
-        //        await unitOfWorkService.AuthorService.AddAsync(author);
-
-        //        if (await unitOfWorkService.CommitAsync())
-        //        {
-        //            var lastID = await unitOfWorkService.AuthorService.GetAllAsync();
-        //            var authorId = lastID.Max(b => b.Id);
-        //            author = await unitOfWorkService.AuthorService.GetByIdAsync(authorId);
-        //            var authorView = new AuthorView
-        //            {
-        //                Id = author.Id,
-        //                DisplayName = author.DisplayName,
-        //                ProfilePicture = author.ProfilePicture,
-        //                Email = author.Email,
-        //                Password = author.Password,
-        //                Bio=author.Bio,
-        //            };
-        //            return CreatedAtRoute("GetAuthor", new
-        //            {
-        //                id = authorId,
-        //            }, authorView);
-        //        }
-        //        else
-        //            return BadRequest();
-
-        //    }
-        //    catch (Exception)
-        //    {
-
-        //        return BadRequest();
-        //    }
-        //}
-
 
         [Authorize(Roles = "Author,Admin")]
         [HttpPut("{id}")]
@@ -171,10 +112,6 @@ namespace NewsApi.Controllers
             try
             {
                 Author author =  await unitOfWorkService.AuthorService.GetByIdAsync(id);
-                //author.Bio = updateAuthor.Bio;
-                //author.Password = updateAuthor.Password;
-                //author.ProfilePicture = updateAuthor.ProfilePicture;
-                //author.DisplayName = updateAuthor.DisplayName;
                 var checkDisplayName = await unitOfWorkService.AuthorService.CheckDisplayName(updateAuthor.DisplayName);
                 if (checkDisplayName is null)
                 {
@@ -273,3 +210,52 @@ namespace NewsApi.Controllers
         }
     }
 }
+
+//[HttpPost]
+//public async Task<ActionResult<AuthorView>> Post(CreateAuthor createAuthor)
+//{
+
+//    try
+//    {
+//        var author = new Author
+//        {
+
+//            Email = createAuthor.Email,
+//            Password = createAuthor.Password,
+//            ProfilePicture = createAuthor.ProfilePicture,
+//            DisplayName = createAuthor.DisplayName,
+//            Bio=createAuthor.Bio,
+//        };
+
+//        await unitOfWorkService.AuthorService.AddAsync(author);
+
+//        if (await unitOfWorkService.CommitAsync())
+//        {
+//            var lastID = await unitOfWorkService.AuthorService.GetAllAsync();
+//            var authorId = lastID.Max(b => b.Id);
+//            author = await unitOfWorkService.AuthorService.GetByIdAsync(authorId);
+//            var authorView = new AuthorView
+//            {
+//                Id = author.Id,
+//                DisplayName = author.DisplayName,
+//                ProfilePicture = author.ProfilePicture,
+//                Email = author.Email,
+//                Password = author.Password,
+//                Bio=author.Bio,
+//            };
+//            return CreatedAtRoute("GetAuthor", new
+//            {
+//                id = authorId,
+//            }, authorView);
+//        }
+//        else
+//            return BadRequest();
+
+//    }
+//    catch (Exception)
+//    {
+
+//        return BadRequest();
+//    }
+//}
+

@@ -10,5 +10,6 @@ namespace NewsApiServies.CRUD.Interfaces
 {
     public interface IImageService:IBaseCRUDService<Image>
     {
+        Task<List<Image>> GetAllByIdArticleAsync(int articleId);
     }
 }

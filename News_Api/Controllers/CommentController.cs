@@ -15,7 +15,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace NewsApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Article/{ArticleId}/[controller]")]
     [ApiController]
     [Authorize]
     public class CommentController : ControllerBase
@@ -32,16 +32,20 @@ namespace NewsApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<CommentView>>> GetAll(int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<List<CommentView>>> GetAll(int articleId,int pageNumber = 1, int pageSize = 10)
         {
+            var article = await unitOfWorkService.LikeService.GetByIdAsync(articleId);
+            if (article == null)
+            {
+                return NotFound();
+            }
 
             try
             {
-                var comment = await unitOfWorkService.CommentsService.GetAllAsync();
+                var comment = await unitOfWorkService.CommentsService.GetAllByIdArticleAsync(articleId);
                 if (comment.Count() > 0)
                 {
                     (comment, var paginationData) = await unitOfWorkService.CommentPagination.GetPaginationAsync(pageNumber, pageSize, comment);
-                    //  var comments = comment.Select(c => new CommentView { Id = c.Id, ArticleId = c.ArticleId, UserId = c.UserId, CommentDate = c.CommentDate, CommentText = c.CommentText }).ToList();
                     if (comment.Count() > 0)
                     {
                         List<CommentView> comments = mapper.Map<List<CommentView>>(comment);
@@ -72,24 +76,27 @@ namespace NewsApi.Controllers
 
 
         [HttpGet("{id}",Name = "GetComment")]
-        public async Task<ActionResult<CommentView>> GetById(int id)
+        public async Task<ActionResult<CommentView>> GetById(int articleId, int id)
         {
-
+            var article = await unitOfWorkService.LikeService.GetByIdAsync(articleId);
+            if (article == null)
+            {
+                return NotFound();
+            }
 
             try
             {
-                var comment = await unitOfWorkService.CommentsService.GetByIdAsync(id);
-               // var commentsView =  new CommentView { Id = comment.Id, ArticleId = comment.ArticleId, UserId = comment.UserId, CommentDate = comment.CommentDate, CommentText = comment.CommentText };
-                if (comment == null)
+                var commentById = await unitOfWorkService.CommentsService.GetByIdAsync(id);
+                if (commentById == null)
                 {
                     await logger.LogWarning("Failed to fetch Comment with ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
                 }
                 else
                 {
-                    CommentView commentsView = mapper.Map<CommentView>(comment);
+                    CommentView comment = mapper.Map<CommentView>(commentById);
                     await logger.LogInformation("Comment with ID " + id + " fetched ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    return Ok(commentsView);
+                    return Ok(comment);
                 }
 
             }
@@ -103,29 +110,29 @@ namespace NewsApi.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<CommentView>> Post(CreateComment createComment)
+        public async Task<ActionResult<CommentView>> Post(int articleId, CreateComment createComment)
         {
+            var article = await unitOfWorkService.LikeService.GetByIdAsync(articleId);
+            if (article == null)
+            {
+                return NotFound();
+            }
 
             try
             {
-                //var comment = new Comment() { CommentText= createComment.CommentText,
-                //                              ArticleId=createComment.ArticleId,
-                //                              UserId=createComment.UserId};
-                Comment comment= mapper.Map<Comment>(createComment);
-                await unitOfWorkService.CommentsService.AddAsync(comment);
+
+                Comment comments= mapper.Map<Comment>(createComment);
+                comments.ArticleId = articleId;
+                await unitOfWorkService.CommentsService.AddAsync(comments);
 
                 if (await unitOfWorkService.CommitAsync())
                 {
                     var lastID = await unitOfWorkService.CommentsService.GetAllAsync();
                     var commentId = lastID.Max(b => b.Id);
-                    comment = await unitOfWorkService.CommentsService.GetByIdAsync(commentId);
-                    //var commentsView = new CommentView { Id = comment.Id, ArticleId = comment.ArticleId, UserId = comment.UserId, CommentDate = comment.CommentDate, CommentText = comment.CommentText };
-                    CommentView commentsView = mapper.Map<CommentView>(comment);
+                    comments = await unitOfWorkService.CommentsService.GetByIdAsync(commentId);
+                    CommentView comment = mapper.Map<CommentView>(comments);
                     await logger.LogInformation("Comment with ID " + commentId + " added", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    return CreatedAtRoute("GetComment", new
-                    {
-                        id = commentId,
-                    }, commentsView);
+                    return Ok(comment);
 
                 }
                 else
@@ -145,13 +152,16 @@ namespace NewsApi.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, UpdateComment updateComment)
+        public async Task<ActionResult> Put(int articleId, int id, UpdateComment updateComment)
         {
+            var article = await unitOfWorkService.LikeService.GetByIdAsync(articleId);
+            if (article == null)
+            {
+                return NotFound();
+            }
             try
             {
               Comment comment=  await unitOfWorkService.CommentsService.GetByIdAsync(id);
-                // comment.CommentDate = DateTime.Now;
-                //comment.CommentText = updateComment.CommentText;
                 mapper.Map(updateComment, comment);
                 await unitOfWorkService.CommentsService.UpdateAsync(comment);
                 if (await unitOfWorkService.CommitAsync())

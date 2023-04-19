@@ -7,6 +7,8 @@ namespace Services.CRUD.Interfaces
 {
     public interface IUsersService : IBaseCRUDService<User>
     {
+        Task<User> CheckNameAndEmail(string displayName, string email);
         Task<User> CheckDisplayName(string displayName);
+        Task<User> UserAuth(Login userLogin);
     }
 }

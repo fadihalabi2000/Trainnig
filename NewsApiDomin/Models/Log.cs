@@ -10,13 +10,13 @@ namespace NewsApiDomin.Models
         public string Content { get; set; } = string.Empty;
         public DateTime DateCreated { get; set; }= DateTime.UtcNow;
       
-        public int AuthorId { get; set; }=int.MaxValue;
+        public int? AuthorId { get; set; }
        
-        public int UserId { get; set; } =int.MaxValue;
+        public int? UserId { get; set; } 
 
-        //public Author Author { get; set; }
-        //public User User { get; set; }
+        public Author? Author { get; set; }
+        public User? User { get; set; }
 
-      
+
     }
 }

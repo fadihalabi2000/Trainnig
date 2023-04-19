@@ -21,18 +21,16 @@ namespace Services.MyLogger
             var logLevel=(NewsApiDomin.Enum.LogLevel)Enum.Parse(typeof(NewsApiDomin.Enum.LogLevel), messagetype);
             var log = new Log {  logLevel = logLevel, Content = message, };
             //user
-            if (role== Roles.User.ToString())
+            if (role== Role.User)
             {
-                log.AuthorId=int.MaxValue;
                 log.UserId = id;
                await unitOfWorkRepo.LogRepository.AddAsync(log);
                await unitOfWorkRepo.CommitAsync();
             }
             //Author
-            else if(role== Roles.Author.ToString())
+            else if(role== Role.Author)
             {
                 log.AuthorId = id;
-                log.UserId = int.MaxValue;
                await unitOfWorkRepo.LogRepository.AddAsync(log);
               await  unitOfWorkRepo.CommitAsync();
             }

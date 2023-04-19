@@ -10,5 +10,6 @@ namespace NewsApiServies.CRUD.Interfaces
 {
     public interface ILikeService:IBaseCRUDService<Like>
     {
+        Task<List<Like>> GetAllByIdArticleAsync(int articleId);
     }
 }

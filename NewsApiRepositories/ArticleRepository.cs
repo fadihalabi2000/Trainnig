@@ -18,8 +18,8 @@ namespace Repositories
 
         public new async Task<List<Article>> GetAllAsync()
         {
-            var dbSet = this.dbContext.Set<Article>().Include(i=>i.Images).Include(c=>c.Comments.OrderByDescending(c=>c.CommentDate)).Include(l=>l.Likes.OrderByDescending(l=>l.LikeDate));
-
+           // .Include(c => c.Comments.OrderByDescending(c => c.CommentDate)).Include(l => l.Likes.OrderByDescending(l => l.LikeDate))
+            var dbSet = this.dbContext.Set<Article>().Include(i=>i.Images).Include(c => c.Comments.OrderByDescending(c => c.CommentDate)).Include(l => l.Likes.OrderByDescending(l => l.LikeDate));
 
             return await Task.Run(() => dbSet.Where(c => c.IsDeleted == false).OrderByDescending(d=>d.PublishDate).ToListAsync());
         }

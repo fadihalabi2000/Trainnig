@@ -12,7 +12,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace NewsApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Article/{ArticleId}/[controller]")]
     [ApiController]
     [Authorize]
     public class LikeController : ControllerBase
@@ -29,17 +29,20 @@ namespace NewsApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<LikeView>>> GetAll(int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<List<LikeView>>> GetAll(int articleId, int pageNumber = 1, int pageSize = 10)
         {
-
+            var article = await unitOfWorkService.LikeService.GetByIdAsync(articleId);
+            if (article == null)
+            {
+                return NotFound();
+            }
             try
             {
-                var like = await unitOfWorkService.LikeService.GetAllAsync();
+                var like = await unitOfWorkService.LikeService.GetAllByIdArticleAsync(articleId);
                
                 if (like.Count() > 0)
                 {
                     (like, var paginationData) = await unitOfWorkService.LikePagination.GetPaginationAsync(pageNumber, pageSize, like);
-                    //var likes = like.Select(l => new LikeView() { Id = l.Id, ArticleId = l.ArticleId, LikeDate = l.LikeDate, UserId = l.UserId }).ToList();
                     if (like.Count() > 0)
                     {
                         List<LikeView> likes = mapper.Map<List<LikeView>>(like);
@@ -68,26 +71,28 @@ namespace NewsApi.Controllers
 
         }
 
-
         [HttpGet("{id}",Name = "GetLike")]
-        public async Task<ActionResult<LikeView>> GetById(int id)
+        public async Task<ActionResult<LikeView>> GetById( int articleId, int id)
         {
-
+            var article = await unitOfWorkService.LikeService.GetByIdAsync(articleId);
+            if (article == null)
+            {
+                return NotFound();
+            }
 
             try
             {
-                var like = await unitOfWorkService.LikeService.GetByIdAsync(id);
-                if (like == null)
+                var likeById = await unitOfWorkService.LikeService.GetByIdAsync(id);
+                if (likeById == null)
                 {
                     await logger.LogWarning("Failed to fetch Like with ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
                 }
                 else
                 {
-                    //var likeView = new LikeView { Id = like.Id, ArticleId=like.ArticleId,LikeDate=like.LikeDate,UserId=like.UserId };
-                    LikeView likeView= mapper.Map<LikeView>(like);
+                    LikeView like= mapper.Map<LikeView>(likeById);
                     await logger.LogInformation("Like with ID " + id + " fetched ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    return Ok(likeView);
+                    return Ok(like);
                 }
 
             }
@@ -101,27 +106,34 @@ namespace NewsApi.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<LikeView>> Post(CreateLike createLike)
+        public async Task<ActionResult<LikeView>> Post(int articleId, CreateLike createLike)
         {
-
-            try
+            var article = await unitOfWorkService.LikeService.GetByIdAsync(articleId);
+            if (article == null)
             {
-            
-                //var like= new Like { ArticleId = createLike.ArticleId, UserId = createLike.UserId };
-                Like like=mapper.Map<Like>(createLike);
-                await unitOfWorkService.LikeService.AddAsync(like);
+                return NotFound();
+            }
+            try
+            { 
+                var allLikes = await unitOfWorkService.LikeService.GetAllByIdArticleAsync(articleId);
+                var likeByIdUser = allLikes.FirstOrDefault(l=> l.UserId==articleId);
+                if(likeByIdUser == null)
+                {
+                    return BadRequest();
+                }
+
+          
+                Like likes=mapper.Map<Like>(createLike);
+                likes.ArticleId = articleId;
+                await unitOfWorkService.LikeService.AddAsync(likes);
                 if (await unitOfWorkService.CommitAsync())
                 {
                     var lastID = await unitOfWorkService.LikeService.GetAllAsync();
                     var likeId = lastID.Max(b => b.Id);
-                    like = await unitOfWorkService.LikeService.GetByIdAsync(likeId);
-                    //var likeView = new LikeView { Id = like.Id, ArticleId = like.ArticleId, LikeDate = like.LikeDate, UserId = like.UserId };
-                    LikeView likeView=mapper.Map<LikeView>(like);
+                    likes = await unitOfWorkService.LikeService.GetByIdAsync(likeId);
+                    LikeView like=mapper.Map<LikeView>(likes);
                     await logger.LogInformation("Like with ID " + likeId + " added", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    return CreatedAtRoute("GetLike", new
-                    {
-                        id = likeId,
-                    }, likeView);
+                    return Ok(like);
 
                 }
                 else
@@ -145,7 +157,7 @@ namespace NewsApi.Controllers
         //{
         //    try
         //    {
-        //        await unitOfWorkService.LikeService.GetByIdAsync(id);
+        //      var like= await unitOfWorkService.LikeService.GetByIdAsync(id);
         //        var articlesImage = new Like();
         //        await unitOfWorkService.LikeService.UpdateAsync(articlesImage);
         //        if (await unitOfWorkService.CommitAsync())

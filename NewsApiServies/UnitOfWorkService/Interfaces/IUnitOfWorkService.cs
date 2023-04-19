@@ -1,4 +1,5 @@
 ﻿using NewsApiDomin.Models;
+using NewsApiDomin.ViewModels.ArticleViewModel;
 using NewsApiDomin.ViewModels.CategoryViewModel;
 using NewsApiServies.CRUD.Interfaces;
 using NewsApiServies.Pagination.Interface;
@@ -28,5 +29,6 @@ namespace Services.Transactions.Interfaces
         public IPaginationService<Comment> CommentPagination { get; }
         public IPaginationService<Image> ImagePagination { get; }
         public IPaginationService<Like> LikePagination { get; }
+        public IPaginationService<ArticleWithAuthorView> ArticleWithAuthorViewPagination { get; }
     }
 }
