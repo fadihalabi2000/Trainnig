@@ -90,10 +90,10 @@ namespace NewsApi.Controllers
 
             try
             {
-                var user = await unitOfWorkService.UsersService.GetByIdAsync(id);
+                var userById = await unitOfWorkService.UsersService.GetByIdAsync(id);
                 //var userWithoutLog = new UserWithoutLog { Id = id, FirstName = user.FirstName, LastName = user.LastName, Comments = user.Comments, DisplayName = user.DisplayName, Email = user.Email, likes = user.likes, ProfilePicture = user.ProfilePicture };
-                UserWithoutLog userWithoutLog = mapper.Map<UserWithoutLog>(user);
-                if (userWithoutLog == null)
+                UserWithoutLog user = mapper.Map<UserWithoutLog>(userById);
+                if (user == null)
                 {
                     await logger.LogWarning("Failed to fetch User with ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
@@ -101,7 +101,7 @@ namespace NewsApi.Controllers
                 else
                 {
                     await logger.LogInformation("User with ID " + id + " fetched ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    return Ok(userWithoutLog);
+                    return Ok(user);
                 }
 
             }

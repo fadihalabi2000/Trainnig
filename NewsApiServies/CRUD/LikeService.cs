@@ -20,6 +20,12 @@ namespace NewsApiServies.CRUD
         {
             this.unitOfWorkRepo = unitOfWorkRepo;
         }
+        public async Task<List<Like>> GetAllByIdArticleAsync(int articleId)
+        {
+            List<Like> likes = await unitOfWorkRepo.LikeRepository.GetAllAsync();
+            return await Task.Run(() => likes.Where(l=>l.ArticleId==articleId).ToList());
+        }
+
 
     }
 }

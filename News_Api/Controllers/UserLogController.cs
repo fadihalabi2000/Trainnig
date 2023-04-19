@@ -66,7 +66,7 @@ namespace NewsApi.Controllers
 
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserLogView>> GetAllLogUserById(int id)
+        public async Task<ActionResult<List<UserLogView>>> GetAllLogUserById(int id)
         {
 
 
@@ -78,7 +78,7 @@ namespace NewsApi.Controllers
                     return BadRequest();
                 else
                 {
-                    UserLogView userLogView = mapper.Map<UserLogView>(log);
+                    List<UserLogView> userLogView = mapper.Map<List<UserLogView>>(log);
                     return Ok(userLogView);
                 }
 
@@ -97,7 +97,6 @@ namespace NewsApi.Controllers
             try
             {
                 Log log = mapper.Map<Log>(createUserLog);
-                log.AuthorId=int.MaxValue;
                 log.DateCreated = DateTime.Now;
                 await unitOfWorkService.LogService.AddAsync(log);
 

@@ -14,6 +14,10 @@ namespace Services.CRUD
             this.unitOfWorkRepo = unitOfWorkRepo;
         }
 
-     
+        public async Task<List<Comment>> GetAllByIdArticleAsync(int articleId)
+        {
+            List<Comment> comments = await unitOfWorkRepo.CommentRepository.GetAllAsync();
+            return await Task.Run(() => comments.Where(c => c.ArticleId == articleId).ToList());
+        }
     }
 }

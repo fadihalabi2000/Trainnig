@@ -13,8 +13,10 @@ namespace NewsApiServies.Auth.Interfaces
        
          Task<AuthModel> RegisterAsync(CreateUser createUser);
          Task<AuthModel> GetTokenAsync(Login userLogin);
+        Task<AuthModel> RefreshTokenAsync(string token);
+        Task<bool> RevokeTokenAsync(string token);
 
 
-        
+
     }
 }

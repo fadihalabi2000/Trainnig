@@ -1,4 +1,5 @@
 ﻿using DataAccess.Entities.Abstractions.Classes;
+using System.Text.Json.Serialization;
 
 namespace NewsApiDomin.Models
 {
@@ -14,6 +15,8 @@ namespace NewsApiDomin.Models
         public List<Like> likes { get; set; } = new List<Like>();
         public List<Comment> Comments { get; set; } = new List<Comment>();
         public List<Log> Logs { get; set; } = new List<Log>();
+        public List<Author>  Authors { get; set; } = new List<Author>();
+        public List<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 
 
     }

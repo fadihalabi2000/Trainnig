@@ -1,10 +1,12 @@
 ﻿
 
 
+using Microsoft.EntityFrameworkCore;
 using NewsApiDomin.Models;
 using NewsApiRepositories.UnitOfWorkRepository.Interface;
 using NewsApiServies.CRUD.Interfaces;
 using Services.CRUD;
+using System.Collections.Generic;
 
 namespace NewsApiServies.CRUD
 {
@@ -19,26 +21,27 @@ namespace NewsApiServies.CRUD
 
         public async Task<List<Log>> GetAllAuthorsLogAsync()
         {
-            return await unitOfWorkRepo.LogRepository.GetAllAuthorsLogAsync();
+            List<Log> logs=await unitOfWorkRepo.LogRepository.GetAllAsync();
+            return await Task.Run(() => logs.Where(l => l.UserId == null).OrderByDescending(l => l.DateCreated).ToList());
         }
 
         public async Task<List<Log>> GetLogAuthorByIdAsync(int id)
         {
-            return await unitOfWorkRepo.LogRepository.GetLogAuthorByIdAsync(id);
+            List<Log> logs = await unitOfWorkRepo.LogRepository.GetAllAsync();
+            return await Task.Run(() => logs.Where(l => l.AuthorId == id).OrderByDescending(l => l.DateCreated).ToList());
         }
 
         public async Task<List<Log>> GetLogUserByIdAsync(int id)
         {
-            return await unitOfWorkRepo.LogRepository.GetLogUserByIdAsync(id);
+            List<Log> logs = await unitOfWorkRepo.LogRepository.GetAllAsync();
+            return await Task.Run(() => logs.Where(l => l.UserId == id).OrderByDescending(l => l.DateCreated).ToList());
         }
 
         public async Task<List<Log>> GetAllUsersLogAsync()
         {
-            return await unitOfWorkRepo.LogRepository.GetAllUsersLogAsync();
+            List<Log> logs = await unitOfWorkRepo.LogRepository.GetAllAsync();
+            return await Task.Run(() => logs.Where(l => l.AuthorId == null).OrderByDescending(l => l.DateCreated).ToList());
         }
-
-
-  
 
     }
 }

@@ -8,8 +8,7 @@ using System.Threading.Tasks;
 
 namespace NewsApiRepositories.Interfaces
 {
-    public interface ICategoryRepository:IBaseRepository<Category>
+    public interface ICommentRepository: IBaseRepository<Comment>
     {
-      
     }
 }

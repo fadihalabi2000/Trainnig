@@ -18,15 +18,20 @@ namespace Services.CRUD
 
         public async Task<User> CheckDisplayName(string displayName)
         {
-           return await unitOfWorkRepo.UserRepository.CheckDisplayName(displayName);
+            List<User>  users = await unitOfWorkRepo.UserRepository.GetAllAsync();
+            return await Task.Run(() => users.FirstOrDefault(u => u.DisplayName == displayName)!);
         }
 
-        public new async Task<User> GetByIdAsync(int id)
+        public async Task<User> CheckNameAndEmail(string displayName, string email)
         {
-            return await unitOfWorkRepo.UserRepository.GetByIdAsync(id);
-           
+            List<User> users = await unitOfWorkRepo.UserRepository.GetAllAsync();
+            return await Task.Run(() => users.FirstOrDefault(u => u.DisplayName == displayName && u.Email == email)!);
         }
 
-
+        public async Task<User> UserAuth(Login userLogin)
+        {
+            List<User> users = await unitOfWorkRepo.UserRepository.GetAllAsync();
+            return await Task.Run(() => users.FirstOrDefault(u => u.Password == userLogin.Password && u.Email == userLogin.Email)!);
+        }
     }
 }

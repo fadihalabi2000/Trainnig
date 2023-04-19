@@ -1,23 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore;
-using NewsApiData;
+﻿using NewsApiData;
 using NewsApiDomin.Models;
 using NewsApiRepositories.Interfaces;
 using Repositories;
+using System;
 using System.Collections.Generic;
-
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace NewsApiRepositories
 {
-    public class LogRepository : BaseRepository<Log>, ILogRepository
+    public class LikeRepository :BaseRepository<Like>, ILikeReository
     {
         private readonly NewsApiDbContext dbContext;
 
-        public LogRepository(NewsApiDbContext dbContext) : base(dbContext)
+        public LikeRepository(NewsApiDbContext dbContext) : base(dbContext)
         {
             this.dbContext = dbContext;
         }
-
-
     }
-        
 }

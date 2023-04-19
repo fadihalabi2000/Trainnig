@@ -63,20 +63,20 @@ namespace NewsApi.Controllers
 
 
         [HttpGet("{id}", Name = "GetAllLogAuthorById")]
-        public async Task<ActionResult<AuthorLogView>> GetAllLogAuthorById(int id)
+        public async Task<ActionResult<List<AuthorLogView>>> GetAllLogAuthorById(int id)
         {
 
 
             try
             {
-                var log = await unitOfWorkService.LogService.GetLogAuthorByIdAsync(id);
+                var logById = await unitOfWorkService.LogService.GetLogAuthorByIdAsync(id);
                 //var authorLogView = log.Select(l => new AuthorLogView { Content = l.Content, AuthorId = l.AuthorId, logLevel = l.logLevel });
-                if (log == null)
+                if (logById == null)
                     return BadRequest();
                 else
                 {
-                    AuthorLogView authorLogView = mapper.Map<AuthorLogView>(log);
-                    return Ok(authorLogView);
+                   List<AuthorLogView> authorLog = mapper.Map<List<AuthorLogView>>(logById);
+                    return Ok(authorLog);
                 }
 
             }
@@ -95,14 +95,13 @@ namespace NewsApi.Controllers
             try
             {
                 Log log = mapper.Map<Log>(createAuthorLog);
-                log.UserId = int.MaxValue;
                 log.DateCreated = DateTime.Now;
                 await unitOfWorkService.LogService.AddAsync(log);
 
                 if (await unitOfWorkService.CommitAsync())
                 {
-                    AuthorLogView logView = mapper.Map<AuthorLogView>(log);
-                    return Ok(logView);
+                    AuthorLogView authorLog = mapper.Map<AuthorLogView>(log);
+                    return Ok(authorLog);
                 }
                 else
                 {

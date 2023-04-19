@@ -14,7 +14,7 @@ using AutoMapper;
 
 namespace NewsApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Article/{ArticleId}/[controller]")]
     [ApiController]
     [Authorize(Roles = "Admin,Author")]
 
@@ -33,16 +33,19 @@ namespace NewsApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<(PaginationMetaData, List<ImageView>)>> GetAll(int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<(PaginationMetaData, List<ImageView>)>> GetAll(int articleId, int pageNumber = 1, int pageSize = 10)
         {
-
+            var article = await unitOfWorkService.LikeService.GetByIdAsync(articleId);
+            if (article == null)
+            {
+                return NotFound();
+            }
             try
             {
-                var image = await unitOfWorkService.ImageService.GetAllAsync();
+                var image = await unitOfWorkService.ImageService.GetAllByIdArticleAsync(articleId);
                 if (image.Count() > 0)
                 {
                     (image, var paginationData) = await unitOfWorkService.ImagePagination.GetPaginationAsync(pageNumber, pageSize, image);
-                    //var images = image.Select(i => new ImageView { Id = i.Id, ArticleId = i.ArticleId, ImageUrl = i.ImageUrl, ImageDescription = i.ImageDescription });
                     if (image.Count() > 0)
                     {
                         List<ImageView> images = mapper.Map<List<ImageView>>(image);
@@ -73,24 +76,27 @@ namespace NewsApi.Controllers
 
         [Authorize]
         [HttpGet("{id}",Name = "GetImage")]
-        public async Task<ActionResult<ImageView>> GetById(int id)
+        public async Task<ActionResult<ImageView>> GetById(int articleId,int id)
         {
-
+            var article = await unitOfWorkService.LikeService.GetByIdAsync(articleId);
+            if (article == null)
+            {
+                return NotFound();
+            }
 
             try
             {
-                var image = await unitOfWorkService.ImageService.GetByIdAsync(id);
-                //var imageview=new ImageView { Id = image.Id,ArticleId=image.ArticleId, ImageDescription = image.ImageDescription,ImageUrl=image.ImageUrl };
-                if (image == null)
+                var imageById = await unitOfWorkService.ImageService.GetByIdAsync(id);
+                if (imageById == null)
                 {
                     await logger.LogWarning("Failed to fetch Image with ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
                 }
                 else
                 {
-                    ImageView imageView = mapper.Map<ImageView>(image);
+                    ImageView image = mapper.Map<ImageView>(imageById);
                     await logger.LogInformation("Image with ID " + id + " fetched ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    return Ok(imageView);
+                    return Ok(image);
                 }
 
             }
@@ -103,27 +109,27 @@ namespace NewsApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ImageView>> Post(CreateImage createImage)
+        public async Task<ActionResult<ImageView>> Post(int articleId, CreateImage createImage)
         {
-
+            var article = await unitOfWorkService.LikeService.GetByIdAsync(articleId);
+            if (article == null)
+            {
+                return NotFound();
+            }
             try
             {
-                //var image = new Image { ImageDescription=createImage.ImageDescription,ImageUrl= createImage.ImageUrl,ArticleId=createImage.ArticleId};
-                Image image=mapper.Map<Image>(createImage);
-                await unitOfWorkService.ImageService.AddAsync(image);
+                Image images=mapper.Map<Image>(createImage);
+                images.ArticleId=articleId;
+                await unitOfWorkService.ImageService.AddAsync(images);
 
                 if (await unitOfWorkService.CommitAsync())
                 {
                     var lastID = await unitOfWorkService.ImageService.GetAllAsync();
                     var imageId = lastID.Max(b => b.Id);
-                    image = await unitOfWorkService.ImageService.GetByIdAsync(imageId);
+                    images = await unitOfWorkService.ImageService.GetByIdAsync(imageId);
                     await logger.LogInformation("Image with ID " + imageId + " added", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    //var imageView = new ImageView { Id = image.Id, ArticleId = image.ArticleId, ImageDescription = image.ImageDescription, ImageUrl = image.ImageUrl };
-                    ImageView imageView = mapper.Map<ImageView>(image);
-                    return CreatedAtRoute("GetImage", new
-                    {
-                        id = imageId,
-                    }, imageView);
+                    ImageView image = mapper.Map<ImageView>(images);
+                    return Ok(image);
 
 
                 }
@@ -144,13 +150,16 @@ namespace NewsApi.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, UpdateImage updateImage)
+        public async Task<ActionResult> Put(int articleId,int id, UpdateImage updateImage)
         {
+            var article = await unitOfWorkService.LikeService.GetByIdAsync(articleId);
+            if (article == null)
+            {
+                return NotFound();
+            }
             try
             {
               Image image=  await unitOfWorkService.ImageService.GetByIdAsync(id);
-                //image.ImageDescription = updateImage.ImageDescription;
-                //image.ImageUrl = updateImage.ImageUrl;
                 mapper.Map(updateImage, image);
                 await unitOfWorkService.ImageService.UpdateAsync(image);
                 if (await unitOfWorkService.CommitAsync())

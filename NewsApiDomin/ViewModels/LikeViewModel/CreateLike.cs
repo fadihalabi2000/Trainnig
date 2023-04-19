@@ -11,8 +11,6 @@ namespace NewsApiDomin.ViewModels.LikeViewModel
     public class CreateLike
     {
         [Required]
-        public int ArticleId { get; set; }
-        [Required]
         public int UserId { get; set; }
 
     }

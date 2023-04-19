@@ -12,7 +12,7 @@ using NewsApiData;
 namespace NewsApiData.Migrations
 {
     [DbContext(typeof(NewsApiDbContext))]
-    [Migration("20230410212452_Init")]
+    [Migration("20230416202406_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -74,7 +74,7 @@ namespace NewsApiData.Migrations
                             CategoryId = 1,
                             Content = "أصيب أكثر من 200 فلسطيني في مواجهات بنابلس مع قوات الاحتلال الإسرائيلي، بالتزامن مع تشييع شهيد بأريحا، وبعد ساعات من اقتحام مئات المستوطنين للمسجد الأقصى المبارك في القدس.",
                             IsDeleted = false,
-                            PublishDate = new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1855),
+                            PublishDate = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1019),
                             Title = "فلسطين.. عشرات الإصابات بنابلس وتشييع شهيد بأريحا واقتحام يهودي للأقصى",
                             UpdateDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ViewCount = 0
@@ -86,7 +86,7 @@ namespace NewsApiData.Migrations
                             CategoryId = 2,
                             Content = "اقتحم مستوطنون باحات المسجد الأقصى صباح اليوم الأحد بحماية قوات الاحتلال الإسرائيلي التي اعتدت على شبان فلسطينيين عند باب الأسباط ومنعتهم بالقوة من دخول المسجد الأقصى لأداء صلاة فجر اليوم، كما منعت عشرات النساء من الدخول.",
                             IsDeleted = false,
-                            PublishDate = new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1861),
+                            PublishDate = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1029),
                             Title = "الاحتلال يعتدي على فلسطينيين ويمنعهم من دخول الأقصى",
                             UpdateDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ViewCount = 0
@@ -98,7 +98,7 @@ namespace NewsApiData.Migrations
                             CategoryId = 3,
                             Content = "منذ بداية الشهر الجاري هجمات على ضباط في الجيش والقوات الأمنية أدت إلى مقتل ضابط في الجيش وآخر في الشرطة وثالث في الدعم السريع ونهب مركبات عسكرية،",
                             IsDeleted = false,
-                            PublishDate = new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1863),
+                            PublishDate = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1031),
                             Title = "حوادث اغتيال العسكريين السودانيين",
                             UpdateDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ViewCount = 0
@@ -136,7 +136,12 @@ namespace NewsApiData.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Authors");
 
@@ -167,6 +172,16 @@ namespace NewsApiData.Migrations
                             Bio = "hhhhh",
                             DisplayName = "ahmad",
                             Email = "ahmad@gmail.com",
+                            IsDeleted = false,
+                            Password = "165",
+                            ProfilePicture = "https://tse1.mm.bing.net/th/id/OIP.U8tBnyvXfaWfsx3Q-cIXUAHaHa?w=180&h=180&c=7&r=0&o=5&pid=1.7"
+                        },
+                        new
+                        {
+                            Id = 2147483647,
+                            Bio = "test",
+                            DisplayName = "test",
+                            Email = "testA@gmail.com",
                             IsDeleted = false,
                             Password = "165",
                             ProfilePicture = "https://tse1.mm.bing.net/th/id/OIP.U8tBnyvXfaWfsx3Q-cIXUAHaHa?w=180&h=180&c=7&r=0&o=5&pid=1.7"
@@ -250,7 +265,7 @@ namespace NewsApiData.Migrations
                         {
                             Id = 1,
                             ArticleId = 1,
-                            CommentDate = new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1896),
+                            CommentDate = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1061),
                             CommentText = "wwwww",
                             IsDeleted = false,
                             UserId = 1
@@ -259,7 +274,7 @@ namespace NewsApiData.Migrations
                         {
                             Id = 2,
                             ArticleId = 2,
-                            CommentDate = new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1897),
+                            CommentDate = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1062),
                             CommentText = "sssss",
                             IsDeleted = false,
                             UserId = 2
@@ -268,7 +283,7 @@ namespace NewsApiData.Migrations
                         {
                             Id = 3,
                             ArticleId = 3,
-                            CommentDate = new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1898),
+                            CommentDate = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1063),
                             CommentText = "xxxxxxx",
                             IsDeleted = false,
                             UserId = 3
@@ -364,7 +379,7 @@ namespace NewsApiData.Migrations
                             Id = 1,
                             ArticleId = 1,
                             IsDeleted = false,
-                            LikeDate = new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1879),
+                            LikeDate = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1045),
                             UserId = 1
                         },
                         new
@@ -372,7 +387,7 @@ namespace NewsApiData.Migrations
                             Id = 2,
                             ArticleId = 2,
                             IsDeleted = false,
-                            LikeDate = new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1881),
+                            LikeDate = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1047),
                             UserId = 2
                         },
                         new
@@ -380,7 +395,7 @@ namespace NewsApiData.Migrations
                             Id = 3,
                             ArticleId = 3,
                             IsDeleted = false,
-                            LikeDate = new DateTime(2023, 4, 10, 21, 24, 51, 963, DateTimeKind.Utc).AddTicks(1882),
+                            LikeDate = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1047),
                             UserId = 3
                         });
                 });
@@ -393,7 +408,7 @@ namespace NewsApiData.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("AuthorId")
+                    b.Property<int?>("AuthorId")
                         .HasColumnType("int");
 
                     b.Property<string>("Content")
@@ -406,7 +421,7 @@ namespace NewsApiData.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
                         .HasColumnType("int");
 
                     b.Property<int>("logLevel")
@@ -419,6 +434,73 @@ namespace NewsApiData.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Logs");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AuthorId = 1,
+                            Content = "add",
+                            DateCreated = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1092),
+                            IsDeleted = false,
+                            logLevel = 2
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AuthorId = 1,
+                            Content = "delete",
+                            DateCreated = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1096),
+                            IsDeleted = false,
+                            logLevel = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Content = "update",
+                            DateCreated = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1097),
+                            IsDeleted = false,
+                            UserId = 1,
+                            logLevel = 2
+                        });
+                });
+
+            modelBuilder.Entity("NewsApiDomin.Models.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("AuthorId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("RevokedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.User", b =>
@@ -487,9 +569,20 @@ namespace NewsApiData.Migrations
                         {
                             Id = 3,
                             DisplayName = "taher",
-                            Email = "taher",
+                            Email = "taher@gmail.com",
                             FirstName = "taher",
                             IsDeleted = false,
+                            LastName = "halabi",
+                            Password = "12345",
+                            ProfilePicture = "https://www.bing.com/th?id=OIP.frAlEuXSfGFRLcBxzVRY1AHaER&w=329&h=189&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2"
+                        },
+                        new
+                        {
+                            Id = 2147483647,
+                            DisplayName = "test",
+                            Email = "test@gmail.com",
+                            FirstName = "test",
+                            IsDeleted = true,
                             LastName = "halabi",
                             Password = "12345",
                             ProfilePicture = "https://www.bing.com/th?id=OIP.frAlEuXSfGFRLcBxzVRY1AHaER&w=329&h=189&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2"
@@ -498,17 +591,28 @@ namespace NewsApiData.Migrations
 
             modelBuilder.Entity("NewsApiDomin.Models.Article", b =>
                 {
-                    b.HasOne("NewsApiDomin.Models.Author", null)
+                    b.HasOne("NewsApiDomin.Models.Author", "Author")
                         .WithMany("Article")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NewsApiDomin.Models.Category", null)
+                    b.HasOne("NewsApiDomin.Models.Category", "Category")
                         .WithMany("Articles")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("NewsApiDomin.Models.Author", b =>
+                {
+                    b.HasOne("NewsApiDomin.Models.User", null)
+                        .WithMany("Authors")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Comment", b =>
@@ -552,17 +656,32 @@ namespace NewsApiData.Migrations
 
             modelBuilder.Entity("NewsApiDomin.Models.Log", b =>
                 {
-                    b.HasOne("NewsApiDomin.Models.Author", null)
+                    b.HasOne("NewsApiDomin.Models.Author", "Author")
                         .WithMany("Log")
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AuthorId");
 
-                    b.HasOne("NewsApiDomin.Models.User", null)
+                    b.HasOne("NewsApiDomin.Models.User", "User")
                         .WithMany("Logs")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Author");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("NewsApiDomin.Models.RefreshToken", b =>
+                {
+                    b.HasOne("NewsApiDomin.Models.Author", "Author")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("AuthorId");
+
+                    b.HasOne("NewsApiDomin.Models.User", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Author");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Article", b =>
@@ -579,6 +698,8 @@ namespace NewsApiData.Migrations
                     b.Navigation("Article");
 
                     b.Navigation("Log");
+
+                    b.Navigation("RefreshTokens");
                 });
 
             modelBuilder.Entity("NewsApiDomin.Models.Category", b =>
@@ -588,9 +709,13 @@ namespace NewsApiData.Migrations
 
             modelBuilder.Entity("NewsApiDomin.Models.User", b =>
                 {
+                    b.Navigation("Authors");
+
                     b.Navigation("Comments");
 
                     b.Navigation("Logs");
+
+                    b.Navigation("RefreshTokens");
 
                     b.Navigation("likes");
                 });

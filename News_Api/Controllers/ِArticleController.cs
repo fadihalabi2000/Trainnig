@@ -1,18 +1,25 @@
-﻿
-using AutoMapper;
+﻿using AutoMapper;
+using AutoMapper.Internal;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using NewsApiDomin.Enums;
 using NewsApiDomin.Models;
 using NewsApiDomin.ViewModels;
 using NewsApiDomin.ViewModels.ArticleViewModel;
+using NewsApiDomin.ViewModels.CommentViewModel;
 using NewsApiDomin.ViewModels.ImageViewModel;
+using NewsApiDomin.ViewModels.LikeViewModel;
 using NewsApiDomin.ViewModels.UserViewModel;
 using NewsApiServies.Auth.ClassStatic;
 using Services.MyLogger;
 using Services.Transactions.Interfaces;
+using System.Linq;
 using System.Text.Json;
+using System.Xml.Linq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace NewsApi.Controllers
@@ -32,35 +39,21 @@ namespace NewsApi.Controllers
             this.logger = logger;
             this.mapper = mapper;
         }
-
         [HttpGet]
-        public async Task<ActionResult<(PaginationMetaData, List<ArticlView>)>> GetAll(int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<(PaginationMetaData, List<ArticleWithAuthorView>)>> GetAllArticle(int pageNumber = 1, int pageSize = 10)
         {
-
-            try
-            {
-                var article = await unitOfWorkService.ArticleService.GetAllAsync();
-
+           try
+           {
+                List<Article> article = await unitOfWorkService.ArticleService.GetAllAsync();
                 if (article.Count() > 0)
                 {
-                    (article, var paginationData) = await unitOfWorkService.ArticlePagination.GetPaginationAsync(pageNumber, pageSize, article);
-                    //var articles = article.Select(a => new ArticlView
-                    //{
-                    //    Id = a.Id,
-                    //    AuthorId = a.AuthorId,
-                    //    CategoryId = a.CategoryId,
-                    //    Content = a.Content,
-                    //    Comments = a.Comments,
-                    //    Images = a.Images,
-                    //    ViewCount = a.ViewCount,
-                    //    Title = a.Title,
-                    //    Likes = a.Likes,
-                    //    PublishDate = a.PublishDate,
-                    //    UpdateDate = a.PublishDate,
-                    //});
-                    if (article.Count() > 0)
+                    List<ArticleWithAuthorView> articles = new List<ArticleWithAuthorView>();
+
+                    (articles, bool isCompleted) = await unitOfWorkService.ArticleService.GetArticlesAsync(article);
+
+                    if (isCompleted)
                     {
-                        List<ArticlView> articles = mapper.Map<List<ArticlView>>(article);
+                        (articles, var paginationData) = await unitOfWorkService.ArticleWithAuthorViewPagination.GetPaginationAsync(pageNumber, pageSize, articles);
                         Response.Headers.Add("X-Pagination",
                     JsonSerializer.Serialize(paginationData));
                         await logger.LogInformation("All Article table records fetched", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
@@ -77,103 +70,106 @@ namespace NewsApi.Controllers
 
                     return BadRequest();
                 }
-
-            }
-            catch (Exception)
-            {
+           }
+           catch (Exception)
+           {
                 await logger.LogErorr("An Erorr occurred while fetching all logs Article ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                 return BadRequest();
-            }
-
+           }
         }
-
-
-        [HttpGet("{id}",Name = "GetArticle")]
-        public async Task<ActionResult<ArticlView>> GetById(int id)
+        [HttpGet("{id}", Name = "GetArticle")]
+        public async Task<ActionResult<ArticleWithAuthorView>> GetArticleById(int id)
         {
-
-
             try
             {
-                var article = await unitOfWorkService.ArticleService.GetByIdAsync(id);
-                //var articleView = new ArticlView
-                //{
-                //    Id = article.Id,
-                //    AuthorId = article.AuthorId,
-                //    CategoryId = article.CategoryId,
-                //    Content = article.Content   ,
-                //    Comments = article.Comments,
-                //    Images = article.Images,
-                //    ViewCount = article.ViewCount,
-                //    Title = article.Title,
-                //    Likes = article.Likes,
-                //    PublishDate = article.PublishDate,
-                //    UpdateDate = article.PublishDate,
-                    
-                //};
-                if (article == null)
+                var articlById = await unitOfWorkService.ArticleService.GetByIdAsync(id);
+                ;
+                if (articlById == null)
                 {
                     await logger.LogWarning("Failed to fetch Article with ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
                 }
                 else
                 {
-                    ArticlView articleView = mapper.Map<ArticlView>(article);
-                    await logger.LogInformation("Article with ID " + id + " fetched ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    return Ok(articleView);
-                }
+                    Author author = await unitOfWorkService.AuthorService.GetByIdAsync(articlById.AuthorId);
+                    List<User> users = await unitOfWorkService.UsersService.GetAllAsync();
+                    List<Like> likes = articlById.Likes;
+                    List<Comment> comments = articlById.Comments;
 
+                    List<ListLikeView> listLikeViews = likes.Join(
+                                                       users, like => like.UserId,
+                                                       user => user.Id,
+                                                       (like, user) =>
+                                                       new ListLikeView
+                                                       {
+                                                           UserId = user.Id,
+                                                           ArticleId = like.ArticleId,
+                                                           UserDisplayName = user.DisplayName,
+                                                           UserProfilePicture = user.ProfilePicture
+                                                       }).ToList();
+                    List<ListCommentView> listCommentViews = comments.Join(
+                                                             users, comment =>
+                                                             comment.UserId,
+                                                             user => user.Id,
+                                                             (comment, user) =>
+                                                             new ListCommentView
+                                                             {
+                                                                 UserId = user.Id,
+                                                                 ArticleId = comment.ArticleId,
+                                                                 UserDisplayName = user.DisplayName,
+                                                                 UserProfilePicture = user.ProfilePicture,
+                                                                 CommentText = comment.CommentText
+                                                             }).ToList();
+                    ArticleWithAuthorView article = new ArticleWithAuthorView
+                    {
+                        Id = articlById.Id,
+                        CategoryId = articlById.CategoryId,
+                        Title = articlById.Title,
+                        Content = articlById.Content,
+                        ViewCount = articlById.ViewCount,
+                        Images = articlById.Images,
+                        PublishDate = articlById.PublishDate,
+                        UpdateDate = articlById.UpdateDate,
+                        AuthorDisplayName = author.DisplayName,
+                        ProfilePicture = author.ProfilePicture
+                    };
+                    article.Comments = listCommentViews;
+                    article.Likes = listLikeViews;
+                    await logger.LogInformation("Article with ID " + id + " fetched ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+                    return Ok(article);
+                }
             }
             catch (Exception)
             {
                 await logger.LogErorr("Erorr to fetch Article with ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                 return BadRequest();
             }
-
         }
-
         [Authorize(Roles = "Admin,Author")]
         [HttpPost]
         public async Task<ActionResult<ArticlView>> Post(CreateArticle createArticle)
         {
-
-            try
-            {
-                //var article=new Article
-                //{
-
-                //    AuthorId = createArticle.AuthorId,
-                //    CategoryId = createArticle.CategoryId,
-                //    Content = createArticle.Content,
-                //    ViewCount = createArticle.ViewCount,
-                //    Title = createArticle.Title,
-                // //   Images= createArticle.Images,
-
-                //};
-                Article article = mapper.Map<Article>(createArticle);
-                await unitOfWorkService.ArticleService.AddAsync(article);
-
-                if (await unitOfWorkService.CommitAsync())
-                {
+           try
+            { 
+             var image = mapper.Map<List<NewsApiDomin.Models.Image>>(createArticle.Images);
+             Article articles = mapper.Map<Article>(createArticle);
+             articles.Images= image;
+             await unitOfWorkService.ArticleService.AddAsync(articles);
+             if (await unitOfWorkService.CommitAsync())
+              {
                     var lastID = await unitOfWorkService.ArticleService.GetAllAsync();
                     var articleId = lastID.Max(b => b.Id);
-                    article = await unitOfWorkService.ArticleService.GetByIdAsync(articleId);
-                    //var articleView = new ArticlView { Id = article.Id,AuthorId= article.AuthorId,CategoryId= article.CategoryId, ViewCount= article.ViewCount,
-                    //                                   PublishDate=article.PublishDate,UpdateDate= article.UpdateDate,Comments=article.Comments,Content = article.Content,
-                    //                                   Images = article.Images,Likes = article.Likes,Title=article.Title
-                    //};
-                    ArticlView articleView = mapper.Map<ArticlView>(article);
+                    articles = await unitOfWorkService.ArticleService.GetByIdAsync(articleId);
+                    ArticlView article = mapper.Map<ArticlView>(articles);
                     await logger.LogInformation("Article with ID " + articleId + " added", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    return CreatedAtRoute("GetArticle", new
-                    {
-                        id = articleId,
-                    }, articleView);
-                }
-                else
-                {
+                    return await Task.Run(() => CreatedAtRoute("GetArticle", new { id = articleId, }, article));
+              
+              }
+               else
+               {
                     await logger.LogWarning("An warning occurred when adding the Article", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
-                }
+               }
             }
             catch (Exception)
             {
@@ -181,8 +177,6 @@ namespace NewsApi.Controllers
                 return BadRequest();
             }
         }
-
-
         [Authorize(Roles = "Admin,Author")]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, UpdateArticle updateArticle)
@@ -190,14 +184,7 @@ namespace NewsApi.Controllers
             try
             {
                 Article article = await unitOfWorkService.ArticleService.GetByIdAsync(id);
-                //article.CategoryId = updateArticle.CategoryId;
-                //article.Content = updateArticle.Content;
-                //article.ViewCount = updateArticle.ViewCount;
-                //article.Title = updateArticle.Title;
-                //article.Likes = updateArticle.Likes;
-                //article.Comments = updateArticle.Comments;
-                //article = mapper.Map<Article>(updateArticle);
-                  mapper.Map(updateArticle, article);
+                mapper.Map(updateArticle, article);
                 await unitOfWorkService.ArticleService.UpdateAsync(article);
                 if (await unitOfWorkService.CommitAsync())
                 {
@@ -216,10 +203,7 @@ namespace NewsApi.Controllers
                 await logger.LogErorr("An Erorr occurred when updateing the ArticleID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                 return BadRequest();
             }
-
         }
-
-
         [Authorize(Roles = "Author,Admin")]
         [HttpPatch("{id}")]
         public async Task<ActionResult> patch(int id, JsonPatchDocument<UpdateArticle> patchDocument)
@@ -229,10 +213,6 @@ namespace NewsApi.Controllers
                 Article article = await unitOfWorkService.ArticleService.GetByIdAsync(id);
                 UpdateArticle patchArticle = mapper.Map<UpdateArticle>(article);
                 patchDocument.ApplyTo(patchArticle);
-                //article.CategoryId = patchArticle.CategoryId;
-                //article.Content = patchArticle.Content;
-                //article.ViewCount = patchArticle.ViewCount;
-                //article.Title = patchArticle.Title;
                 mapper.Map(patchArticle,article);
                 var x = article;
                 var z = patchArticle;
@@ -247,18 +227,13 @@ namespace NewsApi.Controllers
                     await logger.LogWarning("An warning occurred when updateing the User ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
                 }
-
-
-
             }
             catch (Exception)
             {
                 await logger.LogErorr("An Erorr occurred when updateing the User ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                 return BadRequest();
             }
-
         }
-
         [Authorize(Roles = "Admin,Author")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
@@ -281,10 +256,108 @@ namespace NewsApi.Controllers
             catch (Exception)
             {
                 await logger.LogErorr("An Erorr occurred when deleteing the Article ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-
                 return BadRequest();
             }
-
         }
     }
 }
+
+
+//[HttpGet]
+//public async Task<ActionResult<(PaginationMetaData, List<ArticlView>)>> GetAll(int pageNumber = 1, int pageSize = 10)
+//{
+
+//    try
+//    {
+//        var article = await unitOfWorkService.ArticleService.GetAllAsync();
+
+//        if (article.Count() > 0)
+//        {
+//            (article, var paginationData) = await unitOfWorkService.ArticlePagination.GetPaginationAsync(pageNumber, pageSize, article);
+//            //var articles = article.Select(a => new ArticlView
+//            //{
+//            //    Id = a.Id,
+//            //    AuthorId = a.AuthorId,
+//            //    CategoryId = a.CategoryId,
+//            //    Content = a.Content,
+//            //    Comments = a.Comments,
+//            //    Images = a.Images,
+//            //    ViewCount = a.ViewCount,
+//            //    Title = a.Title,
+//            //    Likes = a.Likes,
+//            //    PublishDate = a.PublishDate,
+//            //    UpdateDate = a.PublishDate,
+//            //});
+//            if (article.Count() > 0)
+//            {
+//                List<ArticlView> articles = mapper.Map<List<ArticlView>>(article);
+//                Response.Headers.Add("X-Pagination",
+//            JsonSerializer.Serialize(paginationData));
+//                await logger.LogInformation("All Article table records fetched", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+//                return Ok(new { paginationData, articles });
+//            }
+//            else
+//            {
+//                return NotFound();
+//            }
+//        }
+//        else
+//        {
+//            await logger.LogWarning("An Warning occurred while fetching all logs Article ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+
+//            return BadRequest();
+//        }
+
+//    }
+//    catch (Exception)
+//    {
+//        await logger.LogErorr("An Erorr occurred while fetching all logs Article ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+//        return BadRequest();
+//    }
+
+//}
+
+
+//[HttpGet("{id}",Name = "GetArticle")]
+//public async Task<ActionResult<ArticlView>> GetById(int id)
+//{
+
+
+//    try
+//    {
+//        var articleById = await unitOfWorkService.ArticleService.GetByIdAsync(id);
+//        //var articleView = new ArticlView
+//        //{
+//        //    Id = article.Id,
+//        //    AuthorId = article.AuthorId,
+//        //    CategoryId = article.CategoryId,
+//        //    Content = article.Content   ,
+//        //    Comments = article.Comments,
+//        //    Images = article.Images,
+//        //    ViewCount = article.ViewCount,
+//        //    Title = article.Title,
+//        //    Likes = article.Likes,
+//        //    PublishDate = article.PublishDate,
+//        //    UpdateDate = article.PublishDate,
+
+//        //};
+//        if (articleById == null)
+//        {
+//            await logger.LogWarning("Failed to fetch Article with ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+//            return BadRequest();
+//        }
+//        else
+//        {
+//            ArticlView article = mapper.Map<ArticlView>(articleById);
+//            await logger.LogInformation("Article with ID " + id + " fetched ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+//            return Ok(article);
+//        }
+
+//    }
+//    catch (Exception)
+//    {
+//        await logger.LogErorr("Erorr to fetch Article with ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+//        return BadRequest();
+//    }
+
+//}

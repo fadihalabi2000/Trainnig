@@ -2,14 +2,16 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NewsApiData.Migrations;
+using Microsoft.Extensions.Logging;
 using NewsApiDomin.Enums;
 using NewsApiDomin.Models;
 using NewsApiDomin.ViewModels;
+using NewsApiDomin.ViewModels.ArticleViewModel;
 using NewsApiDomin.ViewModels.CategoryViewModel;
 using NewsApiDomin.ViewModels.ImageViewModel;
 using NewsApiServies.Auth.ClassStatic;
 using Services.MyLogger;
+using Services.Transactions;
 using Services.Transactions.Interfaces;
 using System.Security.Claims;
 using System.Text.Json;
@@ -34,32 +36,21 @@ namespace NewsApi.Controllers
         }
         
         [HttpGet]
-        public async Task<ActionResult<(PaginationMetaData, List<CategoryView>)>> GetAll(int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<(PaginationMetaData, List<CategoryView>)>> GetAll()
         {
-
             try
-            {
-                
+            { 
                 var category = await unitOfWorkService.CategoryService.GetAllAsync();
 
                 if (category.Count() > 0)
                 {
-                    (category, var paginationData) = await unitOfWorkService.CategoryPagination.GetPaginationAsync(pageNumber, pageSize, category);
-                    if (category.Count() > 0)
-                    {
-                        // category.Select(c => new CategoryView { Id = c.Id, CategoryName = c.CategoryName }).ToList();
+                  
+                    
                         List<CategoryView> categories = mapper.Map<List<CategoryView>>(category);
-                        Response.Headers.Add("X-Pagination",
-                       JsonSerializer.Serialize(paginationData));
+                    
                         await logger.LogInformation("All Category table records fetched", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                        return Ok(new { paginationData, categories });
-                    }
-                    else
-                    {
-                        return NotFound();
-                    }
-
-                }
+                        return Ok(categories);
+                }      
                 else
                 {
                     await logger.LogWarning("An Warning occurred while fetching all logs category ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
@@ -77,22 +68,35 @@ namespace NewsApi.Controllers
 
 
         [HttpGet("{id}",Name = "GetCategory")]
-        public async Task<ActionResult<Category>> GetById(int id)
+        public async Task<ActionResult<Category>> GetById(int id, int pageNumber = 1, int pageSize = 10)
         {
-
-
             try
             {
-                var category = await unitOfWorkService.CategoryService.GetByIdAsync(id);
-                if (category == null)
+                var categoryById = await unitOfWorkService.CategoryService.GetByIdAsync(id);
+                if (categoryById == null)
                 {
                     await logger.LogWarning("Failed to fetch category with ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                     return BadRequest();
                 }
                 else
                 {
-                    await logger.LogInformation("category with ID " + id + " fetched ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    return Ok(category);
+                    List<ArticleWithAuthorView> articles = new List<ArticleWithAuthorView>();
+
+                    (articles, bool isCompleted) = await unitOfWorkService.ArticleService.GetArticlesAsync(categoryById.Articles);
+                    if (isCompleted)
+                    {
+                        (articles, var paginationData) = await unitOfWorkService.ArticleWithAuthorViewPagination.GetPaginationAsync(pageNumber, pageSize, articles);
+                        var category=mapper.Map<CategoryView>(categoryById);
+                        Response.Headers.Add("X-Pagination",
+                    JsonSerializer.Serialize(paginationData));
+                        await logger.LogInformation("All Article By Category ID "+id+" table records fetched", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+                        return Ok(new { paginationData,category,articles });
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
+                 
                 }
 
             }
@@ -112,24 +116,24 @@ namespace NewsApi.Controllers
             try
             {
                // var category = new Category {CategoryName=createCategory.CategoryName};
-                Category category = mapper.Map<Category>(createCategory);
+                Category categorys = mapper.Map<Category>(createCategory);
 
                 var checkCategoryName = unitOfWorkService.CategoryService.CheckCategoryName(createCategory.CategoryName);
                 if (checkCategoryName is null)
                 {
-                    await unitOfWorkService.CategoryService.AddAsync(category);
+                    await unitOfWorkService.CategoryService.AddAsync(categorys);
 
                     if (await unitOfWorkService.CommitAsync())
                     {
                         var lastID = await unitOfWorkService.CategoryService.GetAllAsync();
                         var categoryId = lastID.Max(b => b.Id);
-                        category = await unitOfWorkService.CategoryService.GetByIdAsync(categoryId);
-                        var ctegoryView = mapper.Map<CategoryView>(category);
+                        categorys = await unitOfWorkService.CategoryService.GetByIdAsync(categoryId);
+                        var ctegory = mapper.Map<CategoryView>(categorys);
                         await logger.LogInformation("category with ID " + categoryId + " added", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                         return CreatedAtRoute("GetCategory", new
                         {
                             id = categoryId,
-                        }, ctegoryView);
+                        }, ctegory);
 
                     }
                     else
@@ -217,3 +221,30 @@ namespace NewsApi.Controllers
         }
     }
 }
+//[HttpGet("{id}", Name = "GetCategory")]
+//public async Task<ActionResult<Category>> GetById(int id)
+//{
+
+
+//    try
+//    {
+//        var category = await unitOfWorkService.CategoryService.GetByIdAsync(id);
+//        if (category == null)
+//        {
+//            await logger.LogWarning("Failed to fetch category with ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+//            return BadRequest();
+//        }
+//        else
+//        {
+//            await logger.LogInformation("category with ID " + id + " fetched ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+//            return Ok(category);
+//        }
+
+//    }
+//    catch (Exception)
+//    {
+//        await logger.LogErorr("Erorr to fetch category with ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+//        return BadRequest();
+//    }
+
+//}
