@@ -24,7 +24,7 @@ namespace NewsApiRepositories
 
         public new async Task<List<Author>> GetAllAsync()
         {
-            var dbSet = this.dbContext.Set<Author>().Include(a => a.Article.OrderByDescending(a => a.PublishDate));
+            var dbSet = this.dbContext.Set<Author>().Include(r => r.RefreshTokens).Include(a => a.Article.OrderByDescending(a => a.PublishDate));
 
 
             return await Task.Run(() => dbSet.Where(c => c.IsDeleted == false).OrderByDescending(a => a.DisplayName).ToListAsync());

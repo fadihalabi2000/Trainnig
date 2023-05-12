@@ -13,5 +13,10 @@ namespace NewsApiDomin.Models
         public string ImageDescription { get; set; } = string.Empty;
 
         public int ArticleId { get; set; }
+
+        public static implicit operator List<object>(Image v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

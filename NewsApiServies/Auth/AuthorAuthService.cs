@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using NewsApiDomin.Enums;
 using NewsApiDomin.Models;
 using NewsApiDomin.ViewModels.AuthorViewModel;
+using NewsApiDomin.ViewModels.CommentViewModel;
 using NewsApiDomin.ViewModels.UserViewModel;
 using NewsApiRepositories.UnitOfWorkRepository.Interface;
 using NewsApiServies.Auth.ClassStatic;
@@ -35,19 +36,9 @@ namespace Services.Auth
             Author author = await unitOfWorkService.AuthorService.CheckNameAndEmail(createAuthor.DisplayName, createAuthor.Email);
             if (author is not null)
                 return new AuthModel { Message = "Email Or DisplayName is already registered!" };
-            //var author = new Author
-            //{
-
-            //    Email = createAuthor.Email,
-            //    Password = createAuthor.Password,
-            //    ProfilePicture = createAuthor.ProfilePicture,
-            //    DisplayName = createAuthor.DisplayName,
-            //    Bio = createAuthor.Bio,
-            //};
-            mapper.Map(createAuthor,author);
-            await unitOfWorkService.AuthorService.AddAsync(author!);
-
-
+          
+            author = mapper.Map<Author>(createAuthor);
+            await unitOfWorkService.AuthorService.AddAsync(author);
 
             if (await unitOfWorkService.CommitAsync() == false)
             {
@@ -81,19 +72,20 @@ namespace Services.Auth
             }
             var auth = new AuthModel { Email = author.Email, DisplayName = author.DisplayName, Roles = Role.Author.ToString(), Id = author.Id };
             auth  = await CreateToken.CreateJwtToken(auth, _jwt);
+            var IsActive = author.RefreshTokens!.Any(t => (DateTime.UtcNow >= t.ExpiresOn));
+            IsActive = author.RefreshTokens!.Any(t => t.RevokedOn == null && !IsActive);
 
-
-            if (author.RefreshTokens!.Any(t => t.IsActive))
+            if (IsActive)
             {
-                var activeRefreshToken = author.RefreshTokens!.FirstOrDefault(t => t.IsActive);
-                authModel.RefreshToken = activeRefreshToken!.Token;
-                authModel.RefreshTokenExpiration = activeRefreshToken.ExpiresOn;
+                var activeRefreshToken = author.RefreshTokens!.LastOrDefault(t => t.ExpiresOn > DateTime.UtcNow);
+                auth.RefreshToken = activeRefreshToken!.Token;
+                auth.RefreshTokenExpiration = activeRefreshToken.ExpiresOn;
             }
             else
             {
                 var refreshToken =CreateToken.GenerateRefreshToken();
-                authModel.RefreshToken = refreshToken.Token;
-                authModel.RefreshTokenExpiration = refreshToken.ExpiresOn;
+                auth.RefreshToken = refreshToken.Token;
+                auth.RefreshTokenExpiration = refreshToken.ExpiresOn;
                 author.RefreshTokens!.Add(refreshToken);
                 await unitOfWorkService.AuthorService.UpdateAsync(author!);
                 await unitOfWorkService.CommitAsync();
@@ -129,17 +121,17 @@ namespace Services.Auth
             await unitOfWorkService.CommitAsync();
             var auth = new AuthModel { Email = author.Email, DisplayName = author.DisplayName, Roles = Role.Author.ToString(), Id = author.Id };
             auth = await CreateToken.CreateJwtToken(auth, _jwt);
-            authModel.IsAuthenticated = true;
-            authModel.RefreshToken = newRefreshToken.Token;
-            authModel.RefreshTokenExpiration = newRefreshToken.ExpiresOn;
+            auth.IsAuthenticated = true;
+            auth.RefreshToken = newRefreshToken.Token;
+            auth.RefreshTokenExpiration = newRefreshToken.ExpiresOn;
 
-            return authModel;
+            return auth;
         }
 
         public async Task<bool> RevokeTokenAsync(string token)
         {
             var authors = await unitOfWorkService.AuthorService.GetAllAsync();
-            var author =  authors.SingleOrDefault(u => u.RefreshTokens!.Any(t => t.Token == token));
+            var author =  authors.LastOrDefault(u => u.RefreshTokens!.Any(t => t.Token == token));
 
             if (author == null)
                 return false;

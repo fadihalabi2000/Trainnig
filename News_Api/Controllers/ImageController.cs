@@ -11,10 +11,13 @@ using Services.MyLogger;
 using Services.Transactions.Interfaces;
 using System.Text.Json;
 using AutoMapper;
+using DataAccess.Entities.Abstractions.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System.IO;
 
 namespace NewsApi.Controllers
 {
-    [Route("api/Article/{ArticleId}/[controller]")]
+    [Route("api/Article/{articleId}/[controller]")]
     [ApiController]
     [Authorize(Roles = "Admin,Author")]
 
@@ -31,6 +34,12 @@ namespace NewsApi.Controllers
             this.logger = logger;
             this.mapper = mapper;
         }
+
+
+
+
+     
+
 
         [HttpGet]
         public async Task<ActionResult<(PaginationMetaData, List<ImageView>)>> GetAll(int articleId, int pageNumber = 1, int pageSize = 10)
@@ -108,44 +117,7 @@ namespace NewsApi.Controllers
 
         }
 
-        [HttpPost]
-        public async Task<ActionResult<ImageView>> Post(int articleId, CreateImage createImage)
-        {
-            var article = await unitOfWorkService.LikeService.GetByIdAsync(articleId);
-            if (article == null)
-            {
-                return NotFound();
-            }
-            try
-            {
-                Image images=mapper.Map<Image>(createImage);
-                images.ArticleId=articleId;
-                await unitOfWorkService.ImageService.AddAsync(images);
-
-                if (await unitOfWorkService.CommitAsync())
-                {
-                    var lastID = await unitOfWorkService.ImageService.GetAllAsync();
-                    var imageId = lastID.Max(b => b.Id);
-                    images = await unitOfWorkService.ImageService.GetByIdAsync(imageId);
-                    await logger.LogInformation("Image with ID " + imageId + " added", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    ImageView image = mapper.Map<ImageView>(images);
-                    return Ok(image);
-
-
-                }
-                else
-                {
-                    await logger.LogWarning("An warning occurred when adding the Image", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    return BadRequest();
-                }
-
-            }
-            catch (Exception)
-            {
-                await logger.LogErorr("An Erorr occurred when adding the Image", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                return BadRequest();
-            }
-        }
+       
 
 
 
@@ -207,5 +179,80 @@ namespace NewsApi.Controllers
                 return BadRequest();
             }
         }
+        //[HttpPost]
+        //public async Task<ActionResult<ImageView>> Post(int articleId, CreateImage createImage)
+        //{
+        //    var article = await unitOfWorkService.LikeService.GetByIdAsync(articleId);
+        //    if (article == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    try
+        //    {
+        //        Image images = mapper.Map<Image>(createImage);
+        //        images.ArticleId = articleId;
+        //        await unitOfWorkService.ImageService.AddAsync(images);
+
+        //        if (await unitOfWorkService.CommitAsync())
+        //        {
+        //            var lastID = await unitOfWorkService.ImageService.GetAllAsync();
+        //            var imageId = lastID.Max(b => b.Id);
+        //            images = await unitOfWorkService.ImageService.GetByIdAsync(imageId);
+        //            await logger.LogInformation("Image with ID " + imageId + " added", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+        //            ImageView image = mapper.Map<ImageView>(images);
+        //            return await Task.Run(() => CreatedAtRoute("GetImage", new { articleId = articleId, id = imageId, }, image));
+
+
+        //        }
+        //        else
+        //        {
+        //            await logger.LogWarning("An warning occurred when adding the Image", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+        //            return BadRequest();
+        //        }
+
+        //    }
+        //    catch (Exception)
+        //    {
+        //        await logger.LogErorr("An Erorr occurred when adding the Image", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+        //        return BadRequest();
+        //    }
+        //}
     }
 }
+//[HttpPost]
+//public async Task<IActionResult> UploadImage(IFormFile imageFile)
+//{
+
+//    var contentPath = this.environment.ContentRootPath;
+//    // path = "c://projects/productminiapi/uploads" ,not exactly something like that
+//    var path = Path.Combine(contentPath, "Uploads");
+//    if (!Directory.Exists(path))
+//    {
+//        Directory.CreateDirectory(path);
+//    }
+
+//    // Check the allowed extenstions
+//    var ext = Path.GetExtension(imageFile.FileName);
+//    var allowedExtensions = new string[] { ".jpg", ".png", ".jpeg" };
+//    if (!allowedExtensions.Contains(ext))
+//    {
+//        string msg = string.Format("Only {0} extensions are allowed", string.Join(",", allowedExtensions));
+//        return BadRequest(msg);
+//    }
+//    string uniqueString = Guid.NewGuid().ToString();
+//    // we are trying to create a unique filename here
+//    var newFileName = uniqueString + ext;
+//    var fileWithPath = Path.Combine(path, newFileName);
+//    var stream = new FileStream(fileWithPath, FileMode.Create);
+//    imageFile.CopyTo(stream);
+//    stream.Close();
+//    var imageEntity = new Image
+//    {
+//        ArticleId = 1,
+//        ImageDescription = newFileName,
+//        ImageUrl = fileWithPath,
+
+//    };
+
+//    return Ok(imageEntity);
+//}

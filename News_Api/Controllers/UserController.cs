@@ -209,9 +209,7 @@ namespace NewsApi.Controllers
                 UpdateUser patchUser = mapper.Map<UpdateUser>(user);
                 patchDocument.ApplyTo(patchUser);
 
-               var checkDisplayName = await unitOfWorkService.UsersService.CheckDisplayName(patchUser.DisplayName);
-                if (checkDisplayName is null)
-                {
+             
                     user = mapper.Map(patchUser, user);
                     await unitOfWorkService.UsersService.UpdateAsync(user);
                     if (await unitOfWorkService.CommitAsync())
@@ -224,11 +222,7 @@ namespace NewsApi.Controllers
                         await logger.LogWarning("An warning occurred when updateing the User ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
                         return BadRequest();
                     }
-                }
-                else
-                {
-                    return BadRequest(new { Message = "the displayName already exists " });
-                }
+            
 
             }
             catch (Exception)

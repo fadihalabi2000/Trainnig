@@ -15,7 +15,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace NewsApi.Controllers
 {
-    [Route("api/Article/{ArticleId}/[controller]")]
+    [Route("api/Article/{articleId}/[controller]")]
     [ApiController]
     [Authorize]
     public class CommentController : ControllerBase
@@ -32,7 +32,7 @@ namespace NewsApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<CommentView>>> GetAll(int articleId,int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<List<ListCommentView>>> GetAll(int articleId,int pageNumber = 1, int pageSize = 10)
         {
             var article = await unitOfWorkService.LikeService.GetByIdAsync(articleId);
             if (article == null)
@@ -42,17 +42,31 @@ namespace NewsApi.Controllers
 
             try
             {
-                var comment = await unitOfWorkService.CommentsService.GetAllByIdArticleAsync(articleId);
-                if (comment.Count() > 0)
+                var comments = await unitOfWorkService.CommentsService.GetAllByIdArticleAsync(articleId);
+                var users = await unitOfWorkService.UsersService.GetAllAsync();
+                List<ListCommentView> listCommentViews = comments.Join(
+                                         users, comment => comment.UserId, user => user.Id,
+                                         (comment, user) =>
+                                         new ListCommentView
+                                         {
+                                             Id=comment.Id,
+                                             UserId = user.Id,
+                                             ArticleId = comment.ArticleId,
+                                             UserDisplayName = user.DisplayName,
+                                             UserProfilePicture = user.ProfilePicture,
+                                             CommentText = comment.CommentText
+                                         }).ToList();
+                if (listCommentViews.Count() > 0)
                 {
-                    (comment, var paginationData) = await unitOfWorkService.CommentPagination.GetPaginationAsync(pageNumber, pageSize, comment);
-                    if (comment.Count() > 0)
+
+                    (listCommentViews, var paginationData) = await unitOfWorkService.ListCommentViewPagination.GetPaginationAsync(pageNumber, pageSize, listCommentViews);
+                    if (listCommentViews.Count() > 0)
                     {
-                        List<CommentView> comments = mapper.Map<List<CommentView>>(comment);
+                       
                         Response.Headers.Add("X-Pagination",
                   JsonSerializer.Serialize(paginationData));
                         await logger.LogInformation("All Comment table records fetched", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                        return Ok(new { paginationData, comments });
+                        return Ok(new { paginationData, listCommentViews });
                     }
                     else
                     {
@@ -76,7 +90,7 @@ namespace NewsApi.Controllers
 
 
         [HttpGet("{id}",Name = "GetComment")]
-        public async Task<ActionResult<CommentView>> GetById(int articleId, int id)
+        public async Task<ActionResult<ListCommentView>> GetById(int articleId, int id)
         {
             var article = await unitOfWorkService.LikeService.GetByIdAsync(articleId);
             if (article == null)
@@ -94,9 +108,10 @@ namespace NewsApi.Controllers
                 }
                 else
                 {
-                    CommentView comment = mapper.Map<CommentView>(commentById);
+                    var user = await unitOfWorkService.UsersService.GetByIdAsync(commentById.UserId);
+                   ListCommentView listCommentView=new ListCommentView { ArticleId=commentById.ArticleId,CommentText=commentById.CommentText,UserDisplayName=user.DisplayName,UserProfilePicture=user.ProfilePicture,UserId=user.Id,Id=commentById.Id};  
                     await logger.LogInformation("Comment with ID " + id + " fetched ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    return Ok(comment);
+                    return Ok(listCommentView);
                 }
 
             }
@@ -132,7 +147,7 @@ namespace NewsApi.Controllers
                     comments = await unitOfWorkService.CommentsService.GetByIdAsync(commentId);
                     CommentView comment = mapper.Map<CommentView>(comments);
                     await logger.LogInformation("Comment with ID " + commentId + " added", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    return Ok(comment);
+                    return await Task.Run(() => CreatedAtRoute("GetComment", new { articleId = articleId, id = commentId, }, comment));
 
                 }
                 else

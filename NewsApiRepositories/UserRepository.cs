@@ -24,7 +24,7 @@ namespace NewsApiRepositories
 
         public new async Task<List<User>> GetAllAsync()
         {
-            var dbSet = this.dbContext.Set<User>().Include(l => l.likes).Include(c => c.Comments);
+            var dbSet = this.dbContext.Set<User>().Include(r=>r.RefreshTokens);
             return await Task.Run(() => dbSet.Where(c => c.IsDeleted == false).ToListAsync());
         }
         public new async Task<User> GetByIdAsync(int id)

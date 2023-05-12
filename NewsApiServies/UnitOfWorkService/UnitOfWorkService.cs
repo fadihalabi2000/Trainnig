@@ -4,6 +4,8 @@ using NewsApiData;
 using NewsApiDomin.Models;
 using NewsApiDomin.ViewModels.ArticleViewModel;
 using NewsApiDomin.ViewModels.CategoryViewModel;
+using NewsApiDomin.ViewModels.CommentViewModel;
+using NewsApiDomin.ViewModels.LikeViewModel;
 using NewsApiRepositories.UnitOfWorkRepository.Interface;
 using NewsApiServies.CRUD;
 using NewsApiServies.CRUD.Interfaces;
@@ -41,11 +43,11 @@ namespace Services.Transactions
         public IUsersService UsersService { get; private set; }
 
         //pagination
-        public IPaginationService<Category> CategoryPagination { get; private set; }
+      //  public IPaginationService<Category> CategoryPagination { get; private set; }
 
-        public IPaginationService<Article> ArticlePagination { get; private set; }
+       public IPaginationService<ListCommentView> ListCommentViewPagination { get; private set; }
 
-        public IPaginationService<Author> AuthorPagination { get; private set; }
+      public IPaginationService<ListLikeView> ListLikeViewPagination { get; private set; }
 
         public IPaginationService<Log> LogPagination { get; private set; }
 
@@ -73,9 +75,9 @@ namespace Services.Transactions
             UsersService = new UsersService(unitOfWorkRepo);
 
             //pagination
-            CategoryPagination = new PaginationService<Category>();
-            AuthorPagination = new PaginationService<Author>();
-            ArticlePagination = new PaginationService<Article>();
+            // CategoryPagination = new PaginationService<Category>();
+            ListCommentViewPagination = new PaginationService<ListCommentView>();
+            ListLikeViewPagination = new PaginationService<ListLikeView>();
             UserPagination = new PaginationService<User>();
             LogPagination = new PaginationService<Log>();
             CommentPagination = new PaginationService<Comment>();

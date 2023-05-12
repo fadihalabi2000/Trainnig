@@ -54,7 +54,7 @@ namespace NewsApiServies.Auth.ClassStatic
             );
         }
 
-        public static RefreshToken GenerateRefreshToken()
+        public static  RefreshToken GenerateRefreshToken()
         {
             var randomNumber = new byte[32];
 
@@ -62,12 +62,16 @@ namespace NewsApiServies.Auth.ClassStatic
 
             generator.GetBytes(randomNumber);
 
-            return new RefreshToken
+            RefreshToken refreshToken= new RefreshToken
             {
                 Token = Convert.ToBase64String(randomNumber),
-                ExpiresOn = DateTime.UtcNow.AddDays(10),
-                CreatedOn = DateTime.UtcNow
+                ExpiresOn = DateTime.UtcNow.AddDays(7),
+                CreatedOn = DateTime.UtcNow,
+                
             };
+            
+            var x = refreshToken;
+            return refreshToken;
         }
     }
 }

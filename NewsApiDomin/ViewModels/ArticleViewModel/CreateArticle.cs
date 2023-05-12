@@ -1,4 +1,5 @@
-﻿using NewsApiDomin.Models;
+﻿using Microsoft.AspNetCore.Http;
+using NewsApiDomin.Models;
 using NewsApiDomin.ViewModels.ImageViewModel;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,6 @@ namespace NewsApiDomin.ViewModels.ArticleViewModel
         public int ViewCount { get; set; }
         public int AuthorId { get; set; }
         public int CategoryId { get; set; }
-        public List<CreateImage> Images { get; set; } = new List<CreateImage>();
+        public IFormFile Images { get; set; }
     }
 }

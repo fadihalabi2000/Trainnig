@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NewsApiDomin.Models;
 using NewsApiDomin.ViewModels.LikeViewModel;
+using NewsApiRepositories.UnitOfWorkRepository;
 using NewsApiServies.Auth.ClassStatic;
 using Services.MyLogger;
 using Services.Transactions.Interfaces;
@@ -12,7 +13,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace NewsApi.Controllers
 {
-    [Route("api/Article/{ArticleId}/[controller]")]
+    [Route("api/Article/{articleId}/[controller]")]
     [ApiController]
     [Authorize]
     public class LikeController : ControllerBase
@@ -29,7 +30,7 @@ namespace NewsApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<LikeView>>> GetAll(int articleId, int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<List<ListLikeView>>> GetAll(int articleId, int pageNumber = 1, int pageSize = 10)
         {
             var article = await unitOfWorkService.LikeService.GetByIdAsync(articleId);
             if (article == null)
@@ -38,18 +39,29 @@ namespace NewsApi.Controllers
             }
             try
             {
-                var like = await unitOfWorkService.LikeService.GetAllByIdArticleAsync(articleId);
-               
-                if (like.Count() > 0)
+                var likes = await unitOfWorkService.LikeService.GetAllByIdArticleAsync(articleId);
+                List<User> users = await unitOfWorkService.UsersService.GetAllAsync();
+                List<ListLikeView> listLikeViews = likes.Join(
+                                                            users, like => like.UserId, user => user.Id,
+                                                            (like, user) =>
+                                                            new ListLikeView
+                                                            {
+                                                                id=like.Id,
+                                                                UserId = user.Id,
+                                                                ArticleId = like.ArticleId,
+                                                                UserDisplayName = user.DisplayName,
+                                                                UserProfilePicture = user.ProfilePicture
+                                                            }).ToList();
+                if (listLikeViews.Count() > 0)
                 {
-                    (like, var paginationData) = await unitOfWorkService.LikePagination.GetPaginationAsync(pageNumber, pageSize, like);
-                    if (like.Count() > 0)
+                    (listLikeViews, var paginationData) = await unitOfWorkService.ListLikeViewPagination.GetPaginationAsync(pageNumber, pageSize, listLikeViews);
+                    if (listLikeViews.Count() > 0)
                     {
-                        List<LikeView> likes = mapper.Map<List<LikeView>>(like);
+                       
                         Response.Headers.Add("X-Pagination",
                   JsonSerializer.Serialize(paginationData));
                         await logger.LogInformation("All Like table records fetched", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                        return Ok(new { paginationData, likes });
+                        return Ok(new { paginationData, listLikeViews });
                     }
                     else
                     {
@@ -72,9 +84,10 @@ namespace NewsApi.Controllers
         }
 
         [HttpGet("{id}",Name = "GetLike")]
-        public async Task<ActionResult<LikeView>> GetById( int articleId, int id)
+        public async Task<ActionResult<ListLikeView>> GetById( int articleId, int id)
         {
             var article = await unitOfWorkService.LikeService.GetByIdAsync(articleId);
+         
             if (article == null)
             {
                 return NotFound();
@@ -83,6 +96,7 @@ namespace NewsApi.Controllers
             try
             {
                 var likeById = await unitOfWorkService.LikeService.GetByIdAsync(id);
+
                 if (likeById == null)
                 {
                     await logger.LogWarning("Failed to fetch Like with ID " + id, CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
@@ -90,9 +104,10 @@ namespace NewsApi.Controllers
                 }
                 else
                 {
-                    LikeView like= mapper.Map<LikeView>(likeById);
+                    var user = await unitOfWorkService.UsersService.GetByIdAsync(likeById.UserId);
+                    ListLikeView listLikeView = new ListLikeView { ArticleId = likeById.ArticleId, UserId = likeById.UserId, UserDisplayName = user.DisplayName, UserProfilePicture = user.ProfilePicture,id=likeById.Id };
                     await logger.LogInformation("Like with ID " + id + " fetched ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    return Ok(like);
+                    return Ok(listLikeView);
                 }
 
             }
@@ -133,7 +148,7 @@ namespace NewsApi.Controllers
                     likes = await unitOfWorkService.LikeService.GetByIdAsync(likeId);
                     LikeView like=mapper.Map<LikeView>(likes);
                     await logger.LogInformation("Like with ID " + likeId + " added", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                    return Ok(like);
+                    return await Task.Run(() => CreatedAtRoute("GetLike", new { articleId = articleId, id = likeId, }, like));
 
                 }
                 else

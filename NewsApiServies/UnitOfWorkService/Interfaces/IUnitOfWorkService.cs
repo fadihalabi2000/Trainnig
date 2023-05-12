@@ -1,6 +1,8 @@
 ﻿using NewsApiDomin.Models;
 using NewsApiDomin.ViewModels.ArticleViewModel;
 using NewsApiDomin.ViewModels.CategoryViewModel;
+using NewsApiDomin.ViewModels.CommentViewModel;
+using NewsApiDomin.ViewModels.LikeViewModel;
 using NewsApiServies.CRUD.Interfaces;
 using NewsApiServies.Pagination.Interface;
 using Services.CRUD.Interfaces;
@@ -21,9 +23,9 @@ namespace Services.Transactions.Interfaces
         public IUsersService UsersService{ get; }
         Task<bool> CommitAsync();
 
-        public IPaginationService<Category> CategoryPagination { get; }
-        public IPaginationService<Article> ArticlePagination { get; }
-        public IPaginationService<Author> AuthorPagination { get; }
+       // public IPaginationService<Category> CategoryPagination { get; }
+       public IPaginationService<ListCommentView> ListCommentViewPagination { get; }
+        public IPaginationService<ListLikeView> ListLikeViewPagination { get; }
         public IPaginationService<Log> LogPagination { get; }
         public IPaginationService<User> UserPagination { get; }
         public IPaginationService<Comment> CommentPagination { get; }
