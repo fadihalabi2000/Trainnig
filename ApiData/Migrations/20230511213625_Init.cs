@@ -241,8 +241,7 @@ namespace NewsApiData.Migrations
                 {
                     { 1, "aaaaa", "ali", "ali@gmail.com", false, "123", "https://tse4.mm.bing.net/th/id/OIP.y2TOfKrvLx09_tbuortEygHaEG?w=331&h=183&c=7&r=0&o=5&pid=1.7", null },
                     { 2, "ooooo", "omar", "omar@gmail.com", false, "145", "https://tse4.mm.bing.net/th/id/OIP.1FMDAFhu9UEmpewQZBWfqgHaEK?w=326&h=183&c=7&r=0&o=5&pid=1.7", null },
-                    { 3, "hhhhh", "ahmad", "ahmad@gmail.com", false, "165", "https://tse1.mm.bing.net/th/id/OIP.U8tBnyvXfaWfsx3Q-cIXUAHaHa?w=180&h=180&c=7&r=0&o=5&pid=1.7", null },
-                    { 2147483647, "test", "test", "testA@gmail.com", false, "165", "https://tse1.mm.bing.net/th/id/OIP.U8tBnyvXfaWfsx3Q-cIXUAHaHa?w=180&h=180&c=7&r=0&o=5&pid=1.7", null }
+                    { 3, "hhhhh", "ahmad", "ahmad@gmail.com", false, "165", "https://tse1.mm.bing.net/th/id/OIP.U8tBnyvXfaWfsx3Q-cIXUAHaHa?w=180&h=180&c=7&r=0&o=5&pid=1.7", null }
                 });
 
             migrationBuilder.InsertData(
@@ -262,8 +261,7 @@ namespace NewsApiData.Migrations
                 {
                     { 1, "obada", "obada@gmail.com", "obada", false, "halabi", "12345", "https://www.bing.com/th?id=OIP.RYDAyx95XZfKlV4Utf8Z7QHaEK&w=333&h=187&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" },
                     { 2, "fadi", "fadi@gmail.com", "fadi", false, "halabi", "123456", "https://www.bing.com/th?id=OIP.RYDAyx95XZfKlV4Utf8Z7QHaEK&w=333&h=187&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" },
-                    { 3, "taher", "taher@gmail.com", "taher", false, "halabi", "12345", "https://www.bing.com/th?id=OIP.frAlEuXSfGFRLcBxzVRY1AHaER&w=329&h=189&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" },
-                    { 2147483647, "test", "test@gmail.com", "test", true, "halabi", "12345", "https://www.bing.com/th?id=OIP.frAlEuXSfGFRLcBxzVRY1AHaER&w=329&h=189&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" }
+                    { 3, "taher", "taher@gmail.com", "taher", false, "halabi", "12345", "https://www.bing.com/th?id=OIP.frAlEuXSfGFRLcBxzVRY1AHaER&w=329&h=189&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" }
                 });
 
             migrationBuilder.InsertData(
@@ -271,9 +269,9 @@ namespace NewsApiData.Migrations
                 columns: new[] { "Id", "AuthorId", "CategoryId", "Content", "IsDeleted", "PublishDate", "Title", "UpdateDate", "ViewCount" },
                 values: new object[,]
                 {
-                    { 1, 1, 1, "أصيب أكثر من 200 فلسطيني في مواجهات بنابلس مع قوات الاحتلال الإسرائيلي، بالتزامن مع تشييع شهيد بأريحا، وبعد ساعات من اقتحام مئات المستوطنين للمسجد الأقصى المبارك في القدس.", false, new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1019), "فلسطين.. عشرات الإصابات بنابلس وتشييع شهيد بأريحا واقتحام يهودي للأقصى", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 0 },
-                    { 2, 2, 2, "اقتحم مستوطنون باحات المسجد الأقصى صباح اليوم الأحد بحماية قوات الاحتلال الإسرائيلي التي اعتدت على شبان فلسطينيين عند باب الأسباط ومنعتهم بالقوة من دخول المسجد الأقصى لأداء صلاة فجر اليوم، كما منعت عشرات النساء من الدخول.", false, new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1029), "الاحتلال يعتدي على فلسطينيين ويمنعهم من دخول الأقصى", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 0 },
-                    { 3, 3, 3, "منذ بداية الشهر الجاري هجمات على ضباط في الجيش والقوات الأمنية أدت إلى مقتل ضابط في الجيش وآخر في الشرطة وثالث في الدعم السريع ونهب مركبات عسكرية،", false, new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1031), "حوادث اغتيال العسكريين السودانيين", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 0 }
+                    { 1, 1, 1, "أصيب أكثر من 200 فلسطيني في مواجهات بنابلس مع قوات الاحتلال الإسرائيلي، بالتزامن مع تشييع شهيد بأريحا، وبعد ساعات من اقتحام مئات المستوطنين للمسجد الأقصى المبارك في القدس.", false, new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2495), "فلسطين.. عشرات الإصابات بنابلس وتشييع شهيد بأريحا واقتحام يهودي للأقصى", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 0 },
+                    { 2, 2, 2, "اقتحم مستوطنون باحات المسجد الأقصى صباح اليوم الأحد بحماية قوات الاحتلال الإسرائيلي التي اعتدت على شبان فلسطينيين عند باب الأسباط ومنعتهم بالقوة من دخول المسجد الأقصى لأداء صلاة فجر اليوم، كما منعت عشرات النساء من الدخول.", false, new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2501), "الاحتلال يعتدي على فلسطينيين ويمنعهم من دخول الأقصى", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 0 },
+                    { 3, 3, 3, "منذ بداية الشهر الجاري هجمات على ضباط في الجيش والقوات الأمنية أدت إلى مقتل ضابط في الجيش وآخر في الشرطة وثالث في الدعم السريع ونهب مركبات عسكرية،", false, new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2502), "حوادث اغتيال العسكريين السودانيين", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 0 }
                 });
 
             migrationBuilder.InsertData(
@@ -281,9 +279,9 @@ namespace NewsApiData.Migrations
                 columns: new[] { "Id", "AuthorId", "Content", "DateCreated", "IsDeleted", "UserId", "logLevel" },
                 values: new object[,]
                 {
-                    { 1, 1, "add", new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1092), false, null, 2 },
-                    { 2, 1, "delete", new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1096), false, null, 2 },
-                    { 3, null, "update", new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1097), false, 1, 2 }
+                    { 1, 1, "add", new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2559), false, null, 2 },
+                    { 2, 1, "delete", new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2561), false, null, 2 },
+                    { 3, null, "update", new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2562), false, 1, 2 }
                 });
 
             migrationBuilder.InsertData(
@@ -291,9 +289,9 @@ namespace NewsApiData.Migrations
                 columns: new[] { "Id", "ArticleId", "CommentDate", "CommentText", "IsDeleted", "UserId" },
                 values: new object[,]
                 {
-                    { 1, 1, new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1061), "wwwww", false, 1 },
-                    { 2, 2, new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1062), "sssss", false, 2 },
-                    { 3, 3, new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1063), "xxxxxxx", false, 3 }
+                    { 1, 1, new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2529), "wwwww", false, 1 },
+                    { 2, 2, new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2531), "sssss", false, 2 },
+                    { 3, 3, new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2532), "xxxxxxx", false, 3 }
                 });
 
             migrationBuilder.InsertData(
@@ -311,9 +309,9 @@ namespace NewsApiData.Migrations
                 columns: new[] { "Id", "ArticleId", "IsDeleted", "LikeDate", "UserId" },
                 values: new object[,]
                 {
-                    { 1, 1, false, new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1045), 1 },
-                    { 2, 2, false, new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1047), 2 },
-                    { 3, 3, false, new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1047), 3 }
+                    { 1, 1, false, new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2516), 1 },
+                    { 2, 2, false, new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2517), 2 },
+                    { 3, 3, false, new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2518), 3 }
                 });
 
             migrationBuilder.CreateIndex(

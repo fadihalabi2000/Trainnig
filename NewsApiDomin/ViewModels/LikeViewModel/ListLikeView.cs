@@ -8,6 +8,7 @@ namespace NewsApiDomin.ViewModels.LikeViewModel
 {
     public class ListLikeView
     {
+        public int id { get; set; }
         public int ArticleId { get; set; }
         public int UserId { get; set; }
         public string UserDisplayName { get; set; } = string.Empty;

@@ -24,6 +24,7 @@ namespace NewsApiDomin.MappingProfile
             CreateMap<UpdateArticle, Article>().ReverseMap();
             CreateMap<Author, AuthorView>().ReverseMap();
             CreateMap<UpdateAuthor, Author>().ReverseMap();
+            CreateMap<CreateAuthor, Author>().ReverseMap();
             CreateMap<Comment, CommentView>();
             CreateMap<CreateComment, Comment>();
             CreateMap<UpdateComment, Comment>();
@@ -33,7 +34,8 @@ namespace NewsApiDomin.MappingProfile
             CreateMap<Like, LikeView>();
             CreateMap<CreateLike, Like>();
             CreateMap<User, UserView>();
-            CreateMap<UpdateCategory, User>().ReverseMap();
+            CreateMap<UpdateUser, User>().ReverseMap();
+            CreateMap<CreateUser, User>().ReverseMap();
             CreateMap<User, UserWithoutLog>();
             CreateMap<Log, UserLogView>();
             CreateMap<CreateUserLog, Log>();

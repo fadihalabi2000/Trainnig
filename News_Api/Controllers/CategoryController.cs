@@ -36,7 +36,7 @@ namespace NewsApi.Controllers
         }
         
         [HttpGet]
-        public async Task<ActionResult<(PaginationMetaData, List<CategoryView>)>> GetAll()
+        public async Task<ActionResult< List<CategoryView>>> GetAll()
         {
             try
             { 
@@ -68,7 +68,7 @@ namespace NewsApi.Controllers
 
 
         [HttpGet("{id}",Name = "GetCategory")]
-        public async Task<ActionResult<Category>> GetById(int id, int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<(PaginationMetaData,CategoryView,List<ArticleWithAuthorView>)>> GetById(int id, int pageNumber = 1, int pageSize = 10)
         {
             try
             {
@@ -86,11 +86,11 @@ namespace NewsApi.Controllers
                     if (isCompleted)
                     {
                         (articles, var paginationData) = await unitOfWorkService.ArticleWithAuthorViewPagination.GetPaginationAsync(pageNumber, pageSize, articles);
-                        var category=mapper.Map<CategoryView>(categoryById);
+                        var category = mapper.Map<CategoryView>(categoryById);
                         Response.Headers.Add("X-Pagination",
                     JsonSerializer.Serialize(paginationData));
-                        await logger.LogInformation("All Article By Category ID "+id+" table records fetched", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                        return Ok(new { paginationData,category,articles });
+                        await logger.LogInformation("All Article By Category ID " + id + " table records fetched", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
+                        return Ok(new{paginationData, category, articles });
                     }
                     else
                     {
@@ -118,7 +118,7 @@ namespace NewsApi.Controllers
                // var category = new Category {CategoryName=createCategory.CategoryName};
                 Category categorys = mapper.Map<Category>(createCategory);
 
-                var checkCategoryName = unitOfWorkService.CategoryService.CheckCategoryName(createCategory.CategoryName);
+                var checkCategoryName =await unitOfWorkService.CategoryService.CheckCategoryName(createCategory.CategoryName);
                 if (checkCategoryName is null)
                 {
                     await unitOfWorkService.CategoryService.AddAsync(categorys);

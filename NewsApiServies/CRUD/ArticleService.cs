@@ -19,10 +19,12 @@ namespace Services.CRUD
     public class ArticleService : BaseCRUDService<Article>, IArticleService
     {
         private readonly IUnitOfWorkRepo unitOfWorkRepo;
+       
 
         public ArticleService(IUnitOfWorkRepo unitOfWorkRepo) : base(unitOfWorkRepo.ArticleRepository)
         {
             this.unitOfWorkRepo = unitOfWorkRepo;
+           
         }
     
         public async Task<(List<ArticleWithAuthorView>,  bool isCompleted)> GetArticlesAsync(List<Article> articles)
@@ -37,7 +39,8 @@ namespace Services.CRUD
              List<ListLikeView> listLikeViews = likes.Join(
                                                 users, like => like.UserId, user => user.Id,
                                                 (like, user) => 
-                                                new ListLikeView { 
+                                                new ListLikeView {
+                                                    id=like.Id,
                                                 UserId = user.Id,
                                                 ArticleId = like.ArticleId,
                                                 UserDisplayName = user.DisplayName,
@@ -47,7 +50,8 @@ namespace Services.CRUD
                                                       users, comment =>comment.UserId, user => user.Id, 
                                                       (comment, user) =>
                                                       new ListCommentView 
-                                                      { UserId = user.Id, ArticleId = comment.ArticleId,
+                                                      {Id=comment.Id,
+                                                          UserId = user.Id, ArticleId = comment.ArticleId,
                                                       UserDisplayName = user.DisplayName,
                                                       UserProfilePicture = user.ProfilePicture,
                                                       CommentText = comment.CommentText
@@ -105,6 +109,35 @@ namespace Services.CRUD
 
         }
 
+        public async Task<List<Image>> UploadImage(IFormFile imageFile, String contentPath)
+        {
+            var path = Path.Combine(contentPath, "Uploads");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
 
+            // Check the allowed extenstions
+            var ext = Path.GetExtension(imageFile.FileName);
+            var allowedExtensions = new string[] { ".jpg", ".png", ".jpeg" };
+            
+            string uniqueString = Guid.NewGuid().ToString();
+            // we are trying to create a unique filename here
+            var newFileName = uniqueString + ext;
+            var fileWithPath = Path.Combine(path, newFileName);
+            var stream = new FileStream(fileWithPath, FileMode.Create);
+            imageFile.CopyTo(stream);
+            stream.Close();
+            var imageEntity = new List<Image>
+            {
+              new Image{
+                ImageDescription = newFileName,
+                ImageUrl = fileWithPath,
+              }
+
+            };
+
+            return imageEntity;
+        }
     }
 }

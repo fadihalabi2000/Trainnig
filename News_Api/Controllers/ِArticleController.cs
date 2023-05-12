@@ -19,8 +19,6 @@ using Services.Transactions.Interfaces;
 using System.Linq;
 using System.Text.Json;
 using System.Xml.Linq;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace NewsApi.Controllers
 {
@@ -32,12 +30,14 @@ namespace NewsApi.Controllers
         private readonly IUnitOfWorkService unitOfWorkService;
         private readonly IMyLogger logger;
         private readonly IMapper mapper;
+        private readonly IWebHostEnvironment environment;
 
-        public ArticleController(IUnitOfWorkService unitOfWorkService, IMyLogger logger,IMapper mapper)
+        public ArticleController(IUnitOfWorkService unitOfWorkService, IMyLogger logger,IMapper mapper, IWebHostEnvironment env)
         {
             this.unitOfWorkService = unitOfWorkService;
             this.logger = logger;
             this.mapper = mapper;
+            this.environment = env;
         }
         [HttpGet]
         public async Task<ActionResult<(PaginationMetaData, List<ArticleWithAuthorView>)>> GetAllArticle(int pageNumber = 1, int pageSize = 10)
@@ -102,6 +102,7 @@ namespace NewsApi.Controllers
                                                        (like, user) =>
                                                        new ListLikeView
                                                        {
+                                                           id=like.Id,
                                                            UserId = user.Id,
                                                            ArticleId = like.ArticleId,
                                                            UserDisplayName = user.DisplayName,
@@ -113,7 +114,7 @@ namespace NewsApi.Controllers
                                                              user => user.Id,
                                                              (comment, user) =>
                                                              new ListCommentView
-                                                             {
+                                                             {Id = comment.Id,
                                                                  UserId = user.Id,
                                                                  ArticleId = comment.ArticleId,
                                                                  UserDisplayName = user.DisplayName,
@@ -147,13 +148,18 @@ namespace NewsApi.Controllers
         }
         [Authorize(Roles = "Admin,Author")]
         [HttpPost]
-        public async Task<ActionResult<ArticlView>> Post(CreateArticle createArticle)
+        public async Task<ActionResult<ArticlView>> Post([FromForm] CreateArticle createArticle)
         {
            try
-            { 
-             var image = mapper.Map<List<NewsApiDomin.Models.Image>>(createArticle.Images);
-             Article articles = mapper.Map<Article>(createArticle);
-             articles.Images= image;
+            {
+                Article articles = new Article { AuthorId=createArticle.AuthorId , CategoryId=createArticle.CategoryId,
+                                                Content=createArticle.Content,Title=createArticle.Title,
+                ViewCount = createArticle.ViewCount
+                };
+
+                var contentPath = this.environment.ContentRootPath;
+
+                articles.Images = await unitOfWorkService!.ArticleService.UploadImage(createArticle.Images, contentPath);
              await unitOfWorkService.ArticleService.AddAsync(articles);
              if (await unitOfWorkService.CommitAsync())
               {

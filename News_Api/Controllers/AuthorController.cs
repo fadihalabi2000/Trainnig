@@ -34,7 +34,7 @@ namespace NewsApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<(PaginationMetaData, List<AuthorView>)>> GetAll()
+        public async Task<ActionResult< List<AuthorView>>> GetAll()
         {
 
             try
@@ -63,7 +63,7 @@ namespace NewsApi.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<AuthorView>> GetById(int id,int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<(PaginationMetaData,AuthorView,List<ArticleWithAuthorView>)>> GetById(int id,int pageNumber = 1, int pageSize = 10)
         {
             try
             {
@@ -85,7 +85,7 @@ namespace NewsApi.Controllers
                         Response.Headers.Add("X-Pagination",
                     JsonSerializer.Serialize(paginationData));
                         await logger.LogInformation("Author with ID " + id + " fetched ", CurrentUser.Id(HttpContext), CurrentUser.Role(HttpContext));
-                        return Ok(new { paginationData, author, articles });
+                        return Ok(new{paginationData, author, articles} );
                     }
                     else
                     {

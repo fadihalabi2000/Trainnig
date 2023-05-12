@@ -8,6 +8,7 @@ using NewsApiData;
 using NewsApiDomin.Models;
 using NewsApiRepositories.UnitOfWorkRepository;
 using NewsApiRepositories.UnitOfWorkRepository.Interface;
+using NewsApiServies.Auth;
 using NewsApiServies.Auth.Interfaces;
 using NewsApiServies.Pagination;
 using NewsApiServies.Pagination.Interface;
@@ -67,6 +68,7 @@ builder.Services.AddScoped<IUnitOfWorkRepo,UnitOfWorkRepo>();
 builder.Services.AddScoped<IUnitOfWorkService,UnitOfWorkService>();
 builder.Services.AddTransient<IUserAuthService,UserAuthService>();
 builder.Services.AddTransient<IAuthorAuthService,AuthorAuthService>();
+builder.Services.AddTransient<IAdminAuthService, AdminAuthService>();
 builder.Services.AddTransient<IMyLogger, MyLogger>();
 
 builder.Services.AddDbContext<NewsApiDbContext>(option =>
@@ -108,7 +110,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseStaticFiles();
+app.UseCors();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

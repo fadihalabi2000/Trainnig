@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NewsApiDomin.Enums;
 using NewsApiDomin.Models;
+using NewsApiDomin.ViewModels.AuthorViewModel;
 using NewsApiDomin.ViewModels.UserViewModel;
 using NewsApiRepositories.UnitOfWorkRepository.Interface;
 using NewsApiServies.Auth.ClassStatic;
@@ -46,6 +47,7 @@ namespace Services.Auth
                 return new AuthModel { Message = "Email Or DisplayName is already registered!" };
 
             mapper.Map(createUser, user);
+            user = mapper.Map<User>(createUser);
             //user = new User
             //{
             //    FirstName = createUser.FirstName,
@@ -55,8 +57,8 @@ namespace Services.Auth
             //    ProfilePicture = createUser.ProfilePicture,
             //    DisplayName = createUser.DisplayName,
             //};
-           
-               await unitOfWorkService.UsersService.AddAsync(user!);
+
+            await unitOfWorkService.UsersService.AddAsync(user!);
 
            
 
@@ -94,19 +96,20 @@ namespace Services.Auth
             }
             var auth = new AuthModel { Email = user.Email, DisplayName = user.DisplayName, Roles = Role.User, Id = user.Id };
             auth = await CreateToken.CreateJwtToken(auth, _jwt);
+            var IsActive = user.RefreshTokens!.Any(t => (DateTime.UtcNow >= t.ExpiresOn));
+            IsActive = user.RefreshTokens!.Any(t => t.RevokedOn == null && !IsActive);
 
-
-            if (user.RefreshTokens!.Any(t => t.IsActive))
+            if (IsActive)
             {
-                var activeRefreshToken = user.RefreshTokens!.FirstOrDefault(t => t.IsActive);
-                authModel.RefreshToken = activeRefreshToken!.Token;
-                authModel.RefreshTokenExpiration = activeRefreshToken.ExpiresOn;
+                var activeRefreshToken = user.RefreshTokens!.LastOrDefault(t => t.ExpiresOn > DateTime.UtcNow);
+                auth.RefreshToken = activeRefreshToken!.Token;
+                auth.RefreshTokenExpiration = activeRefreshToken.ExpiresOn;
             }
             else
             {
                 var refreshToken = CreateToken.GenerateRefreshToken();
-                authModel.RefreshToken = refreshToken.Token;
-                authModel.RefreshTokenExpiration = refreshToken.ExpiresOn;
+                auth.RefreshToken = refreshToken.Token;
+                auth.RefreshTokenExpiration = refreshToken.ExpiresOn;
                 user.RefreshTokens!.Add(refreshToken);
                 await unitOfWorkService.UsersService.UpdateAsync(user!);
             }
@@ -142,10 +145,10 @@ namespace Services.Auth
             await unitOfWorkService.CommitAsync();
             var auth = new AuthModel { Email = user.Email, DisplayName = user.DisplayName, Roles = Role.User.ToString(), Id = user.Id };
             auth = await CreateToken.CreateJwtToken(auth, _jwt);
-            authModel.IsAuthenticated = true;
-            authModel.RefreshToken = newRefreshToken.Token;
-            authModel.RefreshTokenExpiration = newRefreshToken.ExpiresOn;
-            return authModel;
+            auth.IsAuthenticated = true;
+            auth.RefreshToken = newRefreshToken.Token;
+            auth.RefreshTokenExpiration = newRefreshToken.ExpiresOn;
+            return auth;
         }
 
         public async Task<bool> RevokeTokenAsync(string token)

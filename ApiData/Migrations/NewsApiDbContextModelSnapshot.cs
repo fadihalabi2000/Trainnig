@@ -72,7 +72,7 @@ namespace NewsApiData.Migrations
                             CategoryId = 1,
                             Content = "أصيب أكثر من 200 فلسطيني في مواجهات بنابلس مع قوات الاحتلال الإسرائيلي، بالتزامن مع تشييع شهيد بأريحا، وبعد ساعات من اقتحام مئات المستوطنين للمسجد الأقصى المبارك في القدس.",
                             IsDeleted = false,
-                            PublishDate = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1019),
+                            PublishDate = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2495),
                             Title = "فلسطين.. عشرات الإصابات بنابلس وتشييع شهيد بأريحا واقتحام يهودي للأقصى",
                             UpdateDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ViewCount = 0
@@ -84,7 +84,7 @@ namespace NewsApiData.Migrations
                             CategoryId = 2,
                             Content = "اقتحم مستوطنون باحات المسجد الأقصى صباح اليوم الأحد بحماية قوات الاحتلال الإسرائيلي التي اعتدت على شبان فلسطينيين عند باب الأسباط ومنعتهم بالقوة من دخول المسجد الأقصى لأداء صلاة فجر اليوم، كما منعت عشرات النساء من الدخول.",
                             IsDeleted = false,
-                            PublishDate = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1029),
+                            PublishDate = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2501),
                             Title = "الاحتلال يعتدي على فلسطينيين ويمنعهم من دخول الأقصى",
                             UpdateDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ViewCount = 0
@@ -96,7 +96,7 @@ namespace NewsApiData.Migrations
                             CategoryId = 3,
                             Content = "منذ بداية الشهر الجاري هجمات على ضباط في الجيش والقوات الأمنية أدت إلى مقتل ضابط في الجيش وآخر في الشرطة وثالث في الدعم السريع ونهب مركبات عسكرية،",
                             IsDeleted = false,
-                            PublishDate = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1031),
+                            PublishDate = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2502),
                             Title = "حوادث اغتيال العسكريين السودانيين",
                             UpdateDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ViewCount = 0
@@ -170,16 +170,6 @@ namespace NewsApiData.Migrations
                             Bio = "hhhhh",
                             DisplayName = "ahmad",
                             Email = "ahmad@gmail.com",
-                            IsDeleted = false,
-                            Password = "165",
-                            ProfilePicture = "https://tse1.mm.bing.net/th/id/OIP.U8tBnyvXfaWfsx3Q-cIXUAHaHa?w=180&h=180&c=7&r=0&o=5&pid=1.7"
-                        },
-                        new
-                        {
-                            Id = 2147483647,
-                            Bio = "test",
-                            DisplayName = "test",
-                            Email = "testA@gmail.com",
                             IsDeleted = false,
                             Password = "165",
                             ProfilePicture = "https://tse1.mm.bing.net/th/id/OIP.U8tBnyvXfaWfsx3Q-cIXUAHaHa?w=180&h=180&c=7&r=0&o=5&pid=1.7"
@@ -263,7 +253,7 @@ namespace NewsApiData.Migrations
                         {
                             Id = 1,
                             ArticleId = 1,
-                            CommentDate = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1061),
+                            CommentDate = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2529),
                             CommentText = "wwwww",
                             IsDeleted = false,
                             UserId = 1
@@ -272,7 +262,7 @@ namespace NewsApiData.Migrations
                         {
                             Id = 2,
                             ArticleId = 2,
-                            CommentDate = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1062),
+                            CommentDate = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2531),
                             CommentText = "sssss",
                             IsDeleted = false,
                             UserId = 2
@@ -281,7 +271,7 @@ namespace NewsApiData.Migrations
                         {
                             Id = 3,
                             ArticleId = 3,
-                            CommentDate = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1063),
+                            CommentDate = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2532),
                             CommentText = "xxxxxxx",
                             IsDeleted = false,
                             UserId = 3
@@ -377,7 +367,7 @@ namespace NewsApiData.Migrations
                             Id = 1,
                             ArticleId = 1,
                             IsDeleted = false,
-                            LikeDate = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1045),
+                            LikeDate = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2516),
                             UserId = 1
                         },
                         new
@@ -385,7 +375,7 @@ namespace NewsApiData.Migrations
                             Id = 2,
                             ArticleId = 2,
                             IsDeleted = false,
-                            LikeDate = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1047),
+                            LikeDate = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2517),
                             UserId = 2
                         },
                         new
@@ -393,7 +383,7 @@ namespace NewsApiData.Migrations
                             Id = 3,
                             ArticleId = 3,
                             IsDeleted = false,
-                            LikeDate = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1047),
+                            LikeDate = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2518),
                             UserId = 3
                         });
                 });
@@ -439,7 +429,7 @@ namespace NewsApiData.Migrations
                             Id = 1,
                             AuthorId = 1,
                             Content = "add",
-                            DateCreated = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1092),
+                            DateCreated = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2559),
                             IsDeleted = false,
                             logLevel = 2
                         },
@@ -448,7 +438,7 @@ namespace NewsApiData.Migrations
                             Id = 2,
                             AuthorId = 1,
                             Content = "delete",
-                            DateCreated = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1096),
+                            DateCreated = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2561),
                             IsDeleted = false,
                             logLevel = 2
                         },
@@ -456,7 +446,7 @@ namespace NewsApiData.Migrations
                         {
                             Id = 3,
                             Content = "update",
-                            DateCreated = new DateTime(2023, 4, 16, 20, 24, 6, 68, DateTimeKind.Utc).AddTicks(1097),
+                            DateCreated = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2562),
                             IsDeleted = false,
                             UserId = 1,
                             logLevel = 2
@@ -570,17 +560,6 @@ namespace NewsApiData.Migrations
                             Email = "taher@gmail.com",
                             FirstName = "taher",
                             IsDeleted = false,
-                            LastName = "halabi",
-                            Password = "12345",
-                            ProfilePicture = "https://www.bing.com/th?id=OIP.frAlEuXSfGFRLcBxzVRY1AHaER&w=329&h=189&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2"
-                        },
-                        new
-                        {
-                            Id = 2147483647,
-                            DisplayName = "test",
-                            Email = "test@gmail.com",
-                            FirstName = "test",
-                            IsDeleted = true,
                             LastName = "halabi",
                             Password = "12345",
                             ProfilePicture = "https://www.bing.com/th?id=OIP.frAlEuXSfGFRLcBxzVRY1AHaER&w=329&h=189&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2"
