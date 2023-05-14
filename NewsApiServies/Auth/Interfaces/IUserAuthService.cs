@@ -11,7 +11,7 @@ namespace NewsApiServies.Auth.Interfaces
     public interface IUserAuthService
     {
        
-         Task<AuthModel> RegisterAsync(CreateUser createUser);
+         Task<AuthModel> RegisterAsync(CreateUser createUser, List<Image> image);
          Task<AuthModel> GetTokenAsync(Login userLogin);
         Task<AuthModel> RefreshTokenAsync(string token);
         Task<bool> RevokeTokenAsync(string token);

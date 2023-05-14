@@ -40,7 +40,7 @@ namespace Services.Auth
             this.mapper = mapper;
         }
 
-        public async Task<AuthModel> RegisterAsync(CreateUser createUser)
+        public async Task<AuthModel> RegisterAsync(CreateUser createUser, List<Image> image)
         {
             User user = await unitOfWorkService.UsersService.CheckNameAndEmail(createUser.DisplayName, createUser.Email);
             if (user is not null)
@@ -48,6 +48,7 @@ namespace Services.Auth
 
             mapper.Map(createUser, user);
             user = mapper.Map<User>(createUser);
+            user.ProfilePicture = image[0].ImageUrl;
             //user = new User
             //{
             //    FirstName = createUser.FirstName,
