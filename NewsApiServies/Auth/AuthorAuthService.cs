@@ -31,13 +31,14 @@ namespace Services.Auth
             this.mapper = mapper;
         }
 
-        public async Task<AuthModel> RegisterAsync(CreateAuthor createAuthor)
+        public async Task<AuthModel> RegisterAsync(CreateAuthor createAuthor,List<Image> image)
         {
             Author author = await unitOfWorkService.AuthorService.CheckNameAndEmail(createAuthor.DisplayName, createAuthor.Email);
             if (author is not null)
                 return new AuthModel { Message = "Email Or DisplayName is already registered!" };
-          
+           
             author = mapper.Map<Author>(createAuthor);
+            author.ProfilePicture = image[0].ImageUrl;
             await unitOfWorkService.AuthorService.AddAsync(author);
 
             if (await unitOfWorkService.CommitAsync() == false)

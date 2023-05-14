@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NewsApiDomin.Models;
+using NewsApiDomin.ViewModels.AuthorViewModel;
 using NewsApiDomin.ViewModels.UserViewModel;
 using NewsApiServies.Auth.Interfaces;
 using NewsApiServies.CRUD.Interfaces;
+using Services.Transactions;
 using Services.Transactions.Interfaces;
 
 namespace NewsApi.Controllers
@@ -14,18 +16,23 @@ namespace NewsApi.Controllers
     public class UserAuthController : ControllerBase
     {
         private readonly IUserAuthService userAuthService;
+        private readonly IWebHostEnvironment environment;
+        private readonly IUnitOfWorkService unitOfWorkService;
 
-        public UserAuthController(IUserAuthService userAuthService)
+        public UserAuthController(IUserAuthService userAuthService, IWebHostEnvironment env, IUnitOfWorkService unitOfWorkService)
         {
             this.userAuthService = userAuthService;
+            this.environment = env;
+            this.unitOfWorkService = unitOfWorkService;
         }
 
         [HttpPost("UserRegister")]
-        public async Task<ActionResult<AuthModel>> RegisterAsync( CreateUser createUser)
+        public async Task<ActionResult<AuthModel>> RegisterAsync( [FromForm]CreateUser createUser)
         {
-         
+            var contentPath = this.environment.ContentRootPath;
+            List<Image> image = await unitOfWorkService.ArticleService.UploadImage(createUser.ProfilePicture, contentPath);
 
-            var result = await userAuthService.RegisterAsync(createUser);
+            var result = await userAuthService.RegisterAsync(createUser,image);
 
             if (!result.IsAuthenticated)
                 return BadRequest(result.Message);
