@@ -73,6 +73,17 @@ builder.Services.AddTransient<IMyLogger, MyLogger>();
 
 builder.Services.AddDbContext<NewsApiDbContext>(option =>
 option.UseSqlServer(builder.Configuration["ConnectionStrings:NewsApiConnectionString"]));
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularOrigins",
+    builder =>
+    {
+        builder.AllowAnyOrigin()
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+
+    });
+});
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -111,6 +122,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseStaticFiles();
+app.UseCors("AllowAngularOrigins");
 app.UseCors();
 app.UseHttpsRedirection();
 

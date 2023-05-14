@@ -12,7 +12,7 @@ using NewsApiData;
 namespace NewsApiData.Migrations
 {
     [DbContext(typeof(NewsApiDbContext))]
-    [Migration("20230511213625_Init")]
+    [Migration("20231204175445_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -74,7 +74,7 @@ namespace NewsApiData.Migrations
                             CategoryId = 1,
                             Content = "أصيب أكثر من 200 فلسطيني في مواجهات بنابلس مع قوات الاحتلال الإسرائيلي، بالتزامن مع تشييع شهيد بأريحا، وبعد ساعات من اقتحام مئات المستوطنين للمسجد الأقصى المبارك في القدس.",
                             IsDeleted = false,
-                            PublishDate = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2495),
+                            PublishDate = new DateTime(2023, 12, 4, 17, 54, 44, 565, DateTimeKind.Utc).AddTicks(6125),
                             Title = "فلسطين.. عشرات الإصابات بنابلس وتشييع شهيد بأريحا واقتحام يهودي للأقصى",
                             UpdateDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ViewCount = 0
@@ -86,7 +86,7 @@ namespace NewsApiData.Migrations
                             CategoryId = 2,
                             Content = "اقتحم مستوطنون باحات المسجد الأقصى صباح اليوم الأحد بحماية قوات الاحتلال الإسرائيلي التي اعتدت على شبان فلسطينيين عند باب الأسباط ومنعتهم بالقوة من دخول المسجد الأقصى لأداء صلاة فجر اليوم، كما منعت عشرات النساء من الدخول.",
                             IsDeleted = false,
-                            PublishDate = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2501),
+                            PublishDate = new DateTime(2023, 12, 4, 17, 54, 44, 565, DateTimeKind.Utc).AddTicks(6133),
                             Title = "الاحتلال يعتدي على فلسطينيين ويمنعهم من دخول الأقصى",
                             UpdateDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ViewCount = 0
@@ -98,7 +98,7 @@ namespace NewsApiData.Migrations
                             CategoryId = 3,
                             Content = "منذ بداية الشهر الجاري هجمات على ضباط في الجيش والقوات الأمنية أدت إلى مقتل ضابط في الجيش وآخر في الشرطة وثالث في الدعم السريع ونهب مركبات عسكرية،",
                             IsDeleted = false,
-                            PublishDate = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2502),
+                            PublishDate = new DateTime(2023, 12, 4, 17, 54, 44, 565, DateTimeKind.Utc).AddTicks(6136),
                             Title = "حوادث اغتيال العسكريين السودانيين",
                             UpdateDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ViewCount = 0
@@ -255,7 +255,7 @@ namespace NewsApiData.Migrations
                         {
                             Id = 1,
                             ArticleId = 1,
-                            CommentDate = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2529),
+                            CommentDate = new DateTime(2023, 12, 4, 17, 54, 44, 565, DateTimeKind.Utc).AddTicks(6181),
                             CommentText = "wwwww",
                             IsDeleted = false,
                             UserId = 1
@@ -264,7 +264,7 @@ namespace NewsApiData.Migrations
                         {
                             Id = 2,
                             ArticleId = 2,
-                            CommentDate = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2531),
+                            CommentDate = new DateTime(2023, 12, 4, 17, 54, 44, 565, DateTimeKind.Utc).AddTicks(6184),
                             CommentText = "sssss",
                             IsDeleted = false,
                             UserId = 2
@@ -273,7 +273,7 @@ namespace NewsApiData.Migrations
                         {
                             Id = 3,
                             ArticleId = 3,
-                            CommentDate = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2532),
+                            CommentDate = new DateTime(2023, 12, 4, 17, 54, 44, 565, DateTimeKind.Utc).AddTicks(6186),
                             CommentText = "xxxxxxx",
                             IsDeleted = false,
                             UserId = 3
@@ -369,7 +369,7 @@ namespace NewsApiData.Migrations
                             Id = 1,
                             ArticleId = 1,
                             IsDeleted = false,
-                            LikeDate = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2516),
+                            LikeDate = new DateTime(2023, 12, 4, 17, 54, 44, 565, DateTimeKind.Utc).AddTicks(6159),
                             UserId = 1
                         },
                         new
@@ -377,7 +377,7 @@ namespace NewsApiData.Migrations
                             Id = 2,
                             ArticleId = 2,
                             IsDeleted = false,
-                            LikeDate = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2517),
+                            LikeDate = new DateTime(2023, 12, 4, 17, 54, 44, 565, DateTimeKind.Utc).AddTicks(6161),
                             UserId = 2
                         },
                         new
@@ -385,7 +385,7 @@ namespace NewsApiData.Migrations
                             Id = 3,
                             ArticleId = 3,
                             IsDeleted = false,
-                            LikeDate = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2518),
+                            LikeDate = new DateTime(2023, 12, 4, 17, 54, 44, 565, DateTimeKind.Utc).AddTicks(6162),
                             UserId = 3
                         });
                 });
@@ -431,7 +431,7 @@ namespace NewsApiData.Migrations
                             Id = 1,
                             AuthorId = 1,
                             Content = "add",
-                            DateCreated = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2559),
+                            DateCreated = new DateTime(2023, 12, 4, 17, 54, 44, 565, DateTimeKind.Utc).AddTicks(6226),
                             IsDeleted = false,
                             logLevel = 2
                         },
@@ -440,7 +440,7 @@ namespace NewsApiData.Migrations
                             Id = 2,
                             AuthorId = 1,
                             Content = "delete",
-                            DateCreated = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2561),
+                            DateCreated = new DateTime(2023, 12, 4, 17, 54, 44, 565, DateTimeKind.Utc).AddTicks(6230),
                             IsDeleted = false,
                             logLevel = 2
                         },
@@ -448,7 +448,7 @@ namespace NewsApiData.Migrations
                         {
                             Id = 3,
                             Content = "update",
-                            DateCreated = new DateTime(2023, 5, 11, 21, 36, 25, 600, DateTimeKind.Utc).AddTicks(2562),
+                            DateCreated = new DateTime(2023, 12, 4, 17, 54, 44, 565, DateTimeKind.Utc).AddTicks(6232),
                             IsDeleted = false,
                             UserId = 1,
                             logLevel = 2

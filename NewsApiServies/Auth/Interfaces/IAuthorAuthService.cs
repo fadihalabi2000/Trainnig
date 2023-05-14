@@ -10,7 +10,7 @@ namespace NewsApiServies.Auth.Interfaces
 {
     public interface IAuthorAuthService
     {
-        Task<AuthModel> RegisterAsync(CreateAuthor createAuthor);
+        Task<AuthModel> RegisterAsync(CreateAuthor createAuthor, List<Image> image);
         Task<AuthModel> GetTokenAsync(Login authorLogin);
         Task<AuthModel> RefreshTokenAsync(string token);
         Task<bool> RevokeTokenAsync(string token);

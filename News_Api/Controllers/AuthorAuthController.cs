@@ -4,9 +4,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NewsApiDomin.Enums;
 using NewsApiDomin.Models;
+using NewsApiDomin.ViewModels.ArticleViewModel;
 using NewsApiDomin.ViewModels.AuthorViewModel;
 using NewsApiDomin.ViewModels.UserViewModel;
 using NewsApiServies.Auth.Interfaces;
+using Services.Transactions;
+using Services.Transactions.Interfaces;
 
 namespace NewsApi.Controllers
 {
@@ -16,18 +19,23 @@ namespace NewsApi.Controllers
     public class AuthorAuthController : ControllerBase
     {
         private readonly IAuthorAuthService authorAuthService;
+        private readonly IWebHostEnvironment environment;
+        private readonly IUnitOfWorkService unitOfWorkService;
 
-        public AuthorAuthController(IAuthorAuthService authorAuthService)
+        public AuthorAuthController(IAuthorAuthService authorAuthService, IWebHostEnvironment env,IUnitOfWorkService unitOfWorkService)
         {
             this.authorAuthService = authorAuthService;
+            this.environment = env;
+            this.unitOfWorkService = unitOfWorkService;
         }
         [Authorize(Roles = "Admin")]
         [HttpPost("AuthorRegister")]
-            public async Task<ActionResult<AuthModel>> RegisterAsync(CreateAuthor createAuthor)
-            {
+            public async Task<ActionResult<AuthModel>> RegisterAsync([FromForm]CreateAuthor createAuthor)
+        {
+            var contentPath = this.environment.ContentRootPath;
 
-
-                var result = await authorAuthService.RegisterAsync(createAuthor);
+           List<Image> image = await unitOfWorkService.ArticleService.UploadImage(createAuthor.ProfilePicture, contentPath);
+            var result = await authorAuthService.RegisterAsync(createAuthor,image);
 
                 if (!result.IsAuthenticated)
                     return BadRequest(result.Message);
