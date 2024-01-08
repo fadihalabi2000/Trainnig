@@ -128,7 +128,7 @@ namespace TrainnigApI.Controllers
                 }
                 existingRoom.Name =roomView.Name;
                 existingRoom.Capacity=roomView.Capacity;
-                       
+
                 await _context.SaveChangesAsync();
                 return Ok("update saccess");
             }
@@ -138,6 +138,6 @@ namespace TrainnigApI.Controllers
             }
 
 
-        }
     }
+}
 }

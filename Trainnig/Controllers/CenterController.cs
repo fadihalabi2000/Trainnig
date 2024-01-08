@@ -101,6 +101,7 @@ namespace TrainnigApI.Controllers
                 await _context.SaveChangesAsync();
 
                 return Ok($"Deleted successfully center id {center.ID}");
+                return Conflict($"delete center saccessfully {center.ID}");
             }
             catch (Exception ex) 
             { return Conflict(ex.ToString()); }
