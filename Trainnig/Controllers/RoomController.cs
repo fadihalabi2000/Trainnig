@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using TrainnigApI.Data;
 using TrainnigApI.Model;
 using TrainnigApI.View;
@@ -19,15 +20,25 @@ namespace TrainnigApI.Controllers
             _logger = logger;
         }
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Room>>> GetAllCenters()
+        public async Task<ActionResult<IEnumerable<Room>>> GetAllRoom()
         {
             try
             {
-                return await _context.rooms.ToListAsync();
-                // _logger.LogWarning("get allcenterby",);
+                var rooms = await _context.rooms.ToListAsync();
+
+                if (!rooms.Any())
+                {
+                    return NotFound("There are no Room");
+                }
+
+                return Ok(rooms);
+               
+              
             }
-            catch (Exception ex) {
-                return NotFound("The center does not exist");
+            catch (Exception ) {
+
+                return BadRequest("Something went wrong in " +
+                           " the request, please try again.");
             }
         }
         [HttpGet("{id}")]
@@ -35,13 +46,20 @@ namespace TrainnigApI.Controllers
         {
             var Room = await _context.rooms
                        .FirstOrDefaultAsync(r => r.ID == id);
-
-            if (Room == null)
+            try
+            {
+                if (Room == null)
             {
                 return NotFound($"This room id: {id} does not exist");
             }
 
-            return Room;
+                return Ok(Room);
+            }
+            catch
+            {
+                return BadRequest("try agin something wong in request");
+            }
+           
         }
         [HttpPost]
         public async Task<ActionResult<RoomView>> PostRoom(RoomView roomView)
@@ -128,7 +146,7 @@ namespace TrainnigApI.Controllers
                 }
                 existingRoom.Name =roomView.Name;
                 existingRoom.Capacity=roomView.Capacity;
-                       
+
                 await _context.SaveChangesAsync();
                 return Ok("update saccess");
             }
@@ -138,6 +156,6 @@ namespace TrainnigApI.Controllers
             }
 
 
-        }
     }
+}
 }

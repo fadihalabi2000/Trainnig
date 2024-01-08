@@ -15,8 +15,10 @@ option.UseSqlServer(builder.Configuration["ConnectionStrings:DbCoreConnectionStr
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IBaseService<Center>, BaseService<Center>>();
-
+builder.Services.AddScoped<IBaseService<Account>, BaseService<Account>>();
+builder.Services.AddScoped<IBaseService<Room>, BaseService<Room>>();
 var app = builder.Build();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

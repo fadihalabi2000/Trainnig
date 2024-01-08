@@ -7,7 +7,8 @@ using TrainnigApI.Model;
 
 namespace TrainnigApI.service
 {
-    public class BaseService<TEntity> : IBaseService<TEntity> where TEntity : class
+    public class BaseService<TEntity> : IBaseService<TEntity> 
+    where TEntity : class, IBaseNormalEntity
     {
         private readonly AppDBContext dbContext;
 
@@ -21,13 +22,24 @@ namespace TrainnigApI.service
             return await dbContext.Set<TEntity>().ToListAsync();
         }
 
+        //public async Task<TEntity?> GetByIdAsync(int id)
+        //{
+        //    DbSet<TEntity> dbSet = this.dbContext.Set<TEntity>();
+
+        //    TEntity? entity = await dbSet.FirstOrDefaultAsync(p => p.Id == id);
+        //    return entity;
+        //}
+
         public async Task<TEntity> GetByIdAsync(int id)
         {
-            return await dbContext.Set<TEntity>().FindAsync(id);
+            return await dbContext.Set<TEntity>().FirstOrDefaultAsync(p => p.ID == id);
         }
 
         public async Task AddAsync(TEntity entity)
         {
+            //await Task.Run(() => {
+            //    this.dbContext.Set<TEntity>().AddAsync(entity);
+            //});
             await dbContext.Set<TEntity>().AddAsync(entity);
             await dbContext.SaveChangesAsync();
         }
@@ -40,7 +52,9 @@ namespace TrainnigApI.service
 
         public async Task DeleteAsync(int id)
         {
-            var entity = await dbContext.Set<TEntity>().FindAsync(id);
+            var entity = await dbContext.Set<TEntity>()
+                          .FirstOrDefaultAsync(a => a.ID == id);
+
             if (entity != null)
             {
                 dbContext.Set<TEntity>().Remove(entity);

@@ -2,8 +2,10 @@
 
 namespace TrainnigApI.service
 {
-    public interface IBaseService<TEntity> where TEntity : class
+    
+    public interface IBaseService<TEntity> where TEntity :IBaseNormalEntity
     {
+    
        
             Task<List<TEntity>> GetAllAsync();
             Task<TEntity> GetByIdAsync(int id);

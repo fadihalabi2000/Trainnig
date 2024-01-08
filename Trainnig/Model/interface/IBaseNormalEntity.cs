@@ -1,7 +1,7 @@
 ﻿
 namespace TrainnigApI.Model
 {
-  public class BaseNormalEntity :IBaseNormalEntity
+    public interface IBaseNormalEntity
     {
         public int ID { get; set; }
     }

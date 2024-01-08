@@ -35,13 +35,21 @@ namespace TrainnigApI.Controllers
         {
             var Service = await _context.services
                        .FirstOrDefaultAsync(s => s.ID == id);
-
-            if (Service == null)
+            try
             {
-                return NotFound();
+                if (Service == null)
+                {
+                    return NotFound($"This Service id: {id} does not exist");
+                }
+                return Ok(Service);
             }
+            
+             catch
+            {
+                return BadRequest("try agin something wong in request");
+            }
+           
 
-            return Service;
         }
         [HttpPost]
         public async Task<ActionResult<ServiceView>> PostRoom(ServiceView serviceView)

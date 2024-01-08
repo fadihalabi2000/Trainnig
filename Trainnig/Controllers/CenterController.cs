@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq;
-using Trainnig.Controllers;
 using TrainnigApI.Data;
 using TrainnigApI.Model;
 using TrainnigApI.service;
@@ -21,7 +20,7 @@ namespace TrainnigApI.Controllers
 
         public CenterController(AppDBContext context, ILogger<CenterController> logger,IBaseService<Center> baseService)
         {
-            _context = context;
+          //  _context = context;
             _logger = logger;
             this.baseService = baseService;
         }
@@ -31,15 +30,24 @@ namespace TrainnigApI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Center>>> GetAllCenters()
         {
-            var center =await this.baseService.GetAllAsync();
+            try
+            {
+                var center = await this.baseService.GetAllAsync();
 
+                if (!center.Any())
+                {
+                    return NotFound(" There are no accounts in system");
+                }
 
-         
+                return Ok(center);
 
-            return Ok(center);
-
-            //return await _context.Centers.ToListAsync();
-            //_logger.LogWarning("get allcenterby", _context.Centers.ToListAsync());
+                //return await _context.Centers.ToListAsync();
+                //_logger.LogWarning("get allcenterby", _context.Centers.ToListAsync());
+            }
+            catch
+            {
+                return BadRequest("try agin something wong in request");
+            }
         }
 
         [HttpGet("{id}")]
@@ -49,12 +57,18 @@ namespace TrainnigApI.Controllers
             var Center = await _context.Centers
                       .FirstOrDefaultAsync(r => r.ID == id);
 
-            if (Center == null)
+            try
             {
-                return NotFound();
-            }
+                if (Center == null)
+                {
+                    return NotFound($"The Center id {Center.ID} does not exist");
+                }
 
-            return Center;
+                return Ok(Center);
+            }
+            catch { 
+                return BadRequest("try agin something wong in request");
+            }
         }
         [HttpPost]
         public async Task<ActionResult<CenterView>> PostCenter(CenterView carview)
@@ -72,7 +86,7 @@ namespace TrainnigApI.Controllers
                 };
                 await _context.Centers.AddAsync(center);
                 await _context.SaveChangesAsync();
-                if (lastCenterId != null)
+                if (lastCenterId >=0)
                 {
                     lastCenterId += 1;
                     Response.Headers.Append($"Center-ID", lastCenterId.ToString());
@@ -80,7 +94,7 @@ namespace TrainnigApI.Controllers
                 return Ok("saccessfuly add center");
             }
             catch (Exception ) {
-                return Conflict("sorry try agin");
+                return Conflict("sorry  add try agin");
             }
         }
         // DELETE: api/Center
@@ -101,6 +115,7 @@ namespace TrainnigApI.Controllers
                 await _context.SaveChangesAsync();
 
                 return Ok($"Deleted successfully center id {center.ID}");
+            
             }
             catch (Exception ex) 
             { return Conflict(ex.ToString()); }
@@ -108,10 +123,7 @@ namespace TrainnigApI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCenter(int id, CenterView centerView)
         {
-            //if (id != car.ID)
-            //{
-            //    return BadRequest();
-            //}
+           
             try
             {
                 var existingCenter = await _context.Centers
