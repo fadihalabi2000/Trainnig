@@ -114,7 +114,7 @@ namespace TrainnigApI.Controllers
                 _context.Centers.Remove(center);
                 await _context.SaveChangesAsync();
 
-                return Ok($"Deleted successfully center id {center.ID}");
+             
             
             }
             catch (Exception ex) 
