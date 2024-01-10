@@ -50,12 +50,17 @@ namespace TrainnigApI.Controllers
 
             try
             {
-                if (accountsById == null)
+                if (accountsById != null)
                 {
-                    return NotFound($"The Account id {accountsById.ID} does not exist");
+                    return Ok(accountsById);
+                   
+                }
+                else
+                {
+                    return NotFound($"The Account id {id} does not exist");
                 }
 
-                return Ok(accountsById);
+               
             }
             catch
             {
@@ -66,7 +71,8 @@ namespace TrainnigApI.Controllers
         public async Task<ActionResult<AccuontView>> PostCenter(AccuontView accuontView)
         {
             try
-            {
+            {   
+               
                 var accounts = await this.baseService.GetAllAsync();
                 var lastAccountId=accounts.OrderByDescending(b => b.ID)
                                           .Select(b => b.ID)

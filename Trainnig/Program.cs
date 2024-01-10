@@ -17,6 +17,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IBaseService<Center>, BaseService<Center>>();
 builder.Services.AddScoped<IBaseService<Account>, BaseService<Account>>();
 builder.Services.AddScoped<IBaseService<Room>, BaseService<Room>>();
+builder.Services.AddScoped<IBaseService<Reservation>, BaseService<Reservation>>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
