@@ -61,7 +61,7 @@ namespace TrainnigApI.Controllers
             {
                 if (Center == null)
                 {
-                    return NotFound($"The Center id {Center.ID} does not exist");
+                    return NotFound($"The Center id {id} does not exist");
                 }
 
                 return Ok(Center);

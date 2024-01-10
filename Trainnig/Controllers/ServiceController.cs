@@ -27,7 +27,7 @@ namespace TrainnigApI.Controllers
         {
 
             return await _context.services.ToListAsync();
-            _logger.LogWarning("get allServiceby", _context.services.ToListAsync());
+          //  _logger.LogWarning("get allServiceby", _context.services.ToListAsync());
         }
 
         [HttpGet("{id}")]
