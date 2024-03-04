@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrainnigApI.Data;
 
@@ -11,9 +12,11 @@ using TrainnigApI.Data;
 namespace TrainnigApI.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240114074259_AddTranssactionReservationAndListToModel")]
+    partial class AddTranssactionReservationAndListToModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,7 +41,7 @@ namespace TrainnigApI.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("accounts", (string)null);
+                    b.ToTable("accounts");
                 });
 
             modelBuilder.Entity("TrainnigApI.Model.AccountMovement", b =>
@@ -73,7 +76,7 @@ namespace TrainnigApI.Migrations
 
                     b.HasIndex("ReservationId");
 
-                    b.ToTable("accountMovements", (string)null);
+                    b.ToTable("accountMovements");
                 });
 
             modelBuilder.Entity("TrainnigApI.Model.Center", b =>
@@ -92,7 +95,7 @@ namespace TrainnigApI.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("Centers", (string)null);
+                    b.ToTable("Centers");
                 });
 
             modelBuilder.Entity("TrainnigApI.Model.Reservation", b =>
@@ -120,7 +123,7 @@ namespace TrainnigApI.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("reservations", (string)null);
+                    b.ToTable("reservations");
                 });
 
             modelBuilder.Entity("TrainnigApI.Model.ReservationRoom", b =>
@@ -155,7 +158,7 @@ namespace TrainnigApI.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("reservationRooms", (string)null);
+                    b.ToTable("reservationRooms");
                 });
 
             modelBuilder.Entity("TrainnigApI.Model.ReservationService", b =>
@@ -190,7 +193,7 @@ namespace TrainnigApI.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("reservationServices", (string)null);
+                    b.ToTable("reservationServices");
                 });
 
             modelBuilder.Entity("TrainnigApI.Model.Room", b =>
@@ -212,7 +215,7 @@ namespace TrainnigApI.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("rooms", (string)null);
+                    b.ToTable("rooms");
                 });
 
             modelBuilder.Entity("TrainnigApI.Model.Service", b =>
@@ -231,7 +234,7 @@ namespace TrainnigApI.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("services", (string)null);
+                    b.ToTable("services");
                 });
 
             modelBuilder.Entity("TrainnigApI.Model.AccountMovement", b =>

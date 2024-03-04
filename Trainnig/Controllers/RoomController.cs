@@ -91,7 +91,7 @@ namespace TrainnigApI.Controllers
                             lastRoomId += 1;
                             Response.Headers.Append("Room-ID", lastRoomId.ToString());
                         }
-                        return Ok("saccessfuly add Room");
+                        return Ok(room);
                     }
                     catch (Exception ) 
                     { return NotFound("fialed to add room soory"); }
@@ -125,7 +125,8 @@ namespace TrainnigApI.Controllers
                 _context.rooms.Remove(Room);
                 await _context.SaveChangesAsync();
 
-                return Ok($"Deleted successfully center id {Room.ID}");
+                // return Ok($"Deleted successfully center id {Room.ID}");
+                return Ok(Room);
             }
             catch (Exception ex)
             { return Conflict(ex.ToString()); }

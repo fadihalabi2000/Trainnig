@@ -10,7 +10,8 @@ namespace TrainnigApI.Model
         public int NumberOfAttendees { get; set; }
         public bool IsFree { get; set; }
         public string ?BookingRequestImage { get; set; }
-     
+        public List<ReservationRoom> ReservationRooms { get; set; } 
+        public List<ReservationService> reservationServices{ get; set; } 
     }
 
 }

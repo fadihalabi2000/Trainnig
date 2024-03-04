@@ -85,6 +85,7 @@ namespace TrainnigApI.Controllers
                     lastReservationId += 1;
                     Response.Headers.Append($"Account-ID", lastReservationId.ToString());
                     return Ok("saccessfuly add Reservation");
+                   // return Ok(reservation);
                 }
                 else
                 {
@@ -114,6 +115,7 @@ namespace TrainnigApI.Controllers
                     await this.baseService.DeleteAsync(id);
 
                     return Ok($"Deleted successfully Reservation id {ReservationById.ID}");
+                  // return Ok (ReservationById);
                 }
 
             }
@@ -143,6 +145,7 @@ namespace TrainnigApI.Controllers
                      await this.baseService.UpdateAsync(ReservationByIdForUpdate);
                     Response.Headers.Append($" updatedReservation with id to:", id.ToString());
                     return Ok($"update successfully account id( {ReservationByIdForUpdate.ID}  )");
+                // return Ok (ReservationByIdForUpdate);
                                   
                 }
 

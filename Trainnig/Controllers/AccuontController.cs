@@ -20,7 +20,7 @@ namespace TrainnigApI.Controllers
             _logger = logger;
             this.baseService = baseService;
         }
-
+       
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Account>>> GetAllAccounts()
         {
@@ -68,13 +68,44 @@ namespace TrainnigApI.Controllers
             }
         }
         [HttpPost]
+        //public async Task<ActionResult<AccuontView>> PostCenter(AccuontView accuontView)
+        //{
+        //    try
+        //    {
+        //        var accounts = await this.baseService.GetAllAsync();
+        //        var lastAccountId = accounts.OrderByDescending(b => b.ID)
+        //                                     .Select(b => b.ID)
+        //                                     .FirstOrDefault();
+        //        Account account = new Account()
+        //        {
+        //            AccountName = accuontView.AccountName,
+        //            TotalBalance = accuontView.TotalBalance,
+        //        };
+        //        await this.baseService.AddAsync(account);
+
+        //        if (lastAccountId >= 0)
+        //        {
+        //            lastAccountId += 1;
+        //            Response.Headers.Append("Account-ID", lastAccountId.ToString());
+        //        }
+
+        //        // استخدم CreatedAtRoute لإنشاء رد بناءً على الطريق المحددة
+        //        return CreatedAtRoute("GetAccount", new { id = lastAccountId }, account);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return Conflict("Sorry, try again to add the account.");
+        //    }
+        //}
+
+        [HttpPost]
         public async Task<ActionResult<AccuontView>> PostCenter(AccuontView accuontView)
         {
             try
-            {   
-               
+            {
+
                 var accounts = await this.baseService.GetAllAsync();
-                var lastAccountId=accounts.OrderByDescending(b => b.ID)
+                var lastAccountId = accounts.OrderByDescending(b => b.ID)
                                           .Select(b => b.ID)
                                           .FirstOrDefault();
                 Account account = new Account()
@@ -83,20 +114,21 @@ namespace TrainnigApI.Controllers
                     TotalBalance = accuontView.TotalBalance,
                 };
                 await this.baseService.AddAsync(account);
-               // await _context.SaveChangesAsync();
+                // await _context.SaveChangesAsync();
                 if (lastAccountId >= 0)
                 {
                     lastAccountId += 1;
                     Response.Headers.Append($"Account-ID", lastAccountId.ToString());
                 }
-                return Ok("saccessfuly add Account");
+                //return CreatedAtRoute("GetAccount", new { id = lastAccountId }, account);
+                return Ok(account);
             }
             catch (Exception)
             {
                 return Conflict("sorry  add try agin");
             }
         }
-       
+
         [HttpDelete("{id}", Name = "DeleteAccountByID")]
         public async Task<IActionResult> DeleteAccountByID(int id)
         {
@@ -135,10 +167,11 @@ namespace TrainnigApI.Controllers
                     updateAccount.AccountName = accuontView.AccountName;
                     updateAccount.TotalBalance = accuontView.TotalBalance;
                     await this.baseService.UpdateAsync(updateAccount);
-                    Response.Headers.Append($" updatedAccountName to:", (updateAccount.AccountName));
-                    return Ok($"update successfully account id( {updateAccount.ID} )" +
-                                    $"AccountName:{updateAccount.AccountName}" +
-                                    $"TotalBalance:{updateAccount.TotalBalance}");
+                    //   Response.Headers.Append($" updatedAccountName to:", (updateAccount.AccountName));
+                    //     return Ok($"update successfully account id( {updateAccount.ID} )" +
+                    //                   $"AccountName:{updateAccount.AccountName}" +
+                    //                 $"TotalBalance:{updateAccount.TotalBalance}");
+                    return Ok(updateAccount);
                 }
                
             }

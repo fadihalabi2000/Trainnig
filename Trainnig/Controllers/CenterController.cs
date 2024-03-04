@@ -20,7 +20,7 @@ namespace TrainnigApI.Controllers
 
         public CenterController(AppDBContext context, ILogger<CenterController> logger,IBaseService<Center> baseService)
         {
-          //  _context = context;
+            _context = context;
             _logger = logger;
             this.baseService = baseService;
         }
@@ -29,7 +29,7 @@ namespace TrainnigApI.Controllers
      
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Center>>> GetAllCenters()
-        {
+       {
             try
             {
                 var center = await this.baseService.GetAllAsync();
@@ -79,19 +79,27 @@ namespace TrainnigApI.Controllers
               .OrderByDescending(b => b.ID)
               .Select(b => b.ID)
               .FirstOrDefault();
-                Center center = new Center()
+                if (lastCenterId != null)
                 {
-                    Name = carview.Name,
-                  Location = carview.Location
-                };
-                await _context.Centers.AddAsync(center);
-                await _context.SaveChangesAsync();
-                if (lastCenterId >=0)
-                {
-                    lastCenterId += 1;
-                    Response.Headers.Append($"Center-ID", lastCenterId.ToString());
+                    Center center = new Center()
+                    {
+                        Name = carview.Name,
+                        Location = carview.Location
+                    };
+                    await _context.Centers.AddAsync(center);
+                    await _context.SaveChangesAsync();
+                    if (lastCenterId >= 0)
+                    {
+                        lastCenterId += 1;
+                        Response.Headers.Append($"Center-ID", lastCenterId.ToString());
+                    }
+                    return Ok(center);
                 }
-                return Ok("saccessfuly add center");
+                else
+                {
+                    return BadRequest();
+                }
+               
             }
             catch (Exception ) {
                 return Conflict("sorry  add try agin");
@@ -114,7 +122,7 @@ namespace TrainnigApI.Controllers
                 _context.Centers.Remove(center);
                 await _context.SaveChangesAsync();
 
-                return Ok($"Deleted successfully center id {center.ID}");
+                return Ok(center);
             
             }
             catch (Exception ex) 
@@ -136,7 +144,7 @@ namespace TrainnigApI.Controllers
                 existingCenter.Name = centerView.Name;
                 existingCenter.Location = centerView.Location;
                 await _context.SaveChangesAsync();
-                return Ok("update saccess");
+                return Ok(existingCenter);
             }
             catch (DbUpdateConcurrencyException)
             {
