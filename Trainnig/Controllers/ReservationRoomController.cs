@@ -80,7 +80,6 @@ namespace TrainnigApI.Controllers
             try
             {
 
-              
                 ReservationRoom reservationRoom = new ReservationRoom()
                 {
                     ReservationId = reservationRoomView.ReservationId,
