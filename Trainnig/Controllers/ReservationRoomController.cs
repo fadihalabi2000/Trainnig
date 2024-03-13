@@ -80,11 +80,7 @@ namespace TrainnigApI.Controllers
             try
             {
 
-                var AllReservationRoom = await this.baseService.GetAllAsync();
-                var lastReservationRoomId = AllReservationRoom
-                                          .OrderByDescending(b => b.ID)
-                                          .Select(b => b.ID)
-                                          .FirstOrDefault();
+              
                 ReservationRoom reservationRoom = new ReservationRoom()
                 {
                     ReservationId = reservationRoomView.ReservationId,
@@ -96,12 +92,18 @@ namespace TrainnigApI.Controllers
                 };
                 await this.baseService.AddAsync(reservationRoom);
                 // await _context.SaveChangesAsync();
-                if (lastReservationRoomId >= 0)
-                {
-                    lastReservationRoomId += 1;
-                    Response.Headers.Append($"ReservationRoom-ID",
+
+                var AllReservationRoom = await this.baseService.GetAllAsync();
+                var lastReservationRoomId = AllReservationRoom
+                                          .OrderByDescending(b => b.ID)
+                                          .Select(b => b.ID)
+                                          .FirstOrDefault();
+
+                Response.Headers.Append($"ReservationRoom-ID",
                                       lastReservationRoomId.ToString());
-                }
+                reservationRoom.ID = lastReservationRoomId;
+
+
                 return Ok(reservationRoom);
             }
             catch (Exception)

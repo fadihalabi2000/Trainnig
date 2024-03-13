@@ -43,6 +43,8 @@ builder.Services.AddScoped<IBaseService<Room>, BaseService<Room>>();
 builder.Services.AddScoped<IBaseService<Reservation>, BaseService<Reservation>>();
 builder.Services.AddScoped<IBaseService<ReservationRoom>, BaseService<ReservationRoom>>();
 builder.Services.AddScoped<IBaseService<ReservationService>, BaseService<ReservationService>>();
+builder.Services.AddScoped<IBaseService<AccountMovement>, BaseService<AccountMovement>>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -90,15 +90,9 @@ namespace TrainnigApI.Controllers
             {
                
                                
-                var AllReservationService = await this.baseService.GetAllAsync();
-                var lastReservationServiceId = AllReservationService
-                                          .OrderByDescending(b => b.ID)
-                                          .Select(b => b.ID)
-                                          .FirstOrDefault();
+               
                 if (reservationServiceView.ServiceId >= 0 &&
-                      reservationServiceView.ReservationId >= 0 &&
-                      lastReservationServiceId >= 0
-                            )
+                      reservationServiceView.ReservationId >= 0   )
                 {
                     ReservationService reservationService = new ReservationService()
                     {
@@ -111,11 +105,17 @@ namespace TrainnigApI.Controllers
                     };
                     await this.baseService.AddAsync(reservationService);
                     // await _context.SaveChangesAsync();
+                    var AllReservationService = await this.baseService.GetAllAsync();
+                    var lastReservationServiceId = AllReservationService
+                                              .OrderByDescending(b => b.ID)
+                                              .Select(b => b.ID)
+                                              .FirstOrDefault();
                     if (lastReservationServiceId >= 0)
                     {
-                        lastReservationServiceId += 1;
+                        
                         Response.Headers.Append($"ReservationService-ID",
                                           lastReservationServiceId.ToString());
+                        reservationService.ID = lastReservationServiceId;
                     }
                     return Ok(reservationService);
                 }

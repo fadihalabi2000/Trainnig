@@ -7,7 +7,7 @@ namespace TrainnigApI.Model
     public class AccountMovement: BaseNormalEntity
     {
        
-        public int ReservationId { get; set; }
+        public int ?ReservationId { get; set; }
         public virtual Reservation? Reservation { get; set; }
         public double MovementValue { get; set; }
       

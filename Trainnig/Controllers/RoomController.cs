@@ -90,8 +90,16 @@ namespace TrainnigApI.Controllers
                         {
                             lastRoomId += 1;
                             Response.Headers.Append("Room-ID", lastRoomId.ToString());
+                       
                         }
-                        return Ok(room);
+                        Room roomwithId =new Room()
+                        { ID=lastRoomId,
+                        Name = roomView.Name,
+                        Capacity = roomView.Capacity,
+                        CenterId = roomView.CenterId,
+                        
+                        };
+                        return Ok(roomwithId);
                     }
                     catch (Exception ) 
                     { return NotFound("fialed to add room soory"); }

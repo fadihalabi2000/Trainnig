@@ -65,10 +65,7 @@ namespace TrainnigApI.Controllers
             try
             {
 
-                var allReservation = await this.baseService.GetAllAsync();
-                var lastReservationId = allReservation.OrderByDescending(r => r.ID)
-                                          .Select(r => r.ID)
-                                          .FirstOrDefault();
+            
                 Reservation reservation = new Reservation()
                 {
                      AccountId=reservationView.AccountId,
@@ -79,18 +76,18 @@ namespace TrainnigApI.Controllers
                 };
                
                 // await _context.SaveChangesAsync();
-                if (lastReservationId >= 0)
-                {
-                    await this.baseService.AddAsync(reservation);
-                    lastReservationId += 1;
+                 await this.baseService.AddAsync(reservation);
+                    var allReservation = await this.baseService.GetAllAsync();
+                    var lastReservationId = allReservation.OrderByDescending(r => r.ID)
+                                              .Select(r => r.ID)
+                                              .FirstOrDefault();
+              
                     Response.Headers.Append($"Account-ID", lastReservationId.ToString());
-                    return Ok("saccessfuly add Reservation");
+                reservation.ID = lastReservationId;
+                    return Ok(reservation);
                    // return Ok(reservation);
-                }
-                else
-                {
-                    return Conflict("sorry failed  add try agin");
-                }
+               
+             
                
             }
             catch (Exception)
