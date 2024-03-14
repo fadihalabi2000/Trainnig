@@ -65,10 +65,7 @@ namespace TrainnigApI.Controllers
             try
             {
 
-                var allReservation = await this.baseService.GetAllAsync();
-                var lastReservationId = allReservation.OrderByDescending(r => r.ID)
-                                          .Select(r => r.ID)
-                                          .FirstOrDefault();
+            
                 Reservation reservation = new Reservation()
                 {
                      AccountId=reservationView.AccountId,
@@ -79,17 +76,18 @@ namespace TrainnigApI.Controllers
                 };
                
                 // await _context.SaveChangesAsync();
-                if (lastReservationId >= 0)
-                {
-                    await this.baseService.AddAsync(reservation);
-                    lastReservationId += 1;
+                 await this.baseService.AddAsync(reservation);
+                    var allReservation = await this.baseService.GetAllAsync();
+                    var lastReservationId = allReservation.OrderByDescending(r => r.ID)
+                                              .Select(r => r.ID)
+                                              .FirstOrDefault();
+              
                     Response.Headers.Append($"Account-ID", lastReservationId.ToString());
-                    return Ok("saccessfuly add Reservation");
-                }
-                else
-                {
-                    return Conflict("sorry failed  add try agin");
-                }
+                reservation.ID = lastReservationId;
+                    return Ok(reservation);
+                   // return Ok(reservation);
+               
+             
                
             }
             catch (Exception)
@@ -114,6 +112,7 @@ namespace TrainnigApI.Controllers
                     await this.baseService.DeleteAsync(id);
 
                     return Ok($"Deleted successfully Reservation id {ReservationById.ID}");
+                  // return Ok (ReservationById);
                 }
 
             }
@@ -143,6 +142,7 @@ namespace TrainnigApI.Controllers
                      await this.baseService.UpdateAsync(ReservationByIdForUpdate);
                     Response.Headers.Append($" updatedReservation with id to:", id.ToString());
                     return Ok($"update successfully account id( {ReservationByIdForUpdate.ID}  )");
+                // return Ok (ReservationByIdForUpdate);
                                   
                 }
 

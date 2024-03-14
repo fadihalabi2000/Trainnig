@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -60,6 +61,10 @@ namespace TrainnigApI.service
                 dbContext.Set<TEntity>().Remove(entity);
                 await dbContext.SaveChangesAsync();
             }
+        }
+        public IDbContextTransaction BeginTransaction()
+        {
+            return dbContext.Database.BeginTransaction();
         }
     }
 }

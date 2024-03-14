@@ -90,8 +90,16 @@ namespace TrainnigApI.Controllers
                         {
                             lastRoomId += 1;
                             Response.Headers.Append("Room-ID", lastRoomId.ToString());
+                       
                         }
-                        return Ok("saccessfuly add Room");
+                        Room roomwithId =new Room()
+                        { ID=lastRoomId,
+                        Name = roomView.Name,
+                        Capacity = roomView.Capacity,
+                        CenterId = roomView.CenterId,
+                        
+                        };
+                        return Ok(roomwithId);
                     }
                     catch (Exception ) 
                     { return NotFound("fialed to add room soory"); }
@@ -125,7 +133,8 @@ namespace TrainnigApI.Controllers
                 _context.rooms.Remove(Room);
                 await _context.SaveChangesAsync();
 
-                return Ok($"Deleted successfully center id {Room.ID}");
+                // return Ok($"Deleted successfully center id {Room.ID}");
+                return Ok(Room);
             }
             catch (Exception ex)
             { return Conflict(ex.ToString()); }

@@ -1,4 +1,5 @@
-﻿using TrainnigApI.Model;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using TrainnigApI.Model;
 
 namespace TrainnigApI.service
 {
@@ -12,7 +13,7 @@ namespace TrainnigApI.service
             Task AddAsync(TEntity entity);
             Task UpdateAsync(TEntity entity);
             Task DeleteAsync(int id);
+           IDbContextTransaction BeginTransaction();
 
-        
     }
 }
