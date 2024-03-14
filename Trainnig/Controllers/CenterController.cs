@@ -123,6 +123,7 @@ namespace TrainnigApI.Controllers
                 await _context.SaveChangesAsync();
 
                 return Ok(center);
+
             
             }
             catch (Exception ex) 
